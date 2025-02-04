@@ -1,4 +1,5 @@
 <?php
+session_start();
 require "../config/Database.php";
 require "../config/bot_config.php";
 
@@ -27,8 +28,9 @@ while (true) {
                 $text = $message["text"] ?? "";
                 $user_id = $message["from"]["id"];
                 $username = $message["from"]["username"] ?? "Unknown";
+                $message_id = $message["message_id"]; // Extract message_id
 
-                handleUserMessage($user_id, $chat_id, $text, $username, $chat_type);
+                handleUserMessage($user_id, $chat_id, $text, $username, $chat_type, $message_id);
             }
         }
     }
@@ -38,7 +40,7 @@ while (true) {
     sleep(2); // Delay untuk mencegah bot terlalu sering mengecek update
 }
 
-function handleUserMessage($user_id, $chat_id, $text, $username, $chat_type) {
+function handleUserMessage($user_id, $chat_id, $text, $username, $chat_type, $message_id) {
     global $pdo;
 
     // ID grup yang ditargetkan
@@ -49,59 +51,134 @@ function handleUserMessage($user_id, $chat_id, $text, $username, $chat_type) {
         if ($text == "/start") {
             sendMessage($chat_id, "Selamat datang! Ketik /daftar untuk registrasi.");
         } elseif ($text == "/daftar") {
-            sendMessage($chat_id, "Masukkan nama Anda:");
-            saveTempState($user_id, 'awaiting_name');
-        } elseif (getTempState($user_id) == 'awaiting_name') {
-            saveTempStateValue($user_id, 'name', $text);
-            saveTempState($user_id, 'awaiting_username');
+            // Mengecek apakah ID Telegram sudah terdaftar
+            $stmt = $pdo->prepare("SELECT * FROM users WHERE ID_Telegram = ?");
+            $stmt->execute([$user_id]);
+            $user = $stmt->fetch();
+
+            if ($user) {
+                sendMessage($chat_id, "Telegram Anda sudah terdaftar.");
+            } else {
+                sendMessage($chat_id, "Masukkan nama Anda:");
+                // Simpan status bahwa bot sedang menunggu input nama
+                $_SESSION['state'] = 'awaiting_name';
+            }
+        } elseif (isset($_SESSION['state']) && $_SESSION['state'] == 'awaiting_name') {
+            // Menyimpan nama yang diterima
+            $_SESSION['name'] = $text;
             sendMessage($chat_id, "Masukkan username Anda:");
-        } elseif (getTempState($user_id) == 'awaiting_username') {
-            saveTempStateValue($user_id, 'username', $text);
-            saveTempState($user_id, 'awaiting_password');
-            sendMessage($chat_id, "Masukkan password Anda:");
-        } elseif (getTempState($user_id) == 'awaiting_password') {
+            $_SESSION['state'] = 'awaiting_username';
+        } elseif (isset($_SESSION['state']) && $_SESSION['state'] == 'awaiting_username') {
+            // Mengecek apakah username sudah terdaftar
+            $stmt = $pdo->prepare("SELECT * FROM users WHERE Username_Telegram = ?");
+            $stmt->execute([strtolower($text)]);
+            $existing_user = $stmt->fetch();
+
+            if ($existing_user) {
+                sendMessage($chat_id, "Username Anda sudah terdaftar. Coba lagi dengan username yang berbeda.");
+            } else {
+                $_SESSION['username'] = $text;
+                sendMessage($chat_id, "Masukkan password Anda:");
+                $_SESSION['state'] = 'awaiting_password';
+            }
+        } elseif (isset($_SESSION['state']) && $_SESSION['state'] == 'awaiting_password') {
+            // Meng-hash password untuk penyimpanan aman
             $password = password_hash($text, PASSWORD_DEFAULT);
+
+            // Menyimpan data pengguna baru ke dalam database
             $stmt = $pdo->prepare("INSERT INTO users (Nama, ID_Telegram, Username_Telegram, Password) VALUES (?, ?, ?, ?)");
             $stmt->execute([
-                getTempStateValue($user_id, 'name'),
+                $_SESSION['name'],
                 $user_id,
-                getTempStateValue($user_id, 'username'),
+                $_SESSION['username'],
                 $password
             ]);
-            sendMessage($chat_id, "Anda telah terdaftar!\nNama: " . getTempStateValue($user_id, 'name') . "\nUsername: " . getTempStateValue($user_id, 'username'));
-            clearTempState($user_id);
+
+            // Mengirim konfirmasi pendaftaran
+            sendMessage($chat_id, "Anda telah terdaftar!\nNama: " . $_SESSION['name'] . "\nUsername: " . $_SESSION['username']);
+
+            // Menghapus session setelah pendaftaran selesai
+            unset($_SESSION['state']);
+            unset($_SESSION['name']);
+            unset($_SESSION['username']);
         }
     } elseif ($chat_type === 'group' || $chat_type === 'supergroup') {
         // Jika pesan berasal dari grup
         if ($chat_id == $target_group_id && strpos($text, "/moban") === 0) {
-            handleOrder($text, $chat_id);
+            handleOrder($text, $chat_id, $message_id, $user_id, $username);
         }
     }
 }
+
 
 function sendMessage($chat_id, $message) {
     $url = API_URL . "sendMessage?chat_id=$chat_id&text=" . urlencode($message);
     file_get_contents($url);
 }
 
-function handleOrder($text, $chat_id) {
+function handleOrder($text, $chat_id, $message_id, $user_id, $username) {
     global $pdo;
-    // Extract order details from the message
-    preg_match("/#(\w+) #(.+) #(.+)/", $text, $matches);
+
+    // Daftar transaksi yang diperbolehkan
+    $valid_transaksi = ["AO", "MO", "DO", "RO", "SO", "GNO", "CO", "MIGRATE", "PDA", "AS"];
+
+    // Ekstraksi order dari pesan menggunakan regex yang memungkinkan baris baru
+    preg_match("/#(\w+) #(\w+) #([\s\S]+)/", $text, $matches);
+
     if (count($matches) === 4) {
-        $order_id = $matches[1];
-        $transaksi = $matches[2];
-        $keterangan = $matches[3];
+        // Perbaikan posisi order_id dan transaksi
+        $transaksi = strtoupper($matches[1]); // Mengubah transaksi ke huruf besar
+        $order_id = strtoupper($matches[2]); // Mengubah order_id ke huruf besar
+        $keterangan = trim($matches[3]);
+
+        // Validasi apakah transaksi termasuk dalam daftar yang diperbolehkan
+        if (!in_array($transaksi, $valid_transaksi)) {
+            replyMessage($chat_id, "Transaksi tidak valid! Hanya diperbolehkan: " . implode(", ", $valid_transaksi), $message_id);
+            return;
+        }
+
+        // Validasi apakah order_id diawali dengan transaksi
+        if (!preg_match("/^" . preg_quote($transaksi, '/') . "\d+$/", $order_id)) {
+            replyMessage($chat_id, "Format Order_ID tidak valid! Order_ID harus diawali dengan transaksi yang sesuai.\n\nContoh benar:\n- Jika transaksi `MO`, maka Order_ID harus `MO12345678`\n- Jika transaksi `DO`, maka Order_ID harus `DO987654321`", $message_id);
+            return;
+        }
+
+        // Membersihkan keterangan dari karakter newline
+        //$keterangan = str_replace(["\n", "\r"], " ", $keterangan); 
+
+        // Generate nomor tiket
         $no_tiket = generateTicket();
 
-        // Insert the order into the database
-        $stmt = $pdo->prepare("INSERT INTO orders (Order_ID, Transaksi, Keterangan, No_Tiket, Status) VALUES (?, ?, ?, ?, 'Order')");
-        $stmt->execute([$order_id, $transaksi, $keterangan, $no_tiket]);
-        
-        sendMessage($chat_id, "Permintaan Anda $order_id $transaksi sudah kami proses dengan no tiket $no_tiket, silahkan tunggu.");
+        try {
+            $pdo->beginTransaction();
+
+            // Simpan data ke tabel orders
+            $stmt1 = $pdo->prepare("INSERT INTO orders (Order_ID, Transaksi, Keterangan, No_Tiket, Status, id_telegram, username_telegram) VALUES (?, ?, ?, ?, 'Order', ?, ?)");
+            $stmt1->execute([$order_id, $transaksi, $keterangan, $no_tiket, $user_id, $username]);
+
+            // Simpan ke tabel order_messages
+            $stmt2 = $pdo->prepare("INSERT INTO order_messages (no_tiket, message_id) VALUES (?, ?)");
+            $stmt2->execute([$no_tiket, $message_id]);
+
+            $pdo->commit();
+
+            replyMessage($chat_id, "Permintaan Anda $order_id $transaksi sudah kami proses dengan no tiket $no_tiket, silakan tunggu.", $message_id);
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            replyMessage($chat_id, "Terjadi kesalahan saat menyimpan order. Coba lagi nanti.", $message_id);
+        }
     } else {
-        sendMessage($chat_id, "Format order tidak valid. Pastikan formatnya adalah: /moban #Order_ID #Transaksi #Keterangan");
+        replyMessage($chat_id, "Format order tidak valid. Pastikan formatnya sesuai dengan template berikut:\n\n/moban #Transaksi #Order_ID #Keterangan\n\nContoh pengisian yang benar:\n/moban #MO #MO014812917 #DGPS250129211923012742835...", $message_id);
     }
+}
+
+
+
+
+
+function replyMessage($chat_id, $message, $reply_to_message_id) {
+    $url = API_URL . "sendMessage?chat_id=$chat_id&text=" . urlencode($message) . "&reply_to_message_id=$reply_to_message_id";
+    file_get_contents($url);
 }
 
 function sendNotifications() {
@@ -118,19 +195,64 @@ function sendNotifications() {
         $transaksi = $notification['Transaksi'];
 
         // Cek status order di tabel 'orders'
-        $stmtStatus = $pdo->prepare("SELECT Status FROM orders WHERE Order_ID = ?");
-        $stmtStatus->execute([$order_id]);
-        $status = $stmtStatus->fetchColumn();
+        $stmtStatus = $pdo->prepare("SELECT Status, ket_validasi FROM orders WHERE No_Tiket = ?");
+        $stmtStatus->execute([$no_tiket]);
+        $order = $stmtStatus->fetch(PDO::FETCH_ASSOC);
+        $status = $order['Status'];
+        $ket_validasi = $order['ket_validasi']; // Ambil ket_validasi
 
+        // Ambil user yang melakukan "Pick Up" dari tabel order_activity
+        $stmtPickUp = $pdo->prepare("SELECT user_id FROM order_activity WHERE no_tiket = ? AND activity_type = 'Pickup' ORDER BY timestamp DESC LIMIT 1");
+        $stmtPickUp->execute([$no_tiket]);
+        $pickUpUser = $stmtPickUp->fetch(PDO::FETCH_ASSOC);
+
+        // Ambil user yang melakukan "Close" dari tabel order_activity
+        $stmtClose = $pdo->prepare("SELECT user_id FROM order_activity WHERE no_tiket = ? AND activity_type = 'Close' ORDER BY timestamp DESC LIMIT 1");
+        $stmtClose->execute([$no_tiket]);
+        $closeUser = $stmtClose->fetch(PDO::FETCH_ASSOC);
+
+        // Ambil nama pengguna yang melakukan Pick Up
+        if ($pickUpUser) {
+            $stmtUser = $pdo->prepare("SELECT Nama FROM users WHERE ID = ?");
+            $stmtUser->execute([$pickUpUser['user_id']]);
+            $user = $stmtUser->fetch(PDO::FETCH_ASSOC);
+            $pickUpUserName = $user ? $user['Nama'] : 'Unknown User';
+        } else {
+            $pickUpUserName = 'Unknown User'; // Jika tidak ada pengguna yang ditemukan
+        }
+
+        // Ambil nama pengguna yang melakukan Close
+        if ($closeUser) {
+            $stmtUser = $pdo->prepare("SELECT Nama FROM users WHERE ID = ?");
+            $stmtUser->execute([$closeUser['user_id']]);
+            $user = $stmtUser->fetch(PDO::FETCH_ASSOC);
+            $closeUserName = $user ? $user['Nama'] : 'Unknown User';
+        } else {
+            $closeUserName = 'Unknown User'; // Jika tidak ada pengguna yang ditemukan
+        }
+
+        // Tentukan pesan berdasarkan status
         if ($status === 'Pickup') {
-            $message = "Permintaan Anda $no_tiket $order_id $transaksi sudah di PICK UP.";
+            $message = "Permintaan Anda $no_tiket $order_id $transaksi sudah di PICK UP oleh $pickUpUserName.";
         } elseif ($status === 'Close') {
-            $message = "Permintaan Anda $no_tiket $order_id $transaksi sudah di RESOLVED.";
+            // Tambahkan ket_validasi ke pesan
+            $message = "Permintaan Anda $no_tiket $order_id $transaksi sudah di RESOLVED oleh $closeUserName. Keterangan: $ket_validasi";
         } else {
             continue; // Jika bukan Pickup atau Close, lewati
         }
 
-        sendMessage($chat_id, $message);
+        // Ambil message_id dari tabel order_messages untuk digunakan sebagai reply_to_message_id
+        $stmtMessage = $pdo->prepare("SELECT message_id FROM order_messages WHERE no_tiket = ? ORDER BY id ASC LIMIT 1");
+        $stmtMessage->execute([$no_tiket]);
+        $orderMessage = $stmtMessage->fetch(PDO::FETCH_ASSOC);
+
+        // Jika ditemukan message_id, kirim reply
+        if ($orderMessage) {
+            replyMessage($chat_id, $message, $orderMessage['message_id']);
+        } else {
+            // Jika tidak ada message_id yang ditemukan, kirim pesan tanpa reply
+            sendMessage($chat_id, $message);
+        }
 
         // Tandai sebagai terkirim
         $stmtUpdate = $pdo->prepare("UPDATE bot_notifications SET is_sent = 1 WHERE id = ?");
@@ -138,39 +260,9 @@ function sendNotifications() {
     }
 }
 
+
 function generateTicket() {
     return 'TKT' . strtoupper(substr(uniqid(rand(), true), -5));
 }
 
-function saveTempState($user_id, $state) {
-    global $pdo;
-    $stmt = $pdo->prepare("INSERT INTO temp_states (user_id, state) VALUES (?, ?) ON DUPLICATE KEY UPDATE state = ?");
-    $stmt->execute([$user_id, $state, $state]);
-}
-
-function saveTempStateValue($user_id, $key, $value) {
-    global $pdo;
-    $stmt = $pdo->prepare("INSERT INTO temp_states (user_id, key, value) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = ?");
-    $stmt->execute([$user_id, $key, $value, $value]);
-}
-
-function getTempState($user_id) {
-    global $pdo;
-    $stmt = $pdo->prepare("SELECT state FROM temp_states WHERE user_id = ?");
-    $stmt->execute([$user_id]);
-    return $stmt->fetchColumn();
-}
-
-function getTempStateValue($user_id, $key) {
-    global $pdo;
-    $stmt = $pdo->prepare("SELECT value FROM temp_states WHERE user_id = ? AND key = ?");
-    $stmt->execute([$user_id, $key]);
-    return $stmt->fetchColumn();
-}
-
-function clearTempState($user_id) {
-    global $pdo;
-    $stmt = $pdo->prepare("DELETE FROM temp_states WHERE user_id = ?");
-    $stmt->execute([$user_id]);
-}
 ?>

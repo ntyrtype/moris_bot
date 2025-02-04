@@ -86,7 +86,7 @@
                 <th>No</th>
                 <th>Order ID</th>
                 <th>Transaksi</th>
-                <th>Keterangan</th>
+                <th class = "Keterangan">Keterangan</th>
                 <th>No Tiket</th>
                 <th>Kontak</th>
                 <th>Status</th>

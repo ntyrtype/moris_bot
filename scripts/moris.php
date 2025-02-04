@@ -105,7 +105,7 @@ function handleUserMessage($user_id, $chat_id, $text, $username, $chat_type, $me
     } elseif ($chat_type === 'group' || $chat_type === 'supergroup') {
         // Jika pesan berasal dari grup
         if ($chat_id == $target_group_id && strpos($text, "/moban") === 0) {
-            handleOrder($text, $chat_id, $message_id);
+            handleOrder($text, $chat_id, $message_id, $user_id, $username);
         }
     }
 }
@@ -116,31 +116,46 @@ function sendMessage($chat_id, $message) {
     file_get_contents($url);
 }
 
-function handleOrder($text, $chat_id, $message_id) {
+function handleOrder($text, $chat_id, $message_id, $user_id, $username) {
     global $pdo;
 
-    // Extract order details from the message using regex that allows line breaks
+    // Daftar transaksi yang diperbolehkan
+    $valid_transaksi = ["AO", "MO", "DO", "RO", "SO", "GNO", "CO", "MIGRATE", "PDA", "AS"];
+
+    // Ekstraksi order dari pesan menggunakan regex yang memungkinkan baris baru
     preg_match("/#(\w+) #(\w+) #(.+)/s", $text, $matches);
     if (count($matches) === 4) {
-        $order_id = $matches[1];
-        $transaksi = $matches[2];
+        // Perbaikan posisi order_id dan transaksi
+        $transaksi = strtoupper($matches[1]); // Mengubah transaksi ke huruf besar
+        $order_id = strtoupper($matches[2]); // Mengubah order_id ke huruf besar
         $keterangan = trim($matches[3]);
 
-        // Replace newline characters with a space or some other placeholder if needed
-        $keterangan = str_replace("\n", " ", $keterangan); // Mengganti baris baru dengan spasi
-        $keterangan = str_replace("\r", " ", $keterangan); // Mengganti carriage return dengan spasi
+        // Validasi apakah transaksi termasuk dalam daftar yang diperbolehkan
+        if (!in_array($transaksi, $valid_transaksi)) {
+            replyMessage($chat_id, "Transaksi tidak valid! Hanya diperbolehkan: " . implode(", ", $valid_transaksi), $message_id);
+            return;
+        }
 
-        // Generate ticket number
+        // Validasi apakah order_id diawali dengan transaksi
+        if (!preg_match("/^" . preg_quote($transaksi, '/') . "\d+$/", $order_id)) {
+            replyMessage($chat_id, "Format Order_ID tidak valid! Order_ID harus diawali dengan transaksi yang sesuai.\n\nContoh benar:\n- Jika transaksi `MO`, maka Order_ID harus `MO12345678`\n- Jika transaksi `DO`, maka Order_ID harus `DO987654321`", $message_id);
+            return;
+        }
+
+        // Membersihkan keterangan dari karakter newline
+        $keterangan = str_replace(["\n", "\r"], " ", $keterangan);
+
+        // Generate nomor tiket
         $no_tiket = generateTicket();
 
         try {
             $pdo->beginTransaction();
 
-            // Save data into the orders table
-            $stmt1 = $pdo->prepare("INSERT INTO orders (Order_ID, Transaksi, Keterangan, No_Tiket, Status) VALUES (?, ?, ?, ?, 'Order')");
-            $stmt1->execute([$order_id, $transaksi, $keterangan, $no_tiket]);
+            // Simpan data ke tabel orders
+            $stmt1 = $pdo->prepare("INSERT INTO orders (Order_ID, Transaksi, Keterangan, No_Tiket, Status, id_telegram, username_telegram) VALUES (?, ?, ?, ?, 'Order', ?, ?)");
+            $stmt1->execute([$order_id, $transaksi, $keterangan, $no_tiket, $user_id, $username]);
 
-            // Save data into the order_messages table
+            // Simpan ke tabel order_messages
             $stmt2 = $pdo->prepare("INSERT INTO order_messages (no_tiket, message_id) VALUES (?, ?)");
             $stmt2->execute([$no_tiket, $message_id]);
 
@@ -152,9 +167,10 @@ function handleOrder($text, $chat_id, $message_id) {
             replyMessage($chat_id, "Terjadi kesalahan saat menyimpan order. Coba lagi nanti.", $message_id);
         }
     } else {
-        replyMessage($chat_id, "Format order tidak valid. Pastikan formatnya sesuai dengan template berikut:\n\n/moban #Order_ID #Transaksi #Keterangan\n\nContoh pengisian yang benar:\n/moban #PSB #WO014812917 #DGPS250129211923012742835-AOi4250129091923067b57810_12748220-88080439~202501292334127286349~7286349~24114258~3~WSA\n\nODP-SWT-FAS/047\nalasan : odp inputan jarak over\nValins ID: 28176483\nTime: 2025-01-30 14:59:42\nSummary ODP: ODP-SWT-FAS/047\nIP OLT: 172.29.238.135\nSlot: 1\nPort: 9\nSN: ZTEGD816A8E1", $message_id);
+        replyMessage($chat_id, "Format order tidak valid. Pastikan formatnya sesuai dengan template berikut:\n\n/moban #Transaksi #Order_ID #Keterangan\n\nContoh pengisian yang benar:\n/moban #MO #MO014812917 #DGPS250129211923012742835...", $message_id);
     }
 }
+
 
 
 

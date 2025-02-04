@@ -157,7 +157,7 @@
                         <td>{$no}</td>
                         <td>{$row['Order_ID']}</td>
                         <td>{$row['Transaksi']}</td>
-                        <td>{$row['Keterangan']}</td>
+                        <td>" . nl2br(htmlspecialchars($row['Keterangan'])) . "</td>
                         <td>{$row['No_Tiket']}</td>
                         <td><a href='{$telegram_link}' class='telegram-link' target='_blank'>Kontak</a></td>
                         <td>
