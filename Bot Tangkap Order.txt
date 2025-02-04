@@ -1,0 +1,72 @@
+Bot Tangkap Order 
+
+- landing page
+    1. Landing Page Login User
+    2. Landing Page Pickup
+    3. Landing Page Close Order 
+    4. Landing Page Order
+- database :
+ 1. Tabel User
+	ID, Nama, ID_Telegram, Username_Telegram
+ 2. Tabel Order dan Pickup
+	No, Order_ID, Transaksi, Keterangan, No_Tiket, Status
+
+keterangan : 1. No (Auto Increment)
+	     2. NO_Tiket (Random bot)
+	     3. Status (Order, Pickup,  Close)
+
+ - Feedback bot :
+	1. Permintaan Anda #Order_ID #Transaksi sudah kami proses dengan no tiket 
+	   #No_Tiket, silahkan tunggu
+	2. Permintaan Anda $No_Tiket $Order_ID $Transaksi sudah di PICK UP oleh 	  
+	   $User
+	3. Permintaan Anda $No_Tiket $Order_ID $Transaksi sudah di RESOLVED oleh
+	   $User 
+	
+
+- alur web :
+	1. User Login menggunakan Username/ID Telegram dan mengisi password
+	2. Masuk kelahaman Order
+	3. Pada halaman order terdapat table order serta tombol pickup
+	4. Ketika sudah di pickup maka akan baris data pada table yang ter pickup
+	   pindah ke halaman pick up
+	5. Dihalaman pickup tampilan sama, akan tetapi buttonya ganti jadi close
+	6. Baris data yang terclose akan masuk ke halaman close
+
+- cara kerja bot :
+	1. bot berada dalam grup
+	2. format agar bot bisa tangkap order ialah /moban #Order_ID #Transaksi
+	   #Keterangan
+	3. Ketika sesuai format maka bot akan merespon dengan Feedback 1
+	4. lalu akan merekap ke tabel order didatabase
+
+	    
+
+dan saya ingin menambahkan fitur dimana saya bisa chat langsung ke bot untuk mendaftar user,
+ketentuan : 1. user mengklik star bot
+	    2. user /daftar
+	    3. respon masukkan nama 
+	    4. respon masukkan username
+	    5. massukkan password 	
+	    6. bot memberi respon
+	    7. anda telah terdaftar
+		NAMA 
+		USERNAME
+		PASSWORD
+		ID_TELEGRAM
+	     8. untuk id telegram bot memperoleh sendiri saat user memulai percakapan 
+	        dengan bot
+	     9. setelah terdaftar data tersebut akan di rekap pada database dimana disimpan di table user
+
+tapi buat bot agar bisa handle dimana didalam grup bot hanya merespon format /moban #order_id Transaksi #keterangan
+
+	3. Ketika User mentrigger button pick up maka akan mengirim Feedback 2
+	4. Ketika User mentrigger button close maka akan mengirim Feedback 3
+
+
+landing page login
+landing page order
+landing page pick up
+landing page close
+fitur bot 3
+fitur bot 4
