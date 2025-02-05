@@ -135,23 +135,7 @@ if (!isset($_SESSION['user_id'])) {
             </div>
         </div>
 
-        <script>
-            // Open the modal
-            function openModal(no_tiket) {
-                document.getElementById('pickup_tiket').value = no_tiket;
-                document.getElementById('modal').style.display = "block";
-            }
-
-        $(document).ready(function() {
-        $('#closeTable').DataTable({
-            "ordering": false // Menonaktifkan fitur sortir
-        });
-        $('#toggleSidebar').click(function() {
-            $('#sidebar').toggleClass('hidden');
-            $('#content').toggleClass('expanded');
-            console.log($('#sidebar').attr('class'));
-        });
-        });
-        </script>
+        <script src="./js/keterangan.js"></script>
+        <script src="./js/sidebar.js"></script>
     </body>
     </html>

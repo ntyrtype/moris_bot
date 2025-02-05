@@ -48,6 +48,8 @@ body {
 .sidebar.hidden {
     margin-left: -200px; /* Sembunyikan sidebar */
 }
+
+
 .sidebar a {
     display: block;
     color: #fff;
@@ -113,8 +115,11 @@ table th, table td {
     text-align: left;
 }
 table th {
+    position: sticky;
+    top: 60px;
     background: #34495e;
     color: white;
+    z-index: 2;
 }
 .btn {
     padding: 5px 10px;
@@ -131,7 +136,7 @@ table th {
 
 /* order */
 .btn_PickUp {
-  padding: 5px 10px;
+  padding: 5px 5px;
   background: #3498db;
   color: white;
   border: none;

@@ -122,17 +122,7 @@
     </table>
 </div>
 
-<script>
-    $(document).ready(function() {
-        $('#orderTable').DataTable({
-            "ordering": false // Menonaktifkan fitur sortir
-        });
-        $('#toggleSidebar').click(function() {
-            $('#sidebar').toggleClass('hidden');
-            $('#content').toggleClass('expanded');
-        });
-    });
-</script>
+<script src="./js/sidebar.js"></script>
 
 </body>
 </html>
