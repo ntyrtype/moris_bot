@@ -8,8 +8,10 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f4f4f4;
@@ -51,7 +53,7 @@
             color: white;
         }
         .btn_PickUp {
-            padding: 5px 10px;
+            padding: 5px 5px;
             background: #3498db;
             color: white;
             border: none;
