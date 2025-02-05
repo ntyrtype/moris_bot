@@ -235,3 +235,47 @@ button {
 button:hover {
   background: #D2665A;
 }
+
+
+/* Dashboard */
+.dashboard-container {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.card_order, .card_pickup, .card_close {
+  width: 200px;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease-in-out;
+}
+
+.card_order {
+  background-color: #f39c12; /* Orange */
+}
+
+.card_pickup {
+  background-color: #3498db; /* Blue */
+}
+
+.card_close {
+  background-color: #B82132; /* Green */
+}
+
+.filter-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  justify-content: center
+}
+
+
+

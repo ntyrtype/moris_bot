@@ -87,7 +87,6 @@
 </div>
 
 <script src="./js/sidebar.js"></script>
-<script src="./js/profile.js"></script>
 
 </body>
 </html>
