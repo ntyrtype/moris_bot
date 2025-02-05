@@ -137,5 +137,6 @@ if (!isset($_SESSION['user_id'])) {
 
         <script src="./js/keterangan.js"></script>
         <script src="./js/sidebar.js"></script>
+        <script src="./js/datatable.js"></script>
     </body>
     </html>

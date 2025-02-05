@@ -78,6 +78,7 @@
 </div>
 
 <script src="./js/sidebar.js"></script>
+<script src="./js/datatable.js"></script>
 
 </body>
 </html>
