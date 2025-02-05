@@ -61,6 +61,9 @@ if (!isset($_SESSION['user_id'])) {
                 text-align: left;
             }
             table th {
+                position: sticky;
+                top: 0;
+                z-index: 2;
                 background: #34495e;
                 color: white;
             }
