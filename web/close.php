@@ -8,6 +8,77 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<<<<<<< HEAD
+=======
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        body {
+            font-family: "Poppins", sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .sidebar {
+            width: 200px;
+            background: #2c3e50;
+            color: #fff;
+            position: fixed;
+            height: 100%;
+            padding-top: 20px;
+        }
+        .sidebar a {
+            display: block;
+            color: #fff;
+            padding: 15px;
+            text-decoration: none;
+        }
+        .sidebar a:hover {
+            background: #34495e;
+        }
+        .content {
+            margin-left: 200px;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: #fff;
+        }
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        table th {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            background: #34495e;
+            color: white;
+        }
+        .btn {
+            padding: 5px 10px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: #2980b9;
+        }
+        .Dashboard {
+            margin-left: 10px;
+            color: #fff;
+            text-decoration: none;
+        }
+        .headtitle {
+            color:#2c3e50
+        }
+    </style>
+>>>>>>> 6cf87f37aabd8d1537b3db90ba41b3c596200257
 </head>
 <body>
 
@@ -19,7 +90,7 @@
 <div class="sidebar" id="sidebar">
     <a class="menu"href="dashboard.php">Dashboard</a>
     <a href="order.php">Order</a>
-    <a href="pickup.php">Pick Up</a>
+    <a href="pickup.php">PickUp</a>
     <a href="close.php">Close</a>
 </div>
 

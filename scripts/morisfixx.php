@@ -47,9 +47,10 @@ function handleUserMessage($user_id, $chat_id, $text, $username, $chat_type, $me
     $target_group_id = -4712566458;
 
     if ($chat_type === 'private') {
+        
         // Jika pesan berasal dari chat pribadi
         if ($text == "/start") {
-            sendMessage($chat_id, "Selamat datang! Ketik /daftar untuk registrasi.");
+            sendMessage($chat_id, "Selamat datang! Ketik /daftar untuk registrasi atau /resetpassword untuk reset password.");
         } elseif ($text == "/daftar") {
             // Mengecek apakah ID Telegram sudah terdaftar
             $stmt = $pdo->prepare("SELECT * FROM users WHERE ID_Telegram = ?");
@@ -63,6 +64,36 @@ function handleUserMessage($user_id, $chat_id, $text, $username, $chat_type, $me
                 // Simpan status bahwa bot sedang menunggu input nama
                 $_SESSION['state'] = 'awaiting_name';
             }
+        } elseif ($text == "/resetpassword") {
+            sendMessage($chat_id, "Masukkan username Anda untuk reset password:");
+            $_SESSION['state'] = 'awaiting_reset_username';
+        } elseif (isset($_SESSION['state']) && $_SESSION['state'] == 'awaiting_reset_username') {
+            // Mengecek apakah username ada di database
+            $stmt = $pdo->prepare("SELECT * FROM users WHERE Username_Telegram = ?");
+            $stmt->execute([strtolower($text)]);
+            $user = $stmt->fetch();
+
+            if ($user) {
+                $_SESSION['reset_username'] = $text;
+                sendMessage($chat_id, "Masukkan password baru Anda:");
+                $_SESSION['state'] = 'awaiting_reset_password';
+            } else {
+                sendMessage($chat_id, "Username tidak ditemukan. Coba lagi.");
+            }
+        } elseif (isset($_SESSION['state']) && $_SESSION['state'] == 'awaiting_reset_password') {
+            // Meng-hash password baru
+            $password = password_hash($text, PASSWORD_DEFAULT);
+
+            // Update password di database
+            $stmt = $pdo->prepare("UPDATE users SET Password = ? WHERE Username_Telegram = ?");
+            $stmt->execute([$password, $_SESSION['reset_username']]);
+
+            // Mengirim konfirmasi reset password
+            sendMessage($chat_id, "Password Anda telah direset.");
+
+            // Menghapus session setelah reset password selesai
+            unset($_SESSION['state']);
+            unset($_SESSION['reset_username']);
         } elseif (isset($_SESSION['state']) && $_SESSION['state'] == 'awaiting_name') {
             // Menyimpan nama yang diterima
             $_SESSION['name'] = $text;
@@ -106,8 +137,31 @@ function handleUserMessage($user_id, $chat_id, $text, $username, $chat_type, $me
         // Jika pesan berasal dari grup
         if ($chat_id == $target_group_id && strpos($text, "/moban") === 0) {
             handleOrder($text, $chat_id, $message_id, $user_id, $username);
+        } elseif ($chat_id == $target_group_id && $text == "/help") {
+            sendHelpMessage($chat_id, $message_id);
         }
     }
+}
+
+
+function sendHelpMessage($chat_id,  $message_id) {
+    $helpMessage = "Berikut adalah template untuk menggunakan perintah /moban:\n\n" .
+                    "/moban #Transaksi #Order_ID #Keterangan\n\n" .
+                    "Contoh penggunaan:\n" .
+                    "/moban #MO #MO014812917 #DGPS250129211923012742835...\n\n" .
+                    "Daftar transaksi yang diperbolehkan:\n" .
+                    "- AO: Adjust Order\n" .
+                    "- MO: Move Order\n" .
+                    "- DO: Delete Order\n" .
+                    "- RO: Return Order\n" .
+                    "- SO: Split Order\n" .
+                    "- GNO: Group New Order\n" .
+                    "- CO: Combine Order\n" .
+                    "- MIGRATE: Migrate Order\n" .
+                    "- PDA: Partial Delivery Adjustment\n" .
+                    "- AS: Adjustment Stock";
+
+                    replyMessage($chat_id, $helpMessage, $message_id);
 }
 
 
