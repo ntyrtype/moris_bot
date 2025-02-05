@@ -123,7 +123,8 @@ function handleOrder($text, $chat_id, $message_id, $user_id, $username) {
     $valid_transaksi = ["AO", "MO", "DO", "RO", "SO", "GNO", "CO", "MIGRATE", "PDA", "AS"];
 
     // Ekstraksi order dari pesan menggunakan regex yang memungkinkan baris baru
-    preg_match("/#(\w+) #(\w+) #(.+)/s", $text, $matches);
+    preg_match("/#(\w+) #(\w+) #([\s\S]+)/", $text, $matches);
+
     if (count($matches) === 4) {
         // Perbaikan posisi order_id dan transaksi
         $transaksi = strtoupper($matches[1]); // Mengubah transaksi ke huruf besar
@@ -143,7 +144,7 @@ function handleOrder($text, $chat_id, $message_id, $user_id, $username) {
         }
 
         // Membersihkan keterangan dari karakter newline
-        $keterangan = str_replace(["\n", "\r"], " ", $keterangan);
+        //$keterangan = str_replace(["\n", "\r"], " ", $keterangan); 
 
         // Generate nomor tiket
         $no_tiket = generateTicket();
