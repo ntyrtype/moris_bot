@@ -1,3 +1,15 @@
+<?php
+ob_start(); // Menyalakan output buffering
+session_start();
+require "../config/Database.php";
+
+// Memastikan pengguna sudah login
+if (!isset($_SESSION['user_id'])) {
+    header("Location: index.php");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,9 +29,9 @@
     <div class="profile-dropdown">
         <button id="profileButton">Profile</button>
         <div class="profile-content" id="profileContent">
-            <p style="padding: 5px; margin: 0;">Username: <?php echo htmlspecialchars($_SESSION['username']); ?></p>
+            <p style="padding: 5px; margin: 0;"><?php echo htmlspecialchars($_SESSION['nama']); ?></p>
             <form action="logout.php" method="POST">
-                <button type="submit" class="logout-btn" style="width: 100%; border: none; background: none; text-align: left;">Logout</button>
+            <button type="submit" class="logout-btn" style="width: 100%; border: none; background: none; text-align: left;">Logout</button>
             </form>
         </div>
     </div>
@@ -48,21 +60,13 @@
         </thead>
         <tbody>
             <?php
-            // Koneksi ke database
-            $conn = new mysqli('localhost', 'root', '', 'moris_bot');
-
-            // Periksa koneksi
-            if ($conn->connect_error) {
-                die("Connection failed: " . $conn->connect_error);
-            }
-
             // Query untuk mengambil data dengan status 'Close'
             $sql = "SELECT * FROM orders WHERE Status = 'Close' ORDER BY No DESC";
-            $result = $conn->query($sql);
+            $stmt = $pdo->query($sql);
 
-            if ($result->num_rows > 0) {
-                $no = 1; // Nomor urut
-                while ($row = $result->fetch_assoc()) {
+            if ($stmt->rowCount() > 0) {
+                $no = 1;
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                     $telegram_username = $row['username_telegram'];
                     $telegram_link = "https://t.me/{$telegram_username}";
                     echo "<tr>
@@ -80,13 +84,14 @@
                 echo "<tr><td colspan='7'>No data available</td></tr>";
             }
 
-            $conn->close();
             ?>
         </tbody>
     </table>
 </div>
 
 <script src="./js/sidebar.js"></script>
+<script src="./js/datatable.js"></script>
+<script src="./js/profile.js"></script>
 
 </body>
 </html>

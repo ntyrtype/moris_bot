@@ -5,7 +5,7 @@ require "../config/Database.php";
 
 // Memastikan pengguna sudah login
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    header("Location: index.php");
     exit();
 }
 ?>
@@ -29,7 +29,7 @@ if (!isset($_SESSION['user_id'])) {
     <div class="profile-dropdown">
         <button id="profileButton">Profile</button>
         <div class="profile-content" id="profileContent">
-            <p style="padding: 5px; margin: 0;">Username: <?php echo htmlspecialchars($_SESSION['username']); ?></p>
+            <p style="padding: 5px; margin: 0;"><?php echo htmlspecialchars($_SESSION['nama']); ?></p>
             <form action="logout.php" method="POST">
                 <button type="submit" class="logout-btn" style="width: 100%; border: none; background: none; text-align: left;">Logout</button>
             </form>

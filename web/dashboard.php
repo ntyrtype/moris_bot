@@ -4,6 +4,7 @@ require "../config/Database.php";
 
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(["error" => "Unauthorized"]);
+    header("Location: index.php");
     exit();
 }
 
@@ -63,6 +64,15 @@ $close_count = $orders_count['Close'] ?? 0;
 <div class="navbar">
     <h1>MORIS BOT</h1>
     <button id="toggleSidebar">☰</button>
+    <div class="profile-dropdown">
+    <button id="profileButton">Profile</button>
+    <div class="profile-content" id="profileContent">
+        <p style="padding: 5px; margin: 0;"><?php echo htmlspecialchars($_SESSION['nama']); ?></p>
+        <form action="logout.php" method="POST">
+        <button type="submit" class="logout-btn" style="width: 100%; border: none; background: none; text-align: left;">Logout</button>
+        </form>
+    </div>
+</div>
 </div>
 
 <div class="sidebar" id="sidebar">
@@ -99,6 +109,7 @@ $close_count = $orders_count['Close'] ?? 0;
 
 <script src="./js/sidebar.js"></script>
 <script src="./js/card.js"></script>
+<script src="./js/profile.js"></script>
 
 </body>
 </html>

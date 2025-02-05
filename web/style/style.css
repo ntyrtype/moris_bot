@@ -130,12 +130,21 @@ table th {
 .profile-content {
   display: none;
   position: absolute;
+  justify-content: center;  /* Memusatkan secara horizontal */
+  align-items: center;
   background-color: white;
   min-width: 160px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   z-index: 1000;
   right: 0; /* Align to the right */
 }
+
+.profile-content p {
+  color: black !important;
+  text-align: center;
+  font-size: 20px;
+}
+
 .profile-content a, .profile-content button {
   color: black;
   padding: 12px 16px;
@@ -145,6 +154,10 @@ table th {
 }
 .profile-content a:hover, .profile-content button:hover {
   background-color: #f1f1f1;
+}
+
+.logout-btn:hover { 
+  color: #B82132;  
 }
 
 /* close */

@@ -32,9 +32,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Set session untuk pengguna
                 $_SESSION['user_id'] = $user['ID'];
                 $_SESSION['username'] = $user['Username_Telegram'];
+                $_SESSION['nama'] = $user['Nama']; 
                 
                 // Redirect ke dashboard
-                header("Location: order.php");
+                header("Location: Dashboard.php");
                 exit();
             } else {
                 $error_message = "Password salah!";
