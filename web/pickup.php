@@ -11,7 +11,6 @@ if (!isset($_SESSION['user_id'])) {
 ?>
 
 <!DOCTYPE html>
-<<<<<<< HEAD
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -32,12 +31,12 @@ if (!isset($_SESSION['user_id'])) {
 <div class="sidebar" id="sidebar">
     <a class="menu"href="dashboard.php">Dashboard</a>
     <a href="order.php">Order</a>
-    <a href="pickup.php">Pick Up</a>
+    <a href="pickup.php">PickUp</a>
     <a href="close.php">Close</a>
 </div>
 
 <div class="content" id="content">
-        <h1 class="headtitle">Pick UP Menu</h1>
+        <h1 class="headtitle">PickUP Menu</h1>
         <table id="closeTable">
             <thead>
                 <tr>
@@ -52,164 +51,8 @@ if (!isset($_SESSION['user_id'])) {
             </thead>
             <tbody>
                 <?php
-                    session_start();
-                    require "../config/Database.php";
-=======
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Pickup</title>
-        <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-        <style>
-            @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-            
-            body {
-                font-family: "Poppins", sans-serif;
-                margin: 0;
-                padding: 0;
-                background-color: #f4f4f4;
-            }
-            .sidebar {
-                width: 200px;
-                background: #2c3e50;
-                color: #fff;
-                position: fixed;
-                height: 100%;
-                padding-top: 20px;
-            }
-            .sidebar a {
-                display: block;
-                color: #fff;
-                padding: 15px;
-                text-decoration: none;
-            }
-            .sidebar a:hover {
-                background: #34495e;
-            }
-            .content {
-                margin-left: 200px;
-                padding: 20px;
-            }
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-top: 20px;
-                background: #fff;
-            }
-            table th, table td {
-                border: 1px solid #ddd;
-                padding: 10px;
-                text-align: left;
-            }
-            table th {
-                position: sticky;
-                top: 0;
-                z-index: 2;
-                background: #34495e;
-                color: white;
-            }
-            .btn_close {
-                padding: 5px 10px;
-                background: #B82132;
-                color: white;
-                border: none;
-                border-radius: 3px;
-                cursor: pointer;
-            }
-            .btn_close:hover {
-                background: #D2665A;
-            }
-            .Dashboard {
-                margin-left: 10px;
-                color: #fff;
-                text-decoration: none;
-            }
-            .headtitle {
-                color:#2c3e50;
-            }
-            /* Styling the Modal */
-            .modal {
-                display: none;
-                position: fixed;
-                z-index: 1;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-                overflow: auto;
-                background-color: rgba(0, 0, 0, 0.4);
-            }
-            .modal-content {
-                background-color: #fff;
-                margin: 15% auto;
-                padding: 20px;
-                border: 1px solid #888;
-                width: 80%;
-                max-width: 500px;
-            }
-            .close {
-                padding: 5px 10px;
-                background: #B82132;
-                color: white;
-                border: none;
-                border-radius: 3px;
-                cursor: pointer;
-            }
-            .close:hover {
-                background: #D2665A;
-            }
-            .close:focus {
-                color: black;
-                text-decoration: none;
-                cursor: pointer;
-            }
-            button {
-                padding: 5px 10px;
-                background: #B82132;
-                color: white;
-                border: none;
-                border-radius: 3px;
-                cursor: pointer;
-            }
-
-            button:hover {
-                background: #D2665A;
-            }
-
-        </style>
-    </head>
-    <body>
-
-        <div class="sidebar">
-            <h2 style="text-align: center;">MORIS BOT</h2>
-            <p class="Dashboard">Dashboard</p>
-            <a href="order.php">Order</a>
-            <a href="pickup.php">PickUp</a>
-            <a href="close.php">Close</a>
-        </div>
-
-        <div class="content">
-            <h1 class="headtitle">PickUp Menu</h1>
-            <table id="closeTable">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Order ID</th>
-                        <th>Transaksi</th>
-                        <th>Keterangan</th>
-                        <th>No Tiket</th>
-                        <th>Kontak</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
                         // Ambil ID pengguna yang sedang aktif
                         $user_id = $_SESSION['user_id'];
->>>>>>> 6cf87f37aabd8d1537b3db90ba41b3c596200257
 
                         // Cek apakah form submit telah dilakukan untuk menutup tiket
                         if (isset($_POST['close_tiket'])) {
@@ -253,25 +96,6 @@ if (!isset($_SESSION['user_id'])) {
                         $sql = "SELECT * FROM orders WHERE Status = 'Pickup'";
                         $stmt = $pdo->query($sql);
 
-<<<<<<< HEAD
-                    if ($stmt->rowCount() > 0) {
-                        $no = 1; // Nomor urut
-                        foreach ($stmt as $row) {
-                            $telegram_username = $row['username_telegram'];
-                            $telegram_link = "https://t.me/{$telegram_username}";
-                            echo "<tr>
-                                    <td>{$no}</td>
-                                    <td>{$row['Order_ID']}</td>
-                                    <td>{$row['Transaksi']}</td>
-                                    <td>{$row['Keterangan']}</td>
-                                    <td>{$row['No_Tiket']}</td>
-                                    <td><a href='{$telegram_link}' class='telegram-link' target='_blank'>Kontak</a></td>
-                                    <td>
-                                        <button onclick='openModal(\"{$row['No_Tiket']}\")'>Close</button>
-                                    </td>
-                                </tr>";
-                            $no++;
-=======
                         if ($stmt->rowCount() > 0) {
                             $no = 1; // Nomor urut
                             foreach ($stmt as $row) {
@@ -292,7 +116,6 @@ if (!isset($_SESSION['user_id'])) {
                             }
                         } else {
                             echo "<tr><td colspan='6'>No data available</td></tr>";
->>>>>>> 6cf87f37aabd8d1537b3db90ba41b3c596200257
                         }
                     ?>
                 </tbody>
@@ -319,7 +142,6 @@ if (!isset($_SESSION['user_id'])) {
                 document.getElementById('modal').style.display = "block";
             }
 
-<<<<<<< HEAD
         $(document).ready(function() {
         $('#closeTable').DataTable({
             "ordering": false // Menonaktifkan fitur sortir
@@ -330,25 +152,6 @@ if (!isset($_SESSION['user_id'])) {
             console.log($('#sidebar').attr('class'));
         });
         });
-    </script>
-=======
-            // Close the modal
-            function closeModal() {
-                document.getElementById('modal').style.display = "none";
-            }
->>>>>>> 6cf87f37aabd8d1537b3db90ba41b3c596200257
-
-            // When the user clicks anywhere outside of the modal, close it
-            window.onclick = function(event) {
-                if (event.target == document.getElementById('modal')) {
-                    closeModal();
-                }
-            }
-
-            $(document).ready(function() {
-            $('#closeTable').DataTable();
-            });
         </script>
-
     </body>
     </html>
