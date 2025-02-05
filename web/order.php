@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -80,7 +83,7 @@
 
 <div class="content">
     <h1 class="headtitle">Order Menu</h1>
-    <table>
+    <table id="closeTable">
         <thead>
             <tr>
                 <th>No</th>
@@ -176,6 +179,12 @@
         </tbody>
     </table>
 </div>
+
+<script>
+    $(document).ready(function() {
+        $('#closeTable').DataTable();
+    });
+</script>
 
 </body>
 </html>
