@@ -1,3 +1,14 @@
+<?php 
+session_start();
+require "../config/Database.php";
+
+// Memastikan pengguna sudah login
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,7 +36,7 @@
 
 <div class="content" id="content">
     <h1 class="headtitle">Order Menu</h1>
-    <table id="orderTable">
+    <table id="dataTable">
         <thead>
             <tr>
                 <th>No</th>
@@ -39,15 +50,6 @@
         </thead>
         <tbody>
             <?php
-            session_start();
-            require "../config/Database.php";
-
-            // Memastikan pengguna sudah login
-            if (!isset($_SESSION['user_id'])) {
-                header("Location: login.php");
-                exit();
-            }
-
             // Ambil ID pengguna yang sedang aktif
             $user_id = $_SESSION['user_id'];
 
@@ -108,7 +110,7 @@
                         <td>
                             <form method='POST'>
                                 <input type='hidden' name='pickup_tiket' value='{$row['No_Tiket']}'>
-                                <button type='submit' class='btn_PickUp'>PICK UP</button>
+                                <button type='submit' class='btn_PickUp'>PickUP</button>
                             </form>
                         </td>
                     </tr>";

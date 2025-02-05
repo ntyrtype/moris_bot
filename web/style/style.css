@@ -136,13 +136,14 @@ table th {
 
 /* order */
 .btn_PickUp {
-  padding: 5px 5px;
+  padding: 5px 10px;
   background: #3498db;
   color: white;
   border: none;
   border-radius: 3px;
   cursor: pointer;
 }
+
 .btn_PickUp:hover {
   background: #2980b9;
 }

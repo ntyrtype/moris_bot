@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    $('#closeTable').DataTable({
+    $('#dataTable').DataTable({
         "ordering": false // Menonaktifkan fitur sortir
     });
 

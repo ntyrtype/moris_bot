@@ -37,7 +37,7 @@ if (!isset($_SESSION['user_id'])) {
 
 <div class="content" id="content">
         <h1 class="headtitle">PickUP Menu</h1>
-        <table id="closeTable">
+        <table id="dataTable">
             <thead>
                 <tr>
                     <th>No</th>
