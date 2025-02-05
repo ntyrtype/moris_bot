@@ -3,134 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style/style.css">
     <title>Pickup</title>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        .sidebar {
-            width: 200px;
-            background: #2c3e50;
-            color: #fff;
-            position: fixed;
-            height: 100%;
-            padding-top: 20px;
-        }
-        .sidebar a {
-            display: block;
-            color: #fff;
-            padding: 15px;
-            text-decoration: none;
-        }
-        .sidebar a:hover {
-            background: #34495e;
-        }
-        .content {
-            margin-left: 200px;
-            padding: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background: #fff;
-        }
-        table th, table td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: left;
-        }
-        table th {
-            background: #34495e;
-            color: white;
-        }
-        .btn_close {
-            padding: 5px 10px;
-            background: #B82132;
-            color: white;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-        .btn_close:hover {
-            background: #D2665A;
-        }
-        .Dashboard {
-            margin-left: 10px;
-            color: #fff;
-            text-decoration: none;
-        }
-        .headtitle {
-            color:#2c3e50;
-        }
-        /* Styling the Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4);
-        }
-        .modal-content {
-            background-color: #fff;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 500px;
-        }
-        .close {
-            padding: 5px 10px;
-            background: #B82132;
-            color: white;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-        .close:hover {
-            background: #D2665A;
-        }
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        button {
-            padding: 5px 10px;
-            background: #B82132;
-            color: white;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #D2665A;
-        }
-
-    </style>
 </head>
 <body>
 
-    <div class="sidebar">
-        <h2 style="text-align: center;">MORIS BOT</h2>
-        <p class="Dashboard">Dashboard</p>
-        <a href="order.php">Order</a>
-        <a href="pickup.php">Pick Up</a>
-        <a href="close.php">Close</a>
-    </div>
+<div class="navbar">
+    <h1>MORIS BOT</h1>
+    <button id="toggleSidebar">☰</button>
+</div>
 
-    <div class="content">
+<div class="sidebar" id="sidebar">
+    <a class="menu"href="dashboard.php">Dashboard</a>
+    <a href="order.php">Order</a>
+    <a href="pickup.php">Pick Up</a>
+    <a href="close.php">Close</a>
+</div>
+
+<div class="content" id="content">
         <h1 class="headtitle">Pick UP Menu</h1>
         <table id="closeTable">
             <thead>
@@ -209,7 +102,7 @@
                                     <td>{$no}</td>
                                     <td>{$row['Order_ID']}</td>
                                     <td>{$row['Transaksi']}</td>
-                                    <td>" . nl2br(htmlspecialchars($row['Keterangan'])) . "</td>
+                                    <td>{$row['Keterangan']}</td>
                                     <td>{$row['No_Tiket']}</td>
                                     <td><a href='{$telegram_link}' class='telegram-link' target='_blank'>Kontak</a></td>
                                     <td>
@@ -259,7 +152,14 @@
         }
 
         $(document).ready(function() {
-        $('#closeTable').DataTable();
+        $('#closeTable').DataTable({
+            "ordering": false // Menonaktifkan fitur sortir
+        });
+        $('#toggleSidebar').click(function() {
+            $('#sidebar').toggleClass('hidden');
+            $('#content').toggleClass('expanded');
+            console.log($('#sidebar').attr('class'));
+        });
         });
     </script>
 

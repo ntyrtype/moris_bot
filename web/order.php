@@ -3,87 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style/style.css">
     <title>Order</title>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        .sidebar {
-            width: 200px;
-            background: #2c3e50;
-            color: #fff;
-            position: fixed;
-            height: 100%;
-            padding-top: 20px;
-        }
-        .sidebar a {
-            display: block;
-            color: #fff;
-            padding: 15px;
-            text-decoration: none;
-        }
-        .sidebar a:hover {
-            background: #34495e;
-        }
-        .content {
-            margin-left: 200px;
-            padding: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background: #fff;
-        }
-        table th, table td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: left;
-        }
-        table th {
-            background: #34495e;
-            color: white;
-        }
-        .btn_PickUp {
-            padding: 5px 10px;
-            background: #3498db;
-            color: white;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-        .btn_PickUp:hover {
-            background: #2980b9;
-        }
-        .Dashboard {
-            margin-left: 10px;
-            color: #fff;
-            text-decoration: none;
-        }
-        .headtitle {
-            color:#2c3e50
-        }
-    </style>
 </head>
 <body>
 
-<div class="sidebar">
-    <h2 style="text-align: center;">MORIS BOT</h2>
-    <p class="Dashboard">Dashboard</p>
+<div class="navbar">
+    <h1>MORIS BOT</h1>
+    <button id="toggleSidebar">☰</button>
+</div>
+
+<div class="sidebar" id="sidebar">
+    <a class="menu"href="dashboard.php">Dashboard</a>
     <a href="order.php">Order</a>
     <a href="pickup.php">Pick Up</a>
     <a href="close.php">Close</a>
 </div>
 
-<div class="content">
+<div class="content" id="content">
     <h1 class="headtitle">Order Menu</h1>
-    <table id="closeTable">
+    <table id="orderTable">
         <thead>
             <tr>
                 <th>No</th>
@@ -182,7 +124,13 @@
 
 <script>
     $(document).ready(function() {
-        $('#closeTable').DataTable();
+        $('#orderTable').DataTable({
+            "ordering": false // Menonaktifkan fitur sortir
+        });
+        $('#toggleSidebar').click(function() {
+            $('#sidebar').toggleClass('hidden');
+            $('#content').toggleClass('expanded');
+        });
     });
 </script>
 
