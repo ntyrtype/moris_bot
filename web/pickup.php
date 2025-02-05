@@ -26,6 +26,15 @@ if (!isset($_SESSION['user_id'])) {
 <div class="navbar">
     <h1>MORIS BOT</h1>
     <button id="toggleSidebar">☰</button>
+    <div class="profile-dropdown">
+        <button id="profileButton">Profile</button>
+        <div class="profile-content" id="profileContent">
+            <p style="padding: 5px; margin: 0;">Username: <?php echo htmlspecialchars($_SESSION['username']); ?></p>
+            <form action="logout.php" method="POST">
+                <button type="submit" class="logout-btn" style="width: 100%; border: none; background: none; text-align: left;">Logout</button>
+            </form>
+        </div>
+    </div>
 </div>
 
 <div class="sidebar" id="sidebar">
@@ -137,5 +146,6 @@ if (!isset($_SESSION['user_id'])) {
 
         <script src="./js/keterangan.js"></script>
         <script src="./js/sidebar.js"></script>
+        <script src="./js/profile.js"></script>
     </body>
     </html>
