@@ -126,12 +126,12 @@
         <h2 style="text-align: center;">MORIS BOT</h2>
         <p class="Dashboard">Dashboard</p>
         <a href="order.php">Order</a>
-        <a href="pickup.php">Pick Up</a>
+        <a href="pickup.php">PickUp</a>
         <a href="close.php">Close</a>
     </div>
 
     <div class="content">
-        <h1 class="headtitle">Pick UP Menu</h1>
+        <h1 class="headtitle">PickUp Menu</h1>
         <table id="closeTable">
             <thead>
                 <tr>

@@ -77,7 +77,7 @@
     <h2 style="text-align: center;">MORIS BOT</h2>
     <p class="Dashboard">Dashboard</p>
     <a href="order.php">Order</a>
-    <a href="pickup.php">Pick Up</a>
+    <a href="pickup.php">PickUp</a>
     <a href="close.php">Close</a>
 </div>
 
