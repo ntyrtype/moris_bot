@@ -1,4 +1,9 @@
 $(document).ready(function() {
+    // Set filter_date ke tanggal hari ini
+    let today = new Date().toISOString().split('T')[0];
+    $('#filter_date').val(today);
+
+    // Event listener untuk filter
     $('#filter').click(function() {
         let filter_date = $('#filter_date').val();
 
@@ -18,4 +23,9 @@ $(document).ready(function() {
             }
         });
     });
+
+    // Pastikan klik pertama hanya terjadi setelah event listener dipasang
+    setTimeout(() => {
+        $('#filter').trigger('click');
+    }, 100);
 });

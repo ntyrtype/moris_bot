@@ -101,7 +101,7 @@ $close_count = $orders_count['Close'] ?? 0;
 
     <div class="filter-container">
         <label for="filter_date">Filter Date:</label>
-        <input type="date" id="filter_date">
+        <input type="date" id="filter_date" value="<?php echo date('Y-m-d'); ?>">
         <button id="filter">Filter</button>
     </div>
 </div>
