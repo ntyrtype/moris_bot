@@ -56,21 +56,56 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <title>Login</title>
   <link href="https://stackpath.bootstrapcdn.com/bootswatch/4.4.1/cosmo/bootstrap.min.css" rel="stylesheet">
   <style>
+    body{
+      background-color: #2c3e50;
+    }
     .wrapper { 
+      font-family:'Poppins', sans-serif;
       width: 500px; 
-      padding: 20px; 
+      padding: 30px; 
       margin: auto;
       margin-top: 50px;
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      background-color: #EEEEEE;
+      border-radius: 0.5rem;
     }
-    .wrapper h2 {text-align: center;}
+    .wrapper h2 {
+      padding: 10px;
+      margin-bottom: 10px;
+      font-weight: bold;
+      text-align: center;
+    }
+    .wrapper p {
+      padding: 8px;
+      margin-bottom: 2px;
+    }
     .wrapper form .form-group span {color: red;}
+
+    .form-group{
+      margin-bottom: 20px;
+      padding: 10px;
+    }
+    .btn{
+    border-color: #2c3e50;
+    }
+    .btn-customs{
+      color: #2c3e50;
+    }
+    .btn:hover{
+    background: #2c3e50;
+    border-color: #2c3e50;
+    }
+
+
   </style>
 </head>
 <body>
   <main>
     <section class="container wrapper">
       <h2 class="display-4 pt-3">Login</h2>
-      <p class="text-center">Silakan masukkan username dan password.</p>
+      <p class="text-center">Silahkan masukkan username dan password.</p>
 
       <?php if ($error_message): ?>
         <div class="alert alert-danger text-center"><?php echo $error_message; ?></div>
@@ -78,17 +113,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
       <form action="" method="POST"> 
         <div class="form-group">
-          <label for="username">Username</label>
-          <input type="text" name="username" id="username" class="form-control" required>
+          <input type="text" name="username" id="username" class="form-control" placeholder="Username" required >
         </div>
 
         <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" name="password" id="password" class="form-control" required>
+          <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
         </div>
 
         <div class="form-group">
-          <input type="submit" class="btn btn-block btn-outline-primary" value="Login">
+          <input type="submit" class="btn btn-block btn-outline-primary btn-customs" value="Login">
         </div>
       </form>
     </section>
