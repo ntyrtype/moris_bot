@@ -136,7 +136,7 @@ function handleOrder($text, $chat_id, $message_id, $user_id, $username) {
     global $pdo;
 
     // Perbaikan regex agar sesuai format
-    preg_match("/^\/moban #(INDIHOME|INDIBIZ|DATIN) #([A-Z0-9]+) #([A-Z0-9]+) #([\s\S]+)/i", $text, $matches);
+    preg_match("/^\/moban #(INDIHOME|INDIBIZ|DATIN|WMS|OLO) #([A-Z0-9]+) #([A-Z0-9]+) #([\s\S]+)/i", $text, $matches);
 
     if (count($matches) !== 5) {
         $message = "Format Order Tidak Valid!\n\n";
@@ -172,7 +172,7 @@ function handleOrder($text, $chat_id, $message_id, $user_id, $username) {
     }
 
     $nama = $user['Nama']; // Ambil nama user dari database
-    $order_by = $user['role']; // Role user sebagai order_by
+    $order_by = strtolower($user['role']); // Role user sebagai order_by
 
     // Generate nomor tiket
     $no_tiket = generateTicket();
@@ -195,9 +195,9 @@ function handleOrder($text, $chat_id, $message_id, $user_id, $username) {
         $pdo->beginTransaction();
 
         // Simpan ke tabel orders
-        $stmt1 = $pdo->prepare("INSERT INTO orders (Order_ID, Transaksi, Kategori, Keterangan, No_Tiket, Status, id_telegram, username_telegram) 
-                    VALUES (?, ?, ?, ?, ?, 'Order', ?, ?)");
-        $stmt1->execute([$wonum, $transaksi, $kategori, $keterangan, $no_tiket, $user_id, $username]);
+        $stmt1 = $pdo->prepare("INSERT INTO orders (Order_ID, Transaksi, Kategori, Keterangan, No_Tiket, Status, id_telegram, username_telegram, order_by) 
+        VALUES (?, ?, ?, ?, ?, 'Order', ?, ?, ?)");
+        $stmt1->execute([$wonum, $transaksi, $kategori, $keterangan, $no_tiket, $user_id, $username, $order_by]);
 
         // Simpan ke tabel order_messages
         $stmt2 = $pdo->prepare("INSERT INTO order_messages (no_tiket, message_id) VALUES (?, ?)");
