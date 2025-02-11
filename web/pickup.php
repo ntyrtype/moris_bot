@@ -49,6 +49,18 @@ if (!isset($_SESSION['user_id'])) {
         </div>
     </div>
         <h1 class="headtitle">PickUp Menu</h1>
+            <div class="filter">
+                <form action="" class="btnTransaksi">
+                    <select aria-label="transaksi" name="transaksi" id="transaksi">
+                        <option value="">All Transaksi</option>
+                        <option value="PDA">PDA</option>
+                        <option value="MO">MO</option>
+                        <option value="ORBIT">ORBIT</option>
+                        <option value="FFG">FFG</option>
+                        <option value="UNSPEk">UNSPEK</option>
+                    </select>
+                </form>
+            </div>
         <table id="dataTable">
             <thead>
                 <tr>

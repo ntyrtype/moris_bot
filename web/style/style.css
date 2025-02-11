@@ -102,13 +102,13 @@ body {
 }
 .headtitle {
   color:#2c3e50;
-  margin: 20px;
+  margin: 20px 20px 20px 10px;
 
 }
 
 /* tabel */
 .dataTables_wrapper {
-  margin: 20px;
+  margin: 0 10px 0 10px;
   position: relative;
   z-index: 1;
 }
@@ -168,6 +168,21 @@ table th {
 
 .logout-btn:hover { 
   color: #B82132;  
+}
+
+/* filter */
+.btnTransaksi select {
+  width: 13rem;
+  padding: 10px;
+  margin: 0px 20px 20px 10px;
+  background-color: #EEEEEE;
+  color: #2c3e50;
+  border-radius: 0.5rem;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  box-shadow: 0 5px 10px 0 rgba(9, 64, 88, 0.25);
+  cursor: pointer;
 }
 
 /* close */
@@ -299,6 +314,8 @@ button:hover {
   margin-top: 20px;
   justify-content: center
 }
+
+
 
 
 
