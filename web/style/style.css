@@ -80,7 +80,7 @@ body {
     top: 0;
     z-index: 2;
     display: flex;
-    align-items: center; 
+    align-items: center;
     gap: 1rem;
 }
 .navbar a {
@@ -114,10 +114,11 @@ body {
 }
 table {
   width: 100%;
+  margin-top: 5px;
+  padding-top: 5px;
   border-collapse: collapse;
-  margin: 20px;
-  background: #fff;
 }
+
 table th, table td {
   border: 1px solid #ddd;
   padding: 10px;
@@ -125,7 +126,7 @@ table th, table td {
 }
 table th {
   position: sticky;
-  top: 60px;
+  top: 58px;
   background: #34495e;
   color: white;
   z-index: 2;
@@ -236,7 +237,6 @@ table th {
   border: none;
   border-radius: 3px;
   cursor: pointer;
-  margin-left: auto;
 }
 .close:hover {
   background: #D2665A;
@@ -253,7 +253,6 @@ button {
   border: none;
   border-radius: 3px;
   cursor: pointer;
-  margin-left: auto;
 }
 
 button:hover {

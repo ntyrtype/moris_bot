@@ -55,10 +55,9 @@ if (!isset($_SESSION['user_id'])) {
                 <th>No</th>
                 <th>Order ID</th>
                 <th>Transaksi</th>
-                <th>Tanggal</th>
                 <th>Keterangan</th>
                 <th>No Tiket</th>
-                <th>Nama</th>
+                <th>Kontak</th>
                 <th>Status</th>
             </tr>
         </thead>
