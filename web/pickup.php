@@ -23,27 +23,31 @@ if (!isset($_SESSION['user_id'])) {
 </head>
 <body>
 
-<div class="navbar">
-    <h1>MORIS BOT</h1>
-    <button id="toggleSidebar">☰</button>
-    <div class="profile-dropdown">
-        <button id="profileButton"><?php echo htmlspecialchars($_SESSION['nama']); ?></button>
-        <div class="profile-content" id="profileContent">
-            <form action="logout.php" method="POST">
-            <button type="submit" class="logout-btn" style="width: 100%; border: none; background: none; text-align: left;">Logout</button>
-            </form>
-        </div>
-    </div>
-</div>
-
 <div class="sidebar" id="sidebar">
-    <a class="menu"href="dashboard.php">Dashboard</a>
+    <h1>MORIS BOT</h1>
+    <a href="dashboard.php">Dashboard</a>
     <a href="order.php">Order</a>
     <a href="pickup.php">PickUp</a>
     <a href="close.php">Close</a>
 </div>
 
 <div class="content" id="content">
+    <div class="navbar">
+        <button id="toggleSidebar">☰</button>
+        <a href="">Indihome</a>
+        <p>|</p>
+        <a href="">Indibiz</a>
+        <p>|</p>
+        <a href="">Datin</a>
+        <div class="profile-dropdown">
+            <button id="profileButton"><?php echo htmlspecialchars($_SESSION['nama']); ?></button>
+            <div class="profile-content" id="profileContent">
+                <form action="logout.php" method="POST">
+                <button type="submit" class="logout-btn" style="width: 100%; border: none; background: none; text-align: left;">Logout</button>
+                </form>
+            </div>
+        </div>
+    </div>
         <h1 class="headtitle">PickUp Menu</h1>
         <table id="dataTable">
             <thead>
@@ -51,9 +55,10 @@ if (!isset($_SESSION['user_id'])) {
                     <th>No</th>
                     <th>Order ID</th>
                     <th>Transaksi</th>
+                    <th>Tanggal</th>
                     <th>Keterangan</th>
                     <th>No Tiket</th>
-                    <th>Kontak</th>
+                    <th>Nama</th>
                     <th>Status</th>
                 </tr>
             </thead>
@@ -136,6 +141,18 @@ if (!isset($_SESSION['user_id'])) {
                 <span class="close" onclick="closeModal()">&times;</span>
                 <h2>Masukkan Keterangan</h2>
                 <form method="POST">
+                    <label for="status">Status:</label>
+                    <select name="status" id="status" required>
+                        <option value="">Pilih Status</option>
+                        <option value="Sudah PS">Sudah PS</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Cabut dan Input Ulang">Cabut dan Input Ulang</option>
+                        <option value="Ada Kendala">Ada Kendala</option>
+                        <option value="On Eskalasi">On Eskalasi</option>
+                    </select>
+                    <br><br>
+
+                    <label for="keterangan">Keterangan:</label>
                     <textarea name="keterangan" rows="4" cols="50" required></textarea><br><br>
                     <input type="hidden" id="pickup_tiket" name="close_tiket">
                     <button type="submit" class="btn_close">Submit</button>

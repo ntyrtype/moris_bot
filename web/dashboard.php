@@ -68,53 +68,57 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
 </head>
 <body>
 
-<div class="navbar">
-    <h1>MORIS BOT</h1>
-    <button id="toggleSidebar">☰</button>
-    <div class="profile-dropdown">
-        <button id="profileButton"><?php echo htmlspecialchars($_SESSION['nama']); ?></button>
-        <div class="profile-content" id="profileContent">
-            <form action="logout.php" method="POST">
-            <button type="submit" class="logout-btn" style="width: 100%; border: none; background: none; text-align: left;">Logout</button>
-            </form>
-        </div>
-    </div>
-</div>
-
 <div class="sidebar" id="sidebar">
-    <a class="menu" href="dashboard.php">Dashboard</a>
+    <h1>MORIS BOT</h1>
+    <a href="dashboard.php">Dashboard</a>
     <a href="order.php">Order</a>
     <a href="pickup.php">PickUp</a>
     <a href="close.php">Close</a>
 </div>
 
 <div class="content" id="content">
-<h1 class="headtitle">Dashboard</h1>
-
-<div class="dashboard-container">
-    <div class="card_order">
-        <h2>Order</h2>
-        <p id="order_count"><?= $order_count ?> Order</p>
+    <div class="navbar">
+        <button id="toggleSidebar">☰</button>
+        <a href="">Indihome</a>
+        <p>|</p>
+        <a href="">Indibiz</a>
+        <p>|</p>
+        <a href="">Datin</a>
+        <div class="profile-dropdown">
+            <button id="profileButton"><?php echo htmlspecialchars($_SESSION['nama']); ?></button>
+            <div class="profile-content" id="profileContent">
+                <form action="logout.php" method="POST">
+                <button type="submit" class="logout-btn" style="width: 100%; border: none; background: none; text-align: left;">Logout</button>
+                </form>
+            </div>
+        </div>
     </div>
-    <div class="card_pickup">
-        <h2>Pickup</h2>
-        <p id="pickup_count"><?= $pickup_count ?> Pickup</p>
-    </div>
-    <div class="card_close">
-        <h2>Close</h2>
-        <p id="close_count"><?= $close_count ?> Close</p>
-    </div>
-</div>
+    <h1 class="headtitle">Dashboard</h1>
 
-<div class="filter-container">
-    <label for="filter_date">Filter Date:</label>
-    <input type="date" id="filter_date" value="<?php echo date('Y-m-d'); ?>">
-    <button id="filter">Filter</button>
-</div>
+    <div class="dashboard-container">
+        <div class="card_order">
+            <h2>Order</h2>
+            <p id="order_count"><?= $order_count ?> Order</p>
+        </div>
+        <div class="card_pickup">
+            <h2>Pickup</h2>
+            <p id="pickup_count"><?= $pickup_count ?> Pickup</p>
+        </div>
+        <div class="card_close">
+            <h2>Close</h2>
+            <p id="close_count"><?= $close_count ?> Close</p>
+        </div>
+    </div>
 
-<div id="transaksi_table">
-    <!-- Table for transaksi data will be inserted here by JavaScript -->
-</div>
+    <div class="filter-container">
+        <label for="filter_date">Filter Date:</label>
+        <input type="date" id="filter_date" value="<?php echo date('Y-m-d'); ?>">
+        <button id="filter">Filter</button>
+    </div>
+
+    <div id="transaksi_table">
+        <!-- Table for transaksi data will be inserted here by JavaScript -->
+    </div>
 </div>
 
 <script src="./js/sidebar.js"></script>
