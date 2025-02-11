@@ -42,6 +42,7 @@ if (!isset($_SESSION['user_id'])) {
         <div class="profile-dropdown">
             <button id="profileButton"><?php echo htmlspecialchars($_SESSION['nama']); ?></button>
             <div class="profile-content" id="profileContent">
+                <a href="add_user.html">Tambah User</a>
                 <form action="logout.php" method="POST">
                 <button type="submit" class="logout-btn" style="width: 100%; border: none; background: none; text-align: left;">Logout</button>
                 </form>
@@ -67,14 +68,15 @@ if (!isset($_SESSION['user_id'])) {
                 <th>No</th>
                 <th>Order ID</th>
                 <th>Transaksi</th>
+                <th>Tanggal</th>
                 <th>Keterangan</th>
                 <th>No Tiket</th>
-                <th>Kontak</th>
+                <th>Nama</th>
                 <th>Status</th>
             </tr>
         </thead>
         <tbody>
-            <?php
+            <!-- <?php
             // Query untuk mengambil data dengan status 'Close'
             $sql = "SELECT * FROM orders WHERE Status = 'Close' ORDER BY No DESC";
             $stmt = $pdo->query($sql);
@@ -99,7 +101,7 @@ if (!isset($_SESSION['user_id'])) {
                 echo "<tr><td colspan='7'>No data available</td></tr>";
             }
 
-            ?>
+            ?> -->
         </tbody>
     </table>
 </div>

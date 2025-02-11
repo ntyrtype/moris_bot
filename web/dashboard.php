@@ -87,6 +87,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
         <div class="profile-dropdown">
             <button id="profileButton"><?php echo htmlspecialchars($_SESSION['nama']); ?></button>
             <div class="profile-content" id="profileContent">
+                <a href="add_user.html">Tambah User</a>
                 <form action="logout.php" method="POST">
                 <button type="submit" class="logout-btn" style="width: 100%; border: none; background: none; text-align: left;">Logout</button>
                 </form>
