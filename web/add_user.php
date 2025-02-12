@@ -1,5 +1,18 @@
 <?php
+session_start();
 require "../config/Database.php"; // Memuat konfigurasi database
+
+// Cek apakah pengguna sudah login dan memiliki role admin
+if (!isset($_SESSION['role'])) {
+  echo "<script>alert('Anda harus login terlebih dahulu!'); window.location.href='index.php';</script>";
+  exit();
+}
+
+if ($_SESSION['role'] !== 'admin') {
+  echo "<script>alert('Anda tidak memiliki akses untuk menambahkan user!'); window.location.href='dashboard.php';</script>";
+  exit();
+}
+
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nama = trim($_POST['nama']);
