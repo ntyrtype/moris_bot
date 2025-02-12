@@ -50,7 +50,7 @@ function handleUserMessage($user_id, $chat_id, $text, $username, $chat_type, $me
         
         // Jika pesan berasal dari chat pribadi
         if ($text == "/start") {
-            sendMessage($chat_id, "Selamat datang! Ketik /daftar untuk registrasi atau /resetpassword untuk reset password.");
+            sendMessage($chat_id, "Selamat datang! Ketik /daftar untuk registrasi");
         } elseif ($text == "/daftar") {
             // Mengecek apakah ID Telegram sudah terdaftar
             $stmt = $pdo->prepare("SELECT * FROM users WHERE ID_Telegram = ?");
@@ -58,80 +58,44 @@ function handleUserMessage($user_id, $chat_id, $text, $username, $chat_type, $me
             $user = $stmt->fetch();
 
             if ($user) {
-                sendMessage($chat_id, "Telegram Anda sudah terdaftar.");
+                // Jika pengguna sudah terdaftar, tampilkan role-nya
+                $role = $user['Role'] ?? 'Unknown Role'; // Ambil role dari database
+                sendMessage($chat_id, "Telegram Anda sudah terdaftar sebagai $role.");
             } else {
                 sendMessage($chat_id, "Masukkan nama Anda:");
                 // Simpan status bahwa bot sedang menunggu input nama
                 $_SESSION['state'] = 'awaiting_name';
             }
-        } elseif ($text == "/resetpassword") {
-            sendMessage($chat_id, "Masukkan username Anda untuk reset password:");
-            $_SESSION['state'] = 'awaiting_reset_username';
-        } elseif (isset($_SESSION['state']) && $_SESSION['state'] == 'awaiting_reset_username') {
-            // Mengecek apakah username ada di database
-            $stmt = $pdo->prepare("SELECT * FROM users WHERE Username_Telegram = ?");
-            $stmt->execute([strtolower($text)]);
-            $user = $stmt->fetch();
-
-            if ($user) {
-                $_SESSION['reset_username'] = $text;
-                sendMessage($chat_id, "Masukkan password baru Anda:");
-                $_SESSION['state'] = 'awaiting_reset_password';
-            } else {
-                sendMessage($chat_id, "Username tidak ditemukan. Coba lagi.");
-            }
-        } elseif (isset($_SESSION['state']) && $_SESSION['state'] == 'awaiting_reset_password') {
-            // Meng-hash password baru
-            $password = password_hash($text, PASSWORD_DEFAULT);
-
-            // Update password di database
-            $stmt = $pdo->prepare("UPDATE users SET Password = ? WHERE Username_Telegram = ?");
-            $stmt->execute([$password, $_SESSION['reset_username']]);
-
-            // Mengirim konfirmasi reset password
-            sendMessage($chat_id, "Password Anda telah direset.");
-
-            // Menghapus session setelah reset password selesai
-            unset($_SESSION['state']);
-            unset($_SESSION['reset_username']);
         } elseif (isset($_SESSION['state']) && $_SESSION['state'] == 'awaiting_name') {
             // Menyimpan nama yang diterima
             $_SESSION['name'] = $text;
-            sendMessage($chat_id, "Masukkan username Anda:");
-            $_SESSION['state'] = 'awaiting_username';
-        } elseif (isset($_SESSION['state']) && $_SESSION['state'] == 'awaiting_username') {
-            // Mengecek apakah username sudah terdaftar
-            $stmt = $pdo->prepare("SELECT * FROM users WHERE Username_Telegram = ?");
-            $stmt->execute([strtolower($text)]);
-            $existing_user = $stmt->fetch();
+            sendMessage($chat_id, "Masukkan role Anda (Teknisi/Plaza):");
+            $_SESSION['state'] = 'awaiting_role';
+        } elseif (isset($_SESSION['state']) && $_SESSION['state'] == 'awaiting_role') {
+            // Validasi role yang dimasukkan
+            $role = strtolower($text);
+            if ($role === 'teknisi' || $role === 'plaza') {
+                $_SESSION['role'] = ucfirst($role); // Simpan role dengan format kapital
+                
+                // Menyimpan data pengguna baru ke dalam database
+                $stmt = $pdo->prepare("INSERT INTO users (Nama, Role, ID_Telegram) VALUES (?, ?, ?)");
+                $stmt->execute([
+                    $_SESSION['name'],
+                    $_SESSION['role'],
+                    $user_id
+                ]);
 
-            if ($existing_user) {
-                sendMessage($chat_id, "Username Anda sudah terdaftar. Coba lagi dengan username yang berbeda.");
+                // Mengirim konfirmasi pendaftaran
+                $message = "Anda telah terdaftar sebagai " . $_SESSION['role'] . "!\nNama: " . $_SESSION['name'] . "\nRole: " . $_SESSION['role'];
+                sendMessage($chat_id, $message);
+
+                // Menghapus session setelah pendaftaran selesai
+                unset($_SESSION['state']);
+                unset($_SESSION['name']);
+                unset($_SESSION['role']);
             } else {
-                $_SESSION['username'] = $text;
-                sendMessage($chat_id, "Masukkan password Anda:");
-                $_SESSION['state'] = 'awaiting_password';
+                sendMessage($chat_id, "Role tidak valid. Masukkan role 'Teknisi' atau 'Plaza'.");
             }
-        } elseif (isset($_SESSION['state']) && $_SESSION['state'] == 'awaiting_password') {
-            // Meng-hash password untuk penyimpanan aman
-            $password = password_hash($text, PASSWORD_DEFAULT);
-
-            // Menyimpan data pengguna baru ke dalam database
-            $stmt = $pdo->prepare("INSERT INTO users (Nama, ID_Telegram, Username_Telegram, Password) VALUES (?, ?, ?, ?)");
-            $stmt->execute([
-                $_SESSION['name'],
-                $user_id,
-                $_SESSION['username'],
-                $password
-            ]);
-
-            // Mengirim konfirmasi pendaftaran
-            sendMessage($chat_id, "Anda telah terdaftar!\nNama: " . $_SESSION['name'] . "\nUsername: " . $_SESSION['username']);
-
-            // Menghapus session setelah pendaftaran selesai
-            unset($_SESSION['state']);
-            unset($_SESSION['name']);
-            unset($_SESSION['username']);
         }
     } elseif ($chat_type === 'group' || $chat_type === 'supergroup') {
         // Jika pesan berasal dari grup
@@ -143,25 +107,23 @@ function handleUserMessage($user_id, $chat_id, $text, $username, $chat_type, $me
     }
 }
 
+function sendHelpMessage($chat_id, $message_id) {
+    $helpMessage = "Panduan Penggunaan Perintah `/moban`\n\n"
+                . "Gunakan format berikut:\n"
+                . "/moban #Kategori #Transaksi #Order_ID #Keterangan\n"
+                . "\nKategori:"
+                . "\n- INDIHOME"
+                . "\n- INDIBIZ"
+                . "\n- DATIN"
+                . "\n\nJenis Transaksi:"
+                . "\n- PDA"
+                . "\n- MO"
+                . "\n- ORBIT"
+                . "\n- FFG"
+                . "\n- UNSPEK"
+                . "\n\n Untuk informasi lebih lanjut, hubungi admin.";
 
-function sendHelpMessage($chat_id,  $message_id) {
-    $helpMessage = "Berikut adalah template untuk menggunakan perintah /moban:\n\n" .
-                    "/moban #Transaksi #Order_ID #Keterangan\n\n" .
-                    "Contoh penggunaan:\n" .
-                    "/moban #MO #MO014812917 #DGPS250129211923012742835...\n\n" .
-                    "Daftar transaksi yang diperbolehkan:\n" .
-                    "- AO: Adjust Order\n" .
-                    "- MO: Move Order\n" .
-                    "- DO: Delete Order\n" .
-                    "- RO: Return Order\n" .
-                    "- SO: Split Order\n" .
-                    "- GNO: Group New Order\n" .
-                    "- CO: Combine Order\n" .
-                    "- MIGRATE: Migrate Order\n" .
-                    "- PDA: Partial Delivery Adjustment\n" .
-                    "- AS: Adjustment Stock";
-
-                    replyMessage($chat_id, $helpMessage, $message_id);
+    replyMessage($chat_id, $helpMessage, $message_id);
 }
 
 
@@ -173,60 +135,82 @@ function sendMessage($chat_id, $message) {
 function handleOrder($text, $chat_id, $message_id, $user_id, $username) {
     global $pdo;
 
-    // Daftar transaksi yang diperbolehkan
-    $valid_transaksi = ["AO", "MO", "DO", "RO", "SO", "GNO", "CO", "MIGRATE", "PDA", "AS"];
+    // Perbaikan regex agar sesuai format
+    preg_match("/^\/moban #(INDIHOME|INDIBIZ|DATIN|WMS|OLO) #([A-Z0-9]+) #([A-Z0-9]+) #([\s\S]+)/i", $text, $matches);
 
-    // Ekstraksi order dari pesan menggunakan regex yang memungkinkan baris baru
-    preg_match("/#(\w+) #(\w+) #([\s\S]+)/", $text, $matches);
+    if (count($matches) !== 5) {
+        $message = "Format Order Tidak Valid!\n\n";
+        $message .= "Pastikan formatnya sesuai dengan contoh berikut:\n";
+        $message .= "/moban #Kategori #Transaksi #WONUM #Keterangan\n\n";
+        $message .= "Contoh:\n";
+        $message .= "/moban #INDIHOME #MO #WO123456789 #Permintaan layanan\n\n";
+        $message .= "Untuk informasi lebih lanjut, ketik perintah `/help`.";
+        
+        replyMessage($chat_id, $message, $message_id,);
+        return;
+    }
 
-    if (count($matches) === 4) {
-        // Perbaikan posisi order_id dan transaksi
-        $transaksi = strtoupper($matches[1]); // Mengubah transaksi ke huruf besar
-        $order_id = strtoupper($matches[2]); // Mengubah order_id ke huruf besar
-        $keterangan = trim($matches[3]);
+    $kategori = strtoupper($matches[1]); // Kategori (INDIHOME, INDIBIZ, DATIN)
+    $transaksi = strtoupper($matches[2]); // Transaksi
+    $wonum = strtoupper($matches[3]); // WONUM
+    $keterangan = trim($matches[4]); // Keterangan
 
-        // Validasi apakah transaksi termasuk dalam daftar yang diperbolehkan
-        if (!in_array($transaksi, $valid_transaksi)) {
-            replyMessage($chat_id, "Transaksi tidak valid! Hanya diperbolehkan: " . implode(", ", $valid_transaksi), $message_id);
-            return;
-        }
+    // Ambil role user berdasarkan user_id
+    $stmt = $pdo->prepare("SELECT Nama, role FROM users WHERE id_telegram = ?");
+    $stmt->execute([$user_id]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // Validasi apakah order_id diawali dengan transaksi
-        if (!preg_match("/^" . preg_quote($transaksi, '/') . "\d+$/", $order_id)) {
-            replyMessage($chat_id, "Format Order_ID tidak valid! Order_ID harus diawali dengan transaksi yang sesuai.\n\nContoh benar:\n- Jika transaksi `MO`, maka Order_ID harus `MO12345678`\n- Jika transaksi `DO`, maka Order_ID harus `DO987654321`", $message_id);
-            return;
-        }
+    if (!$user) {
+        replyMessage($chat_id, "User tidak ditemukan dalam database.", $message_id);
+        return;
+    }
 
-        // Membersihkan keterangan dari karakter newline
-        //$keterangan = str_replace(["\n", "\r"], " ", $keterangan); 
+    // Jika user bukan Teknisi/Plaza, tolak akses
+    if (!in_array($user['role'], ['teknisi', 'plaza'])) {
+        replyMessage($chat_id, "Maaf, fitur ini hanya bisa digunakan oleh Teknisi atau Plaza. Hubungi admin untuk mendapatkan akses.", $message_id);
+        return;
+    }
 
-        // Generate nomor tiket
-        $no_tiket = generateTicket();
+    $nama = $user['Nama']; // Ambil nama user dari database
+    $order_by = strtolower($user['role']); // Role user sebagai order_by
 
-        try {
-            $pdo->beginTransaction();
+    // Generate nomor tiket
+    $no_tiket = generateTicket();
 
-            // Simpan data ke tabel orders
-            $stmt1 = $pdo->prepare("INSERT INTO orders (Order_ID, Transaksi, Keterangan, No_Tiket, Status, id_telegram, username_telegram) VALUES (?, ?, ?, ?, 'Order', ?, ?)");
-            $stmt1->execute([$order_id, $transaksi, $keterangan, $no_tiket, $user_id, $username]);
+    // Cek apakah Order_ID atau No_Tiket sudah ada
+    $stmtCheck = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE Order_ID = ? OR No_Tiket = ?");
+    $stmtCheck->execute([$wonum, $no_tiket]);
+    $exists = $stmtCheck->fetchColumn();
+    
+    if ($exists > 0) {
+        $stmtGet = $pdo->prepare("SELECT Order_ID, No_Tiket FROM orders WHERE Order_ID = ? OR No_Tiket = ?");
+        $stmtGet->execute([$wonum, $no_tiket]);
+        $existingOrder = $stmtGet->fetch(PDO::FETCH_ASSOC);
+    
+        replyMessage($chat_id, "Order sudah ada di sistem!\n\n Order_ID: {$existingOrder['Order_ID']}\n No_Tiket: {$existingOrder['No_Tiket']}", $message_id);
+        return;
+    }
+    
+    try {
+        $pdo->beginTransaction();
 
-            // Simpan ke tabel order_messages
-            $stmt2 = $pdo->prepare("INSERT INTO order_messages (no_tiket, message_id) VALUES (?, ?)");
-            $stmt2->execute([$no_tiket, $message_id]);
+        // Simpan ke tabel orders
+        $stmt1 = $pdo->prepare("INSERT INTO orders (Order_ID, Transaksi, Kategori, Keterangan, No_Tiket, Status, id_telegram, username_telegram, order_by) 
+        VALUES (?, ?, ?, ?, ?, 'Order', ?, ?, ?)");
+        $stmt1->execute([$wonum, $transaksi, $kategori, $keterangan, $no_tiket, $user_id, $username, $order_by]);
 
-            $pdo->commit();
+        // Simpan ke tabel order_messages
+        $stmt2 = $pdo->prepare("INSERT INTO order_messages (no_tiket, message_id) VALUES (?, ?)");
+        $stmt2->execute([$no_tiket, $message_id]);
 
-            replyMessage($chat_id, "Permintaan Anda $order_id $transaksi sudah kami proses dengan no tiket $no_tiket, silakan tunggu.", $message_id);
-        } catch (Exception $e) {
-            $pdo->rollBack();
-            replyMessage($chat_id, "Terjadi kesalahan saat menyimpan order. Coba lagi nanti.", $message_id);
-        }
-    } else {
-        replyMessage($chat_id, "Format order tidak valid. Pastikan formatnya sesuai dengan template berikut:\n\n/moban #Transaksi #Order_ID #Keterangan\n\nContoh pengisian yang benar:\n/moban #MO #MO014812917 #DGPS250129211923012742835...", $message_id);
+        $pdo->commit();
+
+        replyMessage($chat_id, "Hallo $nama. Permintaan Anda $wonum $transaksi $kategori sudah kami rekap dengan no tiket $no_tiket.", $message_id);
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        replyMessage($chat_id, "Terjadi kesalahan saat menyimpan order. Coba lagi nanti.\n\nError: " . $e->getMessage(), $message_id);
     }
 }
-
-
 
 
 
