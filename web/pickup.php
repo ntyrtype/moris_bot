@@ -59,6 +59,17 @@ if (!isset($_SESSION['user_id'])) {
                         <option value="UNSPEk">UNSPEK</option>
                     </select>
                 </form>
+                <form action="" class="btnKategori">
+                    <select aria-label="kategori" name="kategori" id="kategiri">
+                        <option value="">All Kategori</option>
+                        <option value="Indibiz">Indibiz</option>
+                        <option value="Indihome">Indihome</option>
+                        <option value="Datin">Datin</option>
+                        <option value="WMS">WMS</option>
+                        <option value="OSLO">OSLO</option>
+                    </select>
+                </form>
+                <input type="date" id="filter_date" value="<?php echo date('Y-m-d'); ?>">
             </div>
         <table id="dataTable">
             <thead>

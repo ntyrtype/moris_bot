@@ -19,6 +19,17 @@
       text-align: center;
       background-color: #EEEEEE;
       border-radius: 0.5rem;
+      position: relative;
+    }
+    .close-btn {
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      font-size: 30px;
+      color: #333;
+      cursor: pointer;
+      background: none;
+      border: none;
     }
     .wrapper h2 {
       padding: 10px;
@@ -53,6 +64,7 @@
 <body>
   <main>
     <section class="container wrapper">
+      <button class="close-btn" onclick="window.history.back();">&times;</button>
       <h2 class="display-4 pt-3">Tambah User</h2>
       <p class="text-center">Isi inputan di bawah untuk menambahkan user baru</p>
       
