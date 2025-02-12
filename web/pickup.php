@@ -34,11 +34,9 @@ if (!isset($_SESSION['user_id'])) {
 <div class="content" id="content">
     <div class="navbar">
         <button id="toggleSidebar">☰</button>
-        <a href="">Indihome</a>
+        <a href="">Plasa</a>
         <p>|</p>
-        <a href="">Indibiz</a>
-        <p>|</p>
-        <a href="">Datin</a>
+        <a href="">Teknisi</a>
         <div class="profile-dropdown">
             <button id="profileButton"><?php echo htmlspecialchars($_SESSION['nama']); ?></button>
             <div class="profile-content" id="profileContent">
@@ -67,6 +65,7 @@ if (!isset($_SESSION['user_id'])) {
                 <tr>
                     <th>No</th>
                     <th>Order ID</th>
+                    <th>Kategori</th>
                     <th>Transaksi</th>
                     <th>Tanggal</th>
                     <th>Keterangan</th>
