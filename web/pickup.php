@@ -34,6 +34,7 @@ if (!isset($_SESSION['user_id'])) {
 <div class="content" id="content">
     <div class="navbar">
         <button id="toggleSidebar">☰</button>
+        <a href="" class="home-button"><i class="fas fa-home"></i></a>
         <a href="">Plasa</a>
         <p>|</p>
         <a href="">Teknisi</a>
@@ -84,7 +85,7 @@ if (!isset($_SESSION['user_id'])) {
                     <th>Keterangan</th>
                     <th>No Tiket</th>
                     <th>Nama</th>
-                    <th>Status</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -171,7 +172,6 @@ if (!isset($_SESSION['user_id'])) {
                         <option value="">Pilih Status</option>
                         <option value="Sudah PS">Sudah PS</option>
                         <option value="In Progress">In Progress</option>
-                        <option value="Cabut dan Input Ulang">Cabut dan Input Ulang</option>
                         <option value="Ada Kendala">Ada Kendala</option>
                         <option value="On Eskalasi">On Eskalasi</option>
                     </select>

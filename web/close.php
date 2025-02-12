@@ -34,6 +34,7 @@ if (!isset($_SESSION['user_id'])) {
 <div class="content" id="content">
     <div class="navbar">
         <button id="toggleSidebar">☰</button>
+        <a href="" class="home-button"><i class="fas fa-home"></i></a>
         <a href="">Plasa</a>
         <p>|</p>
         <a href="">Teknisi</a>
@@ -85,6 +86,7 @@ if (!isset($_SESSION['user_id'])) {
                 <th>No Tiket</th>
                 <th>Nama</th>
                 <th>Status</th>
+                <th>Log</th>
             </tr>
         </thead>
         <tbody>
