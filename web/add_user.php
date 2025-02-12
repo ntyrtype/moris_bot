@@ -1,3 +1,24 @@
+<?php
+require "../config/Database.php"; // Memuat konfigurasi database
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $nama = trim($_POST['nama']);
+    $username = trim($_POST['username']);
+    $password = $password = hash('sha256', $_POST['password']); // Enkripsi password
+    $role = 'helpdesk'; // Default role
+    $status = 'active'; // Default status
+
+    try {
+        $stmt = $pdo->prepare("INSERT INTO users (Nama, Username, Password, role, status) VALUES (?, ?, ?, ?, ?)");
+        $stmt->execute([$nama, $username, $password, $role, $status]);
+
+        echo "<script>alert('User berhasil ditambahkan!'); window.location.href='index.php';</script>";
+    } catch (PDOException $e) {
+        echo "<script>alert('Gagal menambahkan user: " . $e->getMessage() . "');</script>";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
