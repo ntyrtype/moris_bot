@@ -1,7 +1,6 @@
 $(document).ready(function() {
     $('#dataTable').DataTable({
-        "scrollX": true,
-        "scrollY": true,
+        "scroll": true,
         "ordering": false // Menonaktifkan fitur sortir
     });
 });

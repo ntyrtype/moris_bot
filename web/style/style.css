@@ -89,35 +89,37 @@ body {
 
 /* tabel */
 .table-responsive {
-  background: #EEEEEE;
-  margin: 10px;
+  background: #fff;
+  margin: 20px 20px 20px 10px;
   z-index: 1;
   width: 100%;
-  overflow-x: auto;
-  border-radius: 5px; /* Membuat sudut lebih lembut */
+  overflow: auto;
+  border-radius: 15px; /* Membuat sudut lebih lembut */
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Bayangan lembut */
 }
+
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 5px;
+  margin-top: 10px;
   padding-top: 5px;
   white-space: nowrap; /* Mencegah teks terpotong */
 }
+
 table th {
-  background: #2c3e50; /* Warna lebih gelap untuk kontras */
   border: 1px solid #ddd;
+  background: #2c3e50; /* Warna lebih gelap untuk kontras */
   color: white;
-  font-size: 10px; /* Meningkatkan ukuran font header */
+  font-size: 18px; /* Meningkatkan ukuran font header */
   font-weight: bold;
-  padding: 10px; /* Padding lebih besar untuk header */
+  padding: 15px; /* Padding lebih besar untuk header */
   text-align: center;
 }
 
 table td {
   border: 1px solid #ddd;
-  padding: 10px;
-  font-size: 10px; /* Sedikit lebih besar agar nyaman dibaca */
+  padding: 12px;
+  font-size: 16px; /* Sedikit lebih besar agar nyaman dibaca */
   text-align: left;
   background: #f9f9f9; /* Warna background isi tabel */
 }
@@ -249,7 +251,7 @@ table tr:hover {
 .modal {
   display: none;
   position: fixed;
-  z-index:  9999;
+  z-index: 1;
   left: 0;
   top: 0;
   width: 100%;
