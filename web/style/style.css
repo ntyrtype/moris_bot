@@ -88,29 +88,58 @@ body {
 
 
 /* tabel */
-.dataTables_wrapper {
-  margin: 0 10px 0 10px;
+.table-responsive {
+  background: #fff;
   position: relative;
+  margin: 15px;
   z-index: 1;
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 8px; /* Membuat sudut lebih lembut */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Bayangan lembut */
 }
+
 table {
   width: 100%;
-  margin-top: 5px;
-  padding-top: 5px;
   border-collapse: collapse;
+  margin: 10px;
+  white-space: nowrap; /* Mencegah teks terpotong */
 }
-table th, table td {
+
+table th {
+  border: 1px solid #ddd;
+  background: #2c3e50; /* Warna lebih gelap untuk kontras */
+  color: white;
+  font-size: 16px; /* Meningkatkan ukuran font header */
+  font-weight: bold;
+  padding: 10px; /* Padding lebih besar untuk header */
+  text-align: center;
+}
+
+table td {
   border: 1px solid #ddd;
   padding: 10px;
+  font-size: 12px; /* Sedikit lebih besar agar nyaman dibaca */
   text-align: left;
+  background: #f9f9f9; /* Warna background isi tabel */
 }
-table th {
-  position: sticky;
-  top: 58px;
-  background: #34495e;
-  color: white;
-  z-index: 2;
+
+table tr:nth-child(even) {
+  background: #f1f1f1; /* Alternatif warna untuk baris */
 }
+
+table tr:hover {
+  background: #d5dbdb; /* Efek hover untuk keterbacaan */
+  transition: 0.3s ease-in-out;
+}
+
+@media screen and (max-width: 768px) {
+  table th, table td {
+    font-size: 14px; /* Ukuran lebih kecil untuk layar kecil */
+    padding: 10px;
+  }
+}
+
 #transaksi_table{
   margin: 0 10px 0 10px;
   position: relative;

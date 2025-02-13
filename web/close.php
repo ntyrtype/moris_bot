@@ -85,114 +85,116 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body>
 
-<div class="sidebar" id="sidebar">
-    <h1>MORIS BOT</h1>
-    <a href="dashboard.php">Dashboard</a>
-    <a href="order.php">Order</a>
-    <a href="pickup.php">PickUp</a>
-    <a href="close.php">Close</a>
-</div>
+    <div class="sidebar" id="sidebar">
+        <h1>MORIS BOT</h1>
+        <a href="dashboard.php">Dashboard</a>
+        <a href="order.php">Order</a>
+        <a href="pickup.php">PickUp</a>
+        <a href="close.php">Close</a>
+    </div>
 
-<div class="content" id="content">
-<div class="navbar">
-        <button id="toggleSidebar">☰</button>
-        <a href="close.php?order_by=Plaza">Plasa</a>
-        <p>|</p>
-        <a href="close.php?order_by=Teknisi">Teknisi</a>
-        <div class="profile-dropdown">
-            <button id="profileButton"><?php echo htmlspecialchars($_SESSION['nama']); ?></button>
-            <div class="profile-content" id="profileContent">
-                <?php if ($_SESSION['role'] === 'admin'): ?>
-                    <a href="add_user.php">Tambah User</a>
-                <?php endif; ?>
-                <form action="logout.php" method="POST">
-                    <button type="submit" class="logout-btn" style="width: 100%; border: none; background: none; text-align: left;">Logout</button>
-                </form>
+    <div class="content" id="content">
+        <div class="navbar">
+            <button id="toggleSidebar">☰</button>
+            <a href="close.php?order_by=Plaza">Plasa</a>
+            <p>|</p>
+            <a href="close.php?order_by=Teknisi">Teknisi</a>
+            <div class="profile-dropdown">
+                <button id="profileButton"><?php echo htmlspecialchars($_SESSION['nama']); ?></button>
+                <div class="profile-content" id="profileContent">
+                    <?php if ($_SESSION['role'] === 'admin'): ?>
+                        <a href="add_user.php">Tambah User</a>
+                    <?php endif; ?>
+                    <form action="logout.php" method="POST">
+                        <button type="submit" class="logout-btn" style="width: 100%; border: none; background: none; text-align: left;">Logout</button>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
-    <h1 class="headtitle">Close Menu</h1>
-    <div class="filter">
-        <form action="" method="GET">
-            <select aria-label="transaksi" name="transaksi" id="transaksi">
-                <option value="">All Transaksi</option>
-                <option value="PDA" <?= ($transaksi === 'PDA') ? 'selected' : '' ?>>PDA</option>
-                <option value="MO" <?= ($transaksi === 'MO') ? 'selected' : '' ?>>MO</option>
-                <option value="ORBIT" <?= ($transaksi === 'ORBIT') ? 'selected' : '' ?>>ORBIT</option>
-                <option value="FFG" <?= ($transaksi === 'FFG') ? 'selected' : '' ?>>FFG</option>
-                <option value="UNSPEk" <?= ($transaksi === 'UNSPEk') ? 'selected' : '' ?>>UNSPEK</option>
-            </select>
+        <h1 class="headtitle">Close Menu</h1>
+        <div class="filter">
+            <form action="" method="GET">
+                <select aria-label="transaksi" name="transaksi" id="transaksi">
+                    <option value="">All Transaksi</option>
+                    <option value="PDA" <?= ($transaksi === 'PDA') ? 'selected' : '' ?>>PDA</option>
+                    <option value="MO" <?= ($transaksi === 'MO') ? 'selected' : '' ?>>MO</option>
+                    <option value="ORBIT" <?= ($transaksi === 'ORBIT') ? 'selected' : '' ?>>ORBIT</option>
+                    <option value="FFG" <?= ($transaksi === 'FFG') ? 'selected' : '' ?>>FFG</option>
+                    <option value="UNSPEk" <?= ($transaksi === 'UNSPEk') ? 'selected' : '' ?>>UNSPEK</option>
+                </select>
 
-            <select aria-label="kategori" name="kategori" id="kategori">
-                <option value="">All Kategori</option>
-                <option value="Indibiz" <?= ($kategori === 'Indibiz') ? 'selected' : '' ?>>Indibiz</option>
-                <option value="Indihome" <?= ($kategori === 'Indihome') ? 'selected' : '' ?>>Indihome</option>
-                <option value="Datin" <?= ($kategori === 'Datin') ? 'selected' : '' ?>>Datin</option>
-                <option value="WMS" <?= ($kategori === 'WMS') ? 'selected' : '' ?>>WMS</option>
-                <option value="OLO" <?= ($kategori === 'OLO') ? 'selected' : '' ?>>OLO</option>
-            </select>
+                <select aria-label="kategori" name="kategori" id="kategori">
+                    <option value="">All Kategori</option>
+                    <option value="Indibiz" <?= ($kategori === 'Indibiz') ? 'selected' : '' ?>>Indibiz</option>
+                    <option value="Indihome" <?= ($kategori === 'Indihome') ? 'selected' : '' ?>>Indihome</option>
+                    <option value="Datin" <?= ($kategori === 'Datin') ? 'selected' : '' ?>>Datin</option>
+                    <option value="WMS" <?= ($kategori === 'WMS') ? 'selected' : '' ?>>WMS</option>
+                    <option value="OLO" <?= ($kategori === 'OLO') ? 'selected' : '' ?>>OLO</option>
+                </select>
 
-            <input type="date" name="filter_date" id="filter_date" value="<?= htmlspecialchars($filter_date) ?>">
-            <button type="submit">Filter</button>
-        </form>
-    </div>
-    <table id="dataTable">
-        <thead>
-            <tr>
-                <th>No</th>
-                <th>Order ID</th>
-                <th>Kategori</th>
-                <th>Transaksi</th>
-                <th>Tanggal</th>
-                <th>Keterangan</th>
-                <th>No Tiket</th>
-                <th>Nama</th>
-                <th>Status</th>
-                <th>Log</th>
-            </tr>
-        </thead>
-        <tbody>
-        <?php if (!empty($orders)): ?>
-            <?php $no = 1; ?>
-            <?php foreach ($orders as $order): ?>
+                <input type="date" name="filter_date" id="filter_date" value="<?= htmlspecialchars($filter_date) ?>">
+                <button type="submit">Filter</button>
+            </form>
+        </div>
+        <div class="table-responsive">
+            <table id="dataTable" class="display nowrap" style="width:100%">
+            <thead>
                 <tr>
-                    <td><?= $no ?></td>
-                    <td><?= htmlspecialchars($order['order_id']) ?></td>
-                    <td><?= htmlspecialchars($order['kategori']) ?></td>
-                    <td><?= htmlspecialchars($order['transaksi']) ?></td>
-                    <td><?= htmlspecialchars($order['tanggal']) ?></td>
-                    <td>
-                        <div class="text-container">
-                            <?php
-                            $text = nl2br(htmlspecialchars($order['Keterangan']));
-                            $shortText = substr($text, 0, 80); // Ambil 80 karakter pertama
-                            ?>
-                            <span class="short-text"><?= $shortText ?>...</span>
-                            <span class="hidden-text" style="display: none;"><?= $text ?></span>
-                            <button class="show-more">Show More</button>
-                        </div>
-                    </td>
-                    <td><?= htmlspecialchars($order['no_tiket']) ?></td>
-                    <td>
-                        <a href="https://t.me/<?= htmlspecialchars($order['username_telegram']) ?>" target="_blank">
-                            <?= htmlspecialchars($order['nama']) ?>
-                        </a>
-                    </td>
-                    <td>
-                    <?= htmlspecialchars($order['status']) ?>
-                    </td>
-                    <td>link</td>
+                    <th>No</th>
+                    <th>Order ID</th>
+                    <th>Kategori</th>
+                    <th>Transaksi</th>
+                    <th>Tanggal</th>
+                    <th>Keterangan</th>
+                    <th>No Tiket</th>
+                    <th>Nama</th>
+                    <th>Status</th>
+                    <th>Log</th>
                 </tr>
-                <?php $no++; ?>
-            <?php endforeach; ?>
-        <?php else: ?>
-            <tr>
-                <td colspan="9">Tidak ada data order.</td>
-            </tr>
-        <?php endif; ?>
-        </tbody>
-    </table>
-</div>
+            </thead>
+            <tbody>
+            <?php if (!empty($orders)): ?>
+                <?php $no = 1; ?>
+                <?php foreach ($orders as $order): ?>
+                    <tr>
+                        <td><?= $no ?></td>
+                        <td><?= htmlspecialchars($order['order_id']) ?></td>
+                        <td><?= htmlspecialchars($order['kategori']) ?></td>
+                        <td><?= htmlspecialchars($order['transaksi']) ?></td>
+                        <td><?= htmlspecialchars($order['tanggal']) ?></td>
+                        <td>
+                            <div class="text-container">
+                                <?php
+                                $text = nl2br(htmlspecialchars($order['Keterangan']));
+                                $shortText = substr($text, 0, 80); // Ambil 80 karakter pertama
+                                ?>
+                                <span class="short-text"><?= $shortText ?>...</span>
+                                <span class="hidden-text" style="display: none;"><?= $text ?></span>
+                                <button class="show-more">Show More</button>
+                            </div>
+                        </td>
+                        <td><?= htmlspecialchars($order['no_tiket']) ?></td>
+                        <td>
+                            <a href="https://t.me/<?= htmlspecialchars($order['username_telegram']) ?>" target="_blank">
+                                <?= htmlspecialchars($order['nama']) ?>
+                            </a>
+                        </td>
+                        <td>
+                        <?= htmlspecialchars($order['status']) ?>
+                        </td>
+                        <td>link</td>
+                    </tr>
+                    <?php $no++; ?>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <tr>
+                    <td colspan="9">Tidak ada data order.</td>
+                </tr>
+            <?php endif; ?>
+            </tbody>
+        </table>
+        </div>
+    </div>
 
 <script src="./js/sidebar.js"></script>
 <script src="./js/profile.js"></script>
