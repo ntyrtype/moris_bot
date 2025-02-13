@@ -161,6 +161,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="content" id="content">
         <div class="navbar">
             <button id="toggleSidebar">☰</button>
+            <a href="" class="home-icon"><i class="fas fa-home"></i></a>
             <a href="close.php?order_by=Plaza">Plasa</a>
             <p>|</p>
             <a href="close.php?order_by=Teknisi">Teknisi</a>
@@ -251,7 +252,8 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </a>
                         <td><?= htmlspecialchars($order['progress']) ?></td>
                         <td>
-                            <button onclick='openModal("<?= htmlspecialchars($order['no_tiket']) ?>")'>Reply</button>
+                            <button onclick="openModal('<?php echo htmlspecialchars($order['no_tiket'], ENT_QUOTES, 'UTF-8'); ?>')">Reply</button>
+
                         </td>
                     </tr>
                     <?php $no++; ?>

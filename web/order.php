@@ -182,21 +182,22 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <div class="content" id="content">
         <div class="navbar">
-                <button id="toggleSidebar">☰</button>
-                <a href="close.php?order_by=Plaza">Plasa</a>
-                <p>|</p>
-                <a href="close.php?order_by=Teknisi">Teknisi</a>
-                <div class="profile-dropdown">
-                    <button id="profileButton"><?php echo htmlspecialchars($_SESSION['nama']); ?></button>
-                    <div class="profile-content" id="profileContent">
-                        <?php if ($_SESSION['role'] === 'admin'): ?>
-                            <a href="add_user.php">Tambah User</a>
-                        <?php endif; ?>
-                        <form action="logout.php" method="POST">
-                            <button type="submit" class="logout-btn" style="width: 100%; border: none; background: none; text-align: left;">Logout</button>
-                        </form>
-                    </div>
+            <button id="toggleSidebar">☰</button>
+            <a href="" class="home-icon"><i class="fas fa-home"></i></a>
+            <a href="close.php?order_by=Plaza">Plasa</a>
+            <p>|</p>
+            <a href="close.php?order_by=Teknisi">Teknisi</a>
+            <div class="profile-dropdown">
+                <button id="profileButton"><?php echo htmlspecialchars($_SESSION['nama']); ?></button>
+                <div class="profile-content" id="profileContent">
+                    <?php if ($_SESSION['role'] === 'admin'): ?>
+                    <a href="add_user.php">Tambah User</a>
+                    <?php endif; ?>
+                    <form action="logout.php" method="POST">
+                        <button type="submit" class="logout-btn" style="width: 100%; border: none; background: none; text-align: left;">Logout</button>
+                    </form>
                 </div>
+            </div>
         </div>
         <h1 class="headtitle">Order Menu</h1>
         <?php if (isset($_SESSION['message'])): ?>

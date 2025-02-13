@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css');
 
 body {
     font-family: "Poppins", sans-serif;
@@ -59,13 +60,17 @@ body {
     z-index: 2;
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.25rem;
 }
 .navbar a {
   display: block;
   color: #fff;
   font-size: medium;
   text-decoration: none;
+  padding: 10px;
+}
+.navbar a:hover {
+  background: #2c3e50;
 }
 .navbar button {
     background: #34495e;
@@ -76,7 +81,17 @@ body {
     cursor: pointer;
 }
 .navbar button:hover {
-    background: #2980b9;
+    background: #2c3e50;
+}
+.home-icon {
+  font-size: 20px;
+  text-decoration: none;
+  color: white;
+  margin-right: 15px;
+  padding: 10px;
+}
+.home-icon:hover{
+  background: #2c3e50;
 }
 
 /* judul */
@@ -90,56 +105,55 @@ body {
 /* tabel */
 .table-responsive {
   background: #fff;
-  position: relative;
-  margin: 15px;
+  margin: 10px;
+  padding: 15px;
   z-index: 1;
-  max-width: calc(100% - 15px);
+  max-width: calc(100% - 10px);
   overflow-x: auto;
-  border-radius: 8px; /* Membuat sudut lebih lembut */
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Bayangan lembut */
+  border-radius: 8px; 
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); 
 }
-
 
 table {
   width: 100%;
   border-collapse: collapse;
   margin: 10px;
-  white-space: nowrap; /* Mencegah teks terpotong */
+  white-space: nowrap; 
 }
 
 table th {
   border: 1px solid #ddd;
-  background: #2c3e50; /* Warna lebih gelap untuk kontras */
+  background: #2c3e50; 
   color: white;
-  font-size: 16px; /* Meningkatkan ukuran font header */
+  font-size: 18px; 
   font-weight: bold;
-  padding: 10px; /* Padding lebih besar untuk header */
+  padding: 10px; 
   text-align: center;
 }
 
 table td {
   border: 1px solid #ddd;
   padding: 10px;
-  font-size: 12px; /* Sedikit lebih besar agar nyaman dibaca */
+  font-size: 14px; 
   text-align: left;
-  background: #f9f9f9; /* Warna background isi tabel */
+  background: #f9f9f9; 
 }
-
+/* 
 table tr:nth-child(even) {
-  background: #f1f1f1; /* Alternatif warna untuk baris */
+  background: #f1f1f1; 
 }
 
 table tr:hover {
-  background: #d5dbdb; /* Efek hover untuk keterbacaan */
+  background: #d5dbdb; 
   transition: 0.3s ease-in-out;
-}
+} */
 
-@media screen and (max-width: 768px) {
+/* @media screen and (max-width: 768px) {
   table th, table td {
-    font-size: 14px; /* Ukuran lebih kecil untuk layar kecil */
+    font-size: 14px; 
     padding: 10px;
   }
-}
+} */
 
 #transaksi_table{
   margin: 0 10px 0 10px;
@@ -152,18 +166,18 @@ table tr:hover {
   position: relative;
   display: inline-block;
   margin-right: 25px;
-  margin-left: auto; /* Pushes the profile dropdown to the right */
+  margin-left: auto; 
 }
 .profile-content {
   display: none;
   position: absolute;
-  justify-content: center;  /* Memusatkan secara horizontal */
+  justify-content: center;  
   align-items: center;
   background-color: white;
   min-width: 160px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   z-index: 1000;
-  right: 0; /* Align to the right */
+  right: 0; 
 }
 .profile-content p {
   color: black !important;
@@ -190,8 +204,6 @@ table tr:hover {
   flex-wrap: wrap;
   gap: 0.1rem;
   margin: 0.6rem  0.2rem 0.8rem;
-  /* margin-left: 0.2rem;
-  margin-top: 0.6rem; */
 }
 
 .filter select, input{
@@ -247,6 +259,14 @@ table tr:hover {
 }
 .btn_close:hover {
   background: #D2665A;
+}
+.show-more{
+  background: transparent;
+  color: #458240;
+}
+.show-more:hover{
+  background: #3f763a;
+  color: #EEEEEE;
 }
 /* Styling the Modal */
 .modal {
@@ -327,7 +347,7 @@ button:hover {
 }
 
 .card_close {
-  background-color: #B82132; /* Green */
+  background-color: #B82132;
 }
 
 .filter-container {
