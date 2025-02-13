@@ -1,5 +1,4 @@
-<?php
-ob_start(); // Menyalakan output buffering
+<?php 
 session_start();
 require "../config/Database.php";
 
@@ -8,6 +7,123 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: index.php");
     exit();
 }
+
+// Menangani aksi Reply
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $no_tiket = filter_input(INPUT_POST, 'close_tiket', FILTER_SANITIZE_STRING);
+    $status = filter_input(INPUT_POST, 'status', FILTER_SANITIZE_STRING);
+    $keterangan = filter_input(INPUT_POST, 'keterangan', FILTER_SANITIZE_STRING) ?? '';
+
+    try {
+        $pdo->beginTransaction();
+
+        // Tentukan status dan progress_order berdasarkan input
+        if ($status === 'Sudah PS' || $status === 'On Eskalasi') {
+            $new_status = 'Close';
+            $new_progress = $status;
+        } else {
+            $new_status = 'Pickup';
+            $new_progress = $status;
+        }
+
+        // Update status dan progress_order di tabel orders
+        $sql_update_order = "
+            UPDATE orders 
+            SET Status = :status, progress_order = :progress_order 
+            WHERE No_Tiket = :no_tiket
+        ";
+        $stmt_update_order = $pdo->prepare($sql_update_order);
+        $stmt_update_order->bindParam(':status', $new_status, PDO::PARAM_STR);
+        $stmt_update_order->bindParam(':progress_order', $new_progress, PDO::PARAM_STR);
+        $stmt_update_order->bindParam(':no_tiket', $no_tiket, PDO::PARAM_STR);
+        $stmt_update_order->execute();
+
+        // Catat aktivitas di log_orders
+        $sql_insert_log = "
+            INSERT INTO log_orders (
+                id_user, order_id, transaksi, Kategori, no_tiket, status, progress_order, keterangan, nama, role, order_by
+            )
+            SELECT 
+                :id_user, o.Order_ID, o.Transaksi, o.Kategori, o.No_Tiket, :status, :progress_order, :keterangan, u.Nama, u.role, o.order_by
+            FROM 
+                orders o
+            LEFT JOIN 
+                users u ON u.ID = :id_user
+            WHERE 
+                o.No_Tiket = :no_tiket
+        ";
+
+        $stmt_insert_log = $pdo->prepare($sql_insert_log);
+        $stmt_insert_log->bindParam(':id_user', $_SESSION['user_id'], PDO::PARAM_INT);
+        $stmt_insert_log->bindParam(':status', $new_status, PDO::PARAM_STR);
+        $stmt_insert_log->bindParam(':progress_order', $new_progress, PDO::PARAM_STR);
+        $stmt_insert_log->bindParam(':keterangan', $keterangan, PDO::PARAM_STR);
+        $stmt_insert_log->bindParam(':no_tiket', $no_tiket, PDO::PARAM_STR);
+        $stmt_insert_log->execute();
+
+        $pdo->commit();
+        $_SESSION['message'] = "Order berhasil diupdate.";
+        header("Location: pickup.php"); // Redirect untuk menghindari resubmit form
+        exit();
+
+    } catch (PDOException $e) {
+        $pdo->rollBack();
+        echo "Error: " . $e->getMessage();
+    }
+}
+
+// Query untuk mengambil data order
+$transaksi = filter_input(INPUT_GET, 'transaksi', FILTER_SANITIZE_STRING) ?? '';
+$kategori = filter_input(INPUT_GET, 'kategori', FILTER_SANITIZE_STRING) ?? '';
+$filter_date = filter_input(INPUT_GET, 'filter_date', FILTER_SANITIZE_STRING) ?? '';
+
+$query = "
+    SELECT 
+        o.Order_ID AS order_id,
+        o.Kategori AS kategori,
+        o.Transaksi AS transaksi,
+        o.Keterangan AS Keterangan,
+        o.No_Tiket AS no_tiket,
+        o.id_telegram AS id_telegram,
+        o.username_telegram AS username_telegram,
+        u.Nama AS nama,
+        o.tanggal AS tanggal,
+        o.Status AS status,
+        o.progress_order AS progress
+    FROM 
+        orders o
+    LEFT JOIN 
+        users u ON o.id_telegram = u.id_telegram
+    WHERE 
+        o.Status = 'Pickup'
+";
+
+// Tambahkan kondisi filter ke query
+if ($transaksi) {
+    $query .= " AND o.Transaksi = :transaksi";
+}
+if ($kategori) {
+    $query .= " AND o.Kategori = :kategori";
+}
+if ($filter_date) {
+    $query .= " AND o.tanggal = :filter_date";
+}
+
+// Eksekusi query
+$stmt = $pdo->prepare($query);
+
+if ($transaksi) {
+    $stmt->bindParam(":transaksi", $transaksi, PDO::PARAM_STR);
+}
+if ($kategori) {
+    $stmt->bindParam(":kategori", $kategori, PDO::PARAM_STR);
+}
+if ($filter_date) {
+    $stmt->bindParam(":filter_date", $filter_date, PDO::PARAM_STR);
+}
+
+$stmt->execute();
+$orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -16,7 +132,7 @@ if (!isset($_SESSION['user_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./style/style.css">
-    <title>Pickup</title>
+    <title>Order</title>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
@@ -32,9 +148,8 @@ if (!isset($_SESSION['user_id'])) {
 </div>
 
 <div class="content" id="content">
-    <div class="navbar">
+<div class="navbar">
         <button id="toggleSidebar">☰</button>
-        <a href="" class="home-button"><i class="fas fa-home"></i></a>
         <a href="">Plasa</a>
         <p>|</p>
         <a href="">Teknisi</a>
@@ -50,126 +165,102 @@ if (!isset($_SESSION['user_id'])) {
             </div>
         </div>
     </div>
-        <h1 class="headtitle">PickUp Menu</h1>
-            <div class="filter">
-                <form action="" class="btnTransaksi">
-                    <select aria-label="transaksi" name="transaksi" id="transaksi">
-                        <option value="">All Transaksi</option>
-                        <option value="PDA">PDA</option>
-                        <option value="MO">MO</option>
-                        <option value="ORBIT">ORBIT</option>
-                        <option value="FFG">FFG</option>
-                        <option value="UNSPEk">UNSPEK</option>
-                    </select>
-                </form>
-                <form action="" class="btnKategori">
-                    <select aria-label="kategori" name="kategori" id="kategiri">
-                        <option value="">All Kategori</option>
-                        <option value="Indibiz">Indibiz</option>
-                        <option value="Indihome">Indihome</option>
-                        <option value="Datin">Datin</option>
-                        <option value="WMS">WMS</option>
-                        <option value="OSLO">OSLO</option>
-                    </select>
-                </form>
-                <input type="date" id="filter_date" value="<?php echo date('Y-m-d'); ?>">
-            </div>
-        <table id="dataTable">
-            <thead>
+    <h1 class="headtitle">Pickup Menu</h1>
+    <?php if (isset($_SESSION['message'])): ?>
+    <div class="notification" style="margin: 20px 20px 20px 10px;">
+        <?= htmlspecialchars($_SESSION['message']) ?>
+    </div>
+    <?php unset($_SESSION['message']); // Hapus pesan setelah ditampilkan ?>
+    <?php endif; ?>
+    <div class="filter">
+        <form action="" method="GET">
+            <select aria-label="transaksi" name="transaksi" id="transaksi">
+                <option value="">All Transaksi</option>
+                <option value="PDA" <?= ($transaksi === 'PDA') ? 'selected' : '' ?>>PDA</option>
+                <option value="MO" <?= ($transaksi === 'MO') ? 'selected' : '' ?>>MO</option>
+                <option value="ORBIT" <?= ($transaksi === 'ORBIT') ? 'selected' : '' ?>>ORBIT</option>
+                <option value="FFG" <?= ($transaksi === 'FFG') ? 'selected' : '' ?>>FFG</option>
+                <option value="UNSPEk" <?= ($transaksi === 'UNSPEk') ? 'selected' : '' ?>>UNSPEK</option>
+            </select>
+
+            <select aria-label="kategori" name="kategori" id="kategori">
+                <option value="">All Kategori</option>
+                <option value="Indibiz" <?= ($kategori === 'Indibiz') ? 'selected' : '' ?>>Indibiz</option>
+                <option value="Indihome" <?= ($kategori === 'Indihome') ? 'selected' : '' ?>>Indihome</option>
+                <option value="Datin" <?= ($kategori === 'Datin') ? 'selected' : '' ?>>Datin</option>
+                <option value="WMS" <?= ($kategori === 'WMS') ? 'selected' : '' ?>>WMS</option>
+                <option value="OLO" <?= ($kategori === 'OLO') ? 'selected' : '' ?>>OLO</option>
+            </select>
+
+            <input type="date" name="filter_date" id="filter_date" value="<?= htmlspecialchars($filter_date) ?>">
+            <button type="submit">Filter</button>
+        </form>
+    </div>
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Order ID</th>
+                <th>Kategori</th>
+                <th>Transaksi</th>
+                <th>Tanggal</th>
+                <th>Keterangan</th>
+                <th>No Tiket</th>
+                <th>Nama</th>
+                <th>Progress</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php if (!empty($orders)): ?>
+            <?php $no = 1; ?>
+            <?php foreach ($orders as $order): ?>
                 <tr>
-                    <th>No</th>
-                    <th>Order ID</th>
-                    <th>Kategori</th>
-                    <th>Transaksi</th>
-                    <th>Tanggal</th>
-                    <th>Keterangan</th>
-                    <th>No Tiket</th>
-                    <th>Nama</th>
-                    <th>Aksi</th>
+                    <td><?= $no ?></td>
+                    <td><?= htmlspecialchars($order['order_id']) ?></td>
+                    <td><?= htmlspecialchars($order['kategori']) ?></td>
+                    <td><?= htmlspecialchars($order['transaksi']) ?></td>
+                    <td><?= htmlspecialchars($order['tanggal']) ?></td>
+                    <td>
+                        <div class="text-container">
+                            <?php
+                            $text = nl2br(htmlspecialchars($order['Keterangan']));
+                            $shortText = substr($text, 0, 80); // Ambil 80 karakter pertama
+                            ?>
+                            <span class="short-text"><?= $shortText ?>...</span>
+                            <span class="hidden-text" style="display: none;"><?= $text ?></span>
+                            <button class="show-more">Show More</button>
+                        </div>
+                    </td>
+                    <td><?= htmlspecialchars($order['no_tiket']) ?></td>
+                    <td>
+                        <a href="https://t.me/<?= htmlspecialchars($order['username_telegram']) ?>" target="_blank">
+                            <?= htmlspecialchars($order['nama']) ?>
+                        </a>
+                    <td><?= htmlspecialchars($order['progress']) ?></td>
+                    <td>
+                        <button onclick='openModal("<?= htmlspecialchars($order['no_tiket']) ?>")'>Reply</button>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                <!-- <?php
-                        // Ambil ID pengguna yang sedang aktif
-                        $user_id = $_SESSION['user_id'];
+                <?php $no++; ?>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <tr>
+                <td colspan="9">Tidak ada data order.</td>
+            </tr>
+        <?php endif; ?>
+        </tbody>
+    </table>
+</div>
 
-                        // Cek apakah form submit telah dilakukan untuk menutup tiket
-                        if (isset($_POST['close_tiket'])) {
-                            $pickup_tiket = $_POST['close_tiket'];
-                            $keterangan = $_POST['keterangan'];  // Ambil keterangan yang diinput
-
-                            if (empty($keterangan)) {
-                                echo "<script>alert('Keterangan harus diisi!');</script>";
-                            } else {
-                                try {
-                                    // Memulai transaksi untuk memastikan atomicity
-                                    $pdo->beginTransaction();
-
-                                    // Query untuk memperbarui status menjadi 'Close' dan menyimpan keterangan
-                                    $sql_update = "UPDATE orders SET Status = 'Close', ket_validasi = ? WHERE No_Tiket = ?";
-                                    $stmt_update = $pdo->prepare($sql_update);
-                                    $stmt_update->bindParam(1, $keterangan, PDO::PARAM_STR);
-                                    $stmt_update->bindParam(2, $pickup_tiket, PDO::PARAM_STR);
-                                    $stmt_update->execute();
-
-                                    // Simpan aktivitas ke dalam tabel order_activity
-                                    $sql_activity = "INSERT INTO order_activity (no_tiket, user_id, activity_type) VALUES (?, ?, 'Close')";
-                                    $stmt_activity = $pdo->prepare($sql_activity);
-                                    $stmt_activity->bindParam(1, $pickup_tiket, PDO::PARAM_STR);
-                                    $stmt_activity->bindParam(2, $user_id, PDO::PARAM_INT);
-                                    $stmt_activity->execute();
-
-                                    // Commit transaksi
-                                    $pdo->commit();
-
-                                    echo "<p>Status No Tiket $pickup_tiket berhasil di Resolved dengan keterangan: $keterangan dan aktivitas tercatat.</p>";
-                                } catch (PDOException $e) {
-                                    // Rollback jika terjadi error
-                                    $pdo->rollBack();
-                                    echo "Error: " . $e->getMessage();
-                                }
-                            }
-                        }
-
-                        // Query untuk mengambil data dengan status 'Pickup'
-                        $sql = "SELECT * FROM orders WHERE Status = 'Pickup'";
-                        $stmt = $pdo->query($sql);
-
-                        if ($stmt->rowCount() > 0) {
-                            $no = 1; // Nomor urut
-                            foreach ($stmt as $row) {
-                                $telegram_username = $row['username_telegram'];
-                                $telegram_link = "https://t.me/{$telegram_username}";
-                                echo "<tr>
-                                        <td>{$no}</td>
-                                        <td>{$row['Order_ID']}</td>
-                                        <td>{$row['Transaksi']}</td>
-                                        <td>" . nl2br(htmlspecialchars($row['Keterangan'])) . "</td>
-                                        <td>{$row['No_Tiket']}</td>
-                                        <td><a href='{$telegram_link}' class='telegram-link' target='_blank'>Kontak</a></td>
-                                        <td>
-                                            <button onclick='openModal(\"{$row['No_Tiket']}\")'>Close</button>
-                                        </td>
-                                    </tr>";
-                                $no++;
-                            }
-                        } else {
-                            echo "<tr><td colspan='6'>No data available</td></tr>";
-                        }
-                    ?> -->
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Modal for Keterangan -->
-        <div id="modal" class="modal">
+<div id="modal" class="modal">
             <div class="modal-content">
                 <span class="close" onclick="closeModal()">&times;</span>
                 <h2>Masukkan Keterangan</h2>
                 <form method="POST">
                     <label for="status">Status:</label>
                     <select name="status" id="status" required>
-                        <option value="">Pilih Status</option>
+                        <option value="" disabled selected>Pilih Status</option>
                         <option value="Sudah PS">Sudah PS</option>
                         <option value="In Progress">In Progress</option>
                         <option value="Ada Kendala">Ada Kendala</option>
@@ -183,11 +274,13 @@ if (!isset($_SESSION['user_id'])) {
                     <button type="submit" class="btn_close">Submit</button>
                 </form>
             </div>
-        </div>
+</div>
 
-        <script src="./js/keterangan.js"></script>
-        <script src="./js/sidebar.js"></script>
-        <script src="./js/profile.js"></script>
-        <script src="./js/datatable.js"></script>
-    </body>
-    </html>
+<script src="./js/sidebar.js"></script>
+<script src="./js/profile.js"></script>
+<script src="./js/datatable.js"></script>
+<script src="./js/showmore.js"></script>
+<script src="./js/keterangan.js"></script>
+
+</body>
+</html>
