@@ -62,6 +62,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt_insert_log->bindParam(':no_tiket', $no_tiket, PDO::PARAM_STR);
         $stmt_insert_log->execute();
 
+        // Update id_telegram dan username_telegram di log_orders (trigger pertama)
+        $sql_update_telegram = "
+            UPDATE log_orders lo
+            JOIN orders o ON lo.order_id = o.Order_ID
+            SET lo.id_telegram = o.id_telegram, 
+                lo.username_telegram = o.username_telegram
+            WHERE lo.no_tiket = :no_tiket AND lo.id_telegram IS NULL;
+        ";
+        $stmt_update_telegram = $pdo->prepare($sql_update_telegram);
+        $stmt_update_telegram->bindParam(':no_tiket', $no_tiket, PDO::PARAM_STR);
+        $stmt_update_telegram->execute();
+
+        // Update nama_order_by berdasarkan id_telegram (trigger kedua)
+        $sql_update_nama_order_by = "
+            UPDATE log_orders lo
+            JOIN users u ON lo.id_telegram = u.id_telegram
+            SET lo.nama_order_by = u.nama
+            WHERE lo.no_tiket = :no_tiket;
+        ";
+        $stmt_update_nama_order_by = $pdo->prepare($sql_update_nama_order_by);
+        $stmt_update_nama_order_by->bindParam(':no_tiket', $no_tiket, PDO::PARAM_STR);
+        $stmt_update_nama_order_by->execute();
+
+
         $pdo->commit();
         header("Location: order.php"); // Redirect untuk menghindari resubmit form
         exit();

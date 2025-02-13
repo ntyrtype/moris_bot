@@ -205,7 +205,7 @@ function handleOrder($text, $chat_id, $message_id, $user_id, $username) {
 
         $pdo->commit();
 
-        replyMessage($chat_id, "Hallo $nama. Permintaan Anda $wonum $transaksi $kategori sedang kami dengan no tiket $no_tiket.", $message_id);
+        replyMessage($chat_id, "Hallo $nama. Permintaan Anda $wonum $transaksi $kategori sudah kami rekap dengan no tiket $no_tiket.", $message_id);
     } catch (Exception $e) {
         $pdo->rollBack();
         replyMessage($chat_id, "Terjadi kesalahan saat menyimpan order. Coba lagi nanti.\n\nError: " . $e->getMessage(), $message_id);
@@ -218,21 +218,22 @@ function replyMessage($chat_id, $message, $reply_to_message_id) {
     $url = API_URL . "sendMessage?chat_id=$chat_id&text=" . urlencode($message) . "&reply_to_message_id=$reply_to_message_id";
     file_get_contents($url);
 }
+
 function sendNotifications() {
     global $pdo;
 
-    // Ambil notifikasi yang belum terkirim (is_sent = 0) dengan status 'Pickup' atau 'Close'
-    $stmt = $pdo->query("SELECT * FROM log_orders WHERE (status = 'Pickup' OR status = 'Close') AND is_sent = 0");
-    $notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // Ambil notifikasi yang belum terkirim (is_sent = 0) dengan progress_order selain 'On Check'
+    $stmt = $pdo->query("SELECT * FROM log_orders WHERE progress_order != 'On Check' AND status IN ('Pickup', 'Close') AND is_sent = 0");
+    $notifications = $stmt->fetchAll();
 
     foreach ($notifications as $notification) {
-        $chat_id = -4712566458; // ID Telegram penerima
+        $chat_id = $notification['id_telegram']; // ID Telegram penerima
         $no_tiket = $notification['No_Tiket'];
         $order_id = $notification['order_id'];
         $transaksi = $notification['transaksi'];
         $status = $notification['status'];
         $progress_order = $notification['progress_order'];
-        $keterangan = !empty($notification['keterangan']) ? $notification['keterangan'] : "-"; // Jika NULL atau kosong, ubah jadi "-"
+        $keterangan = $notification['keterangan'];
         $nama = $notification['nama']; // Nama yang menangani order
         $order_by = $notification['order_by']; // Teknisi atau Plaza
 
@@ -243,7 +244,7 @@ function sendNotifications() {
 
         // Format pesan berdasarkan status
         if ($status === 'Pickup') {
-            $message = "🔔 *Update Order*\n\n📌 *No Tiket:* $no_tiket\n🆔 *Order ID:* $order_id\n💰 *Transaksi:* $transaksi\n🚀 *Progress:* $progress_order\n👤 *Ditangani oleh:* $nama ($order_by)\n 📝 *Keterangan:* $keterangan";
+            $message = "🔔 *Update Order*\n\n📌 *No Tiket:* $no_tiket\n🆔 *Order ID:* $order_id\n💰 *Transaksi:* $transaksi\n🚀 *Progress:* $progress_order\n👤 *Ditangani oleh:* $nama ($order_by)";
         } elseif ($status === 'Close') {
             $message = "✅ *Order Selesai*\n\n📌 *No Tiket:* $no_tiket\n🆔 *Order ID:* $order_id\n💰 *Transaksi:* $transaksi\n🚀 *Progress Terakhir:* $progress_order\n👤 *Ditangani oleh:* $nama ($order_by)\n📝 *Keterangan:* $keterangan";
         } else {
@@ -267,6 +268,7 @@ function sendNotifications() {
         $stmtUpdate->execute([$notification['no']]);
     }
 }
+
 
 
 function generateTicket() {

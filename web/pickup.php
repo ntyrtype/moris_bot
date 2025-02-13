@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pdo->beginTransaction();
 
         // Tentukan status dan progress_order berdasarkan input
-        if ($status === 'Sudah PS' || $status === 'On Eskalasi') {
+        if ($status === 'Sudah PS') {
             $new_status = 'Close';
             $new_progress = $status;
         } else {
@@ -217,7 +217,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <th>Transaksi</th>
                     <th>Tanggal</th>
                     <th>Keterangan</th>
-                    <th>No Tiket</th>
+                    <!--<th>No Tiket</th>-->
                     <th>Nama</th>
                     <th>Progress</th>
                     <th>Aksi</th>
@@ -244,7 +244,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <button class="show-more">Show More</button>
                             </div>
                         </td>
-                        <td><?= htmlspecialchars($order['no_tiket']) ?></td>
+                        <!--<td><?= htmlspecialchars($order['no_tiket']) ?></td>-->
                         <td>
                             <a href="https://t.me/<?= htmlspecialchars($order['username_telegram']) ?>" target="_blank">
                                 <?= htmlspecialchars($order['nama']) ?>
