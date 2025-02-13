@@ -76,7 +76,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $transaksi = htmlspecialchars(trim($_GET['transaksi'] ?? ''), ENT_QUOTES, 'UTF-8');
 $kategori = htmlspecialchars(trim($_GET['kategori'] ?? ''), ENT_QUOTES, 'UTF-8');
 $filter_date = htmlspecialchars(trim($_GET['filter_date'] ?? ''), ENT_QUOTES, 'UTF-8');
+$order_by = htmlspecialchars(trim($_GET['order_by'] ?? ''), ENT_QUOTES, 'UTF-8');
 
+// Query untuk mengambil data order
 $query = "
     SELECT 
         o.Order_ID AS order_id,
@@ -89,16 +91,20 @@ $query = "
         u.Nama AS nama,
         o.tanggal AS tanggal,
         o.Status AS status,
-        o.progress_order AS progress
+        o.order_by AS order_by
     FROM 
         orders o
     LEFT JOIN 
         users u ON o.id_telegram = u.id_telegram
     WHERE 
-        o.Status = 'Pickup'
+        o.Status = 'Close'
 ";
 
-// Tambahkan kondisi filter ke query
+// Tambahkan filter jika ada input order_by
+if ($order_by) {
+    $query .= " AND o.order_by = :order_by";
+}
+
 if ($transaksi) {
     $query .= " AND o.Transaksi = :transaksi";
 }
@@ -112,6 +118,10 @@ if ($filter_date) {
 // Eksekusi query
 $stmt = $pdo->prepare($query);
 
+// Bind parameter jika ada
+if ($order_by) {
+    $stmt->bindParam(":order_by", $order_by, PDO::PARAM_STR);
+}
 if ($transaksi) {
     $stmt->bindParam(":transaksi", $transaksi, PDO::PARAM_STR);
 }
@@ -150,9 +160,9 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <div class="content" id="content">
 <div class="navbar">
         <button id="toggleSidebar">☰</button>
-        <a href="">Plasa</a>
+        <a href="close.php?order_by=Plaza">Plasa</a>
         <p>|</p>
-        <a href="">Teknisi</a>
+        <a href="close.php?order_by=Teknisi">Teknisi</a>
         <div class="profile-dropdown">
             <button id="profileButton"><?php echo htmlspecialchars($_SESSION['nama']); ?></button>
             <div class="profile-content" id="profileContent">
