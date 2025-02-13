@@ -91,13 +91,14 @@ $query = "
         u.Nama AS nama,
         o.tanggal AS tanggal,
         o.Status AS status,
-        o.order_by AS order_by
+        o.order_by AS order_by,
+        o.progress_order AS progress
     FROM 
         orders o
     LEFT JOIN 
         users u ON o.id_telegram = u.id_telegram
     WHERE 
-        o.Status = 'Close'
+        o.Status = 'Pickup'
 ";
 
 // Tambahkan filter jika ada input order_by

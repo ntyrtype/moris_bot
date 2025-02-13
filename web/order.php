@@ -96,7 +96,7 @@ $query = "
     LEFT JOIN 
         users u ON o.id_telegram = u.id_telegram
     WHERE 
-        o.Status = 'Close'
+        o.Status = 'Order'
 ";
 
 // Tambahkan filter jika ada input order_by
