@@ -10,10 +10,10 @@ if (!isset($_SESSION['user_id'])) {
 
 // Menangani aksi Reply
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $no_tiket = filter_input(INPUT_POST, 'close_tiket', FILTER_SANITIZE_STRING);
-    $status = filter_input(INPUT_POST, 'status', FILTER_SANITIZE_STRING);
-    $keterangan = filter_input(INPUT_POST, 'keterangan', FILTER_SANITIZE_STRING) ?? '';
-
+    $no_tiket = htmlspecialchars(trim($_POST['close_tiket'] ?? ''), ENT_QUOTES, 'UTF-8');
+    $status = htmlspecialchars(trim($_POST['status'] ?? ''), ENT_QUOTES, 'UTF-8');
+    $keterangan = htmlspecialchars(trim($_POST['keterangan'] ?? ''), ENT_QUOTES, 'UTF-8');
+    
     try {
         $pdo->beginTransaction();
 
@@ -73,9 +73,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Query untuk mengambil data order
-$transaksi = filter_input(INPUT_GET, 'transaksi', FILTER_SANITIZE_STRING) ?? '';
-$kategori = filter_input(INPUT_GET, 'kategori', FILTER_SANITIZE_STRING) ?? '';
-$filter_date = filter_input(INPUT_GET, 'filter_date', FILTER_SANITIZE_STRING) ?? '';
+$transaksi = htmlspecialchars(trim($_GET['transaksi'] ?? ''), ENT_QUOTES, 'UTF-8');
+$kategori = htmlspecialchars(trim($_GET['kategori'] ?? ''), ENT_QUOTES, 'UTF-8');
+$filter_date = htmlspecialchars(trim($_GET['filter_date'] ?? ''), ENT_QUOTES, 'UTF-8');
 
 $query = "
     SELECT 

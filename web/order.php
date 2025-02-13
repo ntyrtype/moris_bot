@@ -10,10 +10,10 @@ if (!isset($_SESSION['user_id'])) {
 
 // Menangani aksi Pickup dan Cancel
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $no_tiket = filter_input(INPUT_POST, 'no_tiket', FILTER_SANITIZE_STRING);
-    $action = filter_input(INPUT_POST, 'action', FILTER_SANITIZE_STRING);
-    $keterangan = filter_input(INPUT_POST, 'keterangan', FILTER_SANITIZE_STRING) ?? '';
-
+    $no_tiket = htmlspecialchars(trim($_POST['no_tiket'] ?? ''), ENT_QUOTES, 'UTF-8');
+    $action = htmlspecialchars(trim($_POST['action'] ?? ''), ENT_QUOTES, 'UTF-8');
+    $keterangan = htmlspecialchars(trim($_POST['keterangan'] ?? ''), ENT_QUOTES, 'UTF-8');
+    
     try {
         $pdo->beginTransaction();
 
@@ -72,9 +72,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$transaksi = filter_input(INPUT_GET, 'transaksi', FILTER_SANITIZE_STRING) ?? '';
-$kategori = filter_input(INPUT_GET, 'kategori', FILTER_SANITIZE_STRING) ?? '';
-$filter_date = filter_input(INPUT_GET, 'filter_date', FILTER_SANITIZE_STRING) ?? '';
+$transaksi = htmlspecialchars(trim($_GET['transaksi'] ?? ''), ENT_QUOTES, 'UTF-8');
+$kategori = htmlspecialchars(trim($_GET['kategori'] ?? ''), ENT_QUOTES, 'UTF-8');
+$filter_date = htmlspecialchars(trim($_GET['filter_date'] ?? ''), ENT_QUOTES, 'UTF-8');
 
 // Query untuk mengambil data order
 $query = "
