@@ -138,7 +138,7 @@ table td {
   text-align: left;
   background: #f9f9f9; 
 }
-
+/* 
 table tr:nth-child(even) {
   background: #f1f1f1; 
 }
@@ -146,14 +146,14 @@ table tr:nth-child(even) {
 table tr:hover {
   background: #d5dbdb; 
   transition: 0.3s ease-in-out;
-}
+} */
 
-@media screen and (max-width: 768px) {
+/* @media screen and (max-width: 768px) {
   table th, table td {
     font-size: 14px; 
     padding: 10px;
   }
-}
+} */
 
 #transaksi_table{
   margin: 0 10px 0 10px;
@@ -259,6 +259,14 @@ table tr:hover {
 }
 .btn_close:hover {
   background: #D2665A;
+}
+.show-more{
+  background: transparent;
+  color: #458240;
+}
+.show-more:hover{
+  background: #3f763a;
+  color: #EEEEEE;
 }
 /* Styling the Modal */
 .modal {
