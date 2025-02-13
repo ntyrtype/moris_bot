@@ -243,12 +243,19 @@ function sendNotifications() {
 
         // Format pesan berdasarkan status
         if ($status === 'Pickup') {
-            $message = "🔔 *Update Order*\n\n📌 *No Tiket:* $no_tiket\n🆔 *Order ID:* $order_id\n💰 *Transaksi:* $transaksi\n🚀 *Progress:* $progress_order\n👤 *Ditangani oleh:* $nama ($order_by)\n 📝 *Keterangan:* $keterangan";
+            if (in_array($progress_order, ['In Progress', 'Ada Kendala', 'On Eskalasi'])) {
+                $message = " Order Pending\n\n No Tiket: $no_tiket\n Order ID: $order_id\n Transaksi: $transaksi\n Progress: $progress_order\n Ditangani oleh: $nama ($order_by)\n Keterangan: $keterangan";
+            } elseif ($progress_order === 'On Rekap') {
+                $message = " Order Proses\n\n No Tiket: $no_tiket\n Order ID: $order_id\n Transaksi: $transaksi\n Progress: $progress_order\n Ditangani oleh: $nama ($order_by)\n Keterangan: $keterangan";
+            }
         } elseif ($status === 'Close') {
-            $message = "✅ *Order Selesai*\n\n📌 *No Tiket:* $no_tiket\n🆔 *Order ID:* $order_id\n💰 *Transaksi:* $transaksi\n🚀 *Progress Terakhir:* $progress_order\n👤 *Ditangani oleh:* $nama ($order_by)\n📝 *Keterangan:* $keterangan";
-        } else {
-            continue; // Jika bukan Pickup atau Close, lewati
+            if ($progress_order === 'Cancel') {
+                $message = " Order Cancelled\n\n No Tiket: $no_tiket\n Order ID: $order_id\n Transaksi: $transaksi\n Progress Terakhir: $progress_order\n Ditangani oleh: $nama ($order_by)\n Keterangan: $keterangan";
+            } elseif ($progress_order === 'Sudah PS') {
+                $message = " Order Selesai\n\n No Tiket: $no_tiket\n Order ID: $order_id\n Transaksi: $transaksi\n Progress Terakhir: $progress_order\n Ditangani oleh: $nama ($order_by)\n Keterangan: $keterangan";
+            }
         }
+        
 
         // Ambil message_id dari tabel order_messages untuk digunakan sebagai reply_to_message_id
         $stmtMessage = $pdo->prepare("SELECT message_id FROM order_messages WHERE no_tiket = ? ORDER BY id ASC LIMIT 1");
