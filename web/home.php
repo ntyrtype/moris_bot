@@ -48,7 +48,7 @@ if (!isset($_SESSION['user_id'])) {
         </div>
     </div>
     <div class="container">
-        <h1>📌 Petunjuk Penggunaan Moris Bot</h1>
+        <h1>📌 Petunjuk Penggunaan</h1>
 
         <section>
             <h2>1. Apa itu Moris Bot?</h2>
@@ -69,8 +69,10 @@ if (!isset($_SESSION['user_id'])) {
             <h2>3. Cara Menggunakan</h2>
             <p><strong>🔹 Navigasi Menu:</strong></p>
             <ul>
-                <li><strong>Dashboard</strong>: Ringkasan informasi penting.</li>
-                <li><strong>Order Management</strong>: Mengelola pesanan atau tiket layanan.</li>
+                <li><strong>Dashboard</strong>: Ringkasan informasi penting mengenai productivity dan progres order.</li>
+                <li><strong>Order</strong>: Mengelola pesanan atau tiket layanan.</li>
+                <li><strong>Pickup</strong>: Mengelola pesanan atau tiket layanan.</li>
+                <li><strong>Close</strong>: Mengelola pesanan atau tiket layanan.</li>
                 <li><strong>Laporan</strong>: Mengunduh laporan aktivitas atau transaksi.</li>
             </ul>
             <p><strong>🔹 Interaksi dengan Bot:</strong></p>

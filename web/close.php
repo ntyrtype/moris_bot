@@ -11,7 +11,8 @@ if (!isset($_SESSION['user_id'])) {
 // Query untuk mengambil data order
 $transaksi = htmlspecialchars(trim($_GET['transaksi'] ?? ''), ENT_QUOTES, 'UTF-8');
 $kategori = htmlspecialchars(trim($_GET['kategori'] ?? ''), ENT_QUOTES, 'UTF-8');
-$filter_date = htmlspecialchars(trim($_GET['filter_date'] ?? ''), ENT_QUOTES, 'UTF-8');
+$start_date = htmlspecialchars(trim($_GET['start_date'] ?? ''), ENT_QUOTES, 'UTF-8');
+$end_date = htmlspecialchars(trim($_GET['end_date'] ?? ''), ENT_QUOTES, 'UTF-8');
 $order_by = htmlspecialchars(trim($_GET['order_by'] ?? ''), ENT_QUOTES, 'UTF-8');
 
 // Query untuk mengambil data order
@@ -47,8 +48,12 @@ if ($transaksi) {
 if ($kategori) {
     $query .= " AND o.Kategori = :kategori";
 }
-if ($filter_date) {
-    $query .= " AND o.tanggal = :filter_date";
+if (!empty($start_date) && !empty($end_date)) {
+    $query .= " AND o.tanggal BETWEEN :start_date AND :end_date";
+} elseif (!empty($start_date)) {
+    $query .= " AND o.tanggal >= :start_date";
+} elseif (!empty($end_date)) {
+    $query .= " AND o.tanggal <= :end_date";
 }
 
 // Eksekusi query
@@ -64,8 +69,13 @@ if ($transaksi) {
 if ($kategori) {
     $stmt->bindParam(":kategori", $kategori, PDO::PARAM_STR);
 }
-if ($filter_date) {
-    $stmt->bindParam(":filter_date", $filter_date, PDO::PARAM_STR);
+if (!empty($start_date) && !empty($end_date)) {
+    $stmt->bindParam(":start_date", $start_date, PDO::PARAM_STR);
+    $stmt->bindParam(":end_date", $end_date, PDO::PARAM_STR);
+} elseif (!empty($start_date)) {
+    $stmt->bindParam(":start_date", $start_date, PDO::PARAM_STR);
+} elseif (!empty($end_date)) {
+    $stmt->bindParam(":end_date", $end_date, PDO::PARAM_STR);
 }
 
 $stmt->execute();
@@ -134,7 +144,13 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <option value="OLO" <?= ($kategori === 'OLO') ? 'selected' : '' ?>>OLO</option>
                 </select>
 
-                <input type="date" name="filter_date" id="filter_date" value="<?= htmlspecialchars($filter_date) ?>">
+                <div class="filter_date">
+                    <label for="start_date">Date:</label>
+                    <input type="date" name="start_date" id="start_date" value="<?= isset($_GET['start_date']) ? htmlspecialchars($_GET['start_date']) : '' ?>">
+                    <label for="end_date">to:</label>
+                    <input type="date" name="end_date" id="end_date" value="<?= isset($_GET['end_date']) ? htmlspecialchars($_GET['end_date']) : '' ?>">
+                </div>
+
                 <button type="submit">Filter</button>
             </form>
         </div>
@@ -185,7 +201,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <td>
                         <?= htmlspecialchars($order['status']) ?>
                         </td>
-                        <td>link</td>
+                        <td><a href="#" onclick="showLog('<?php echo htmlspecialchars($order['no_tiket'], ENT_QUOTES, 'UTF-8'); ?>')">Lihat Log</a></td>
                     </tr>
                     <?php $no++; ?>
                 <?php endforeach; ?>
@@ -201,12 +217,31 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     </div>
 
+    <!-- log aktifitas -->
+    <div class="modal fade" id="logModal" tabindex="-1" aria-labelledby="logModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="logModalLabel">Log Aktivitas</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="logContent">
+                <!-- Data log akan dimuat di sini -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+            </div>
+        </div>
+    </div>
+
 <script src="./js/sidebar.js"></script>
 <script src="./js/profile.js"></script>
 <script src="./js/datatable.js"></script>
 <script src="./js/showmore.js"></script>
 <script src="./js/cancel.js"></script>
 <script src="./js/download.js"></script>
+<script src="./js/log.js"></script>
 
 </body>
 </html>
