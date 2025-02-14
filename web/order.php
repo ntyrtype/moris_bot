@@ -98,7 +98,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $transaksi = htmlspecialchars(trim($_GET['transaksi'] ?? ''), ENT_QUOTES, 'UTF-8');
 $kategori = htmlspecialchars(trim($_GET['kategori'] ?? ''), ENT_QUOTES, 'UTF-8');
-$filter_date = htmlspecialchars(trim($_GET['filter_date'] ?? ''), ENT_QUOTES, 'UTF-8');
+$start_date = htmlspecialchars(trim($_GET['start_date'] ?? ''), ENT_QUOTES, 'UTF-8');
+$end_date = htmlspecialchars(trim($_GET['end_date'] ?? ''), ENT_QUOTES, 'UTF-8');
 $order_by = htmlspecialchars(trim($_GET['order_by'] ?? ''), ENT_QUOTES, 'UTF-8');
 
 // Query untuk mengambil data order
@@ -134,8 +135,12 @@ if ($transaksi) {
 if ($kategori) {
     $query .= " AND o.Kategori = :kategori";
 }
-if ($filter_date) {
-    $query .= " AND o.tanggal = :filter_date";
+if (!empty($start_date) && !empty($end_date)) {
+    $query .= " AND o.tanggal BETWEEN :start_date AND :end_date";
+} elseif (!empty($start_date)) {
+    $query .= " AND o.tanggal >= :start_date";
+} elseif (!empty($end_date)) {
+    $query .= " AND o.tanggal <= :end_date";
 }
 
 // Eksekusi query
@@ -151,8 +156,13 @@ if ($transaksi) {
 if ($kategori) {
     $stmt->bindParam(":kategori", $kategori, PDO::PARAM_STR);
 }
-if ($filter_date) {
-    $stmt->bindParam(":filter_date", $filter_date, PDO::PARAM_STR);
+if (!empty($start_date) && !empty($end_date)) {
+    $stmt->bindParam(":start_date", $start_date, PDO::PARAM_STR);
+    $stmt->bindParam(":end_date", $end_date, PDO::PARAM_STR);
+} elseif (!empty($start_date)) {
+    $stmt->bindParam(":start_date", $start_date, PDO::PARAM_STR);
+} elseif (!empty($end_date)) {
+    $stmt->bindParam(":end_date", $end_date, PDO::PARAM_STR);
 }
 
 $stmt->execute();
@@ -226,7 +236,13 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <option value="OLO" <?= ($kategori === 'OLO') ? 'selected' : '' ?>>OLO</option>
                 </select>
 
-                <input type="date" name="filter_date" id="filter_date" value="<?= htmlspecialchars($filter_date) ?>">
+                <div class="filter_date">
+                    <label for="start_date">Date:</label>
+                    <input type="date" name="start_date" id="start_date" value="<?= isset($_GET['start_date']) ? htmlspecialchars($_GET['start_date']) : '' ?>">
+                    <label for="end_date">to:</label>
+                    <input type="date" name="end_date" id="end_date" value="<?= isset($_GET['end_date']) ? htmlspecialchars($_GET['end_date']) : '' ?>">
+                </div>
+
                 <button type="submit">Filter</button>
             </form>
         </div>
