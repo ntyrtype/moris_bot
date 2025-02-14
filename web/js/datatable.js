@@ -1,8 +1,7 @@
 $(document).ready(function() {
     $('#dataTable').DataTable({
         "scrollX": true,
-        "ordering": false, // Menonaktifkan fitur sortir
-        "autoWidth": false,
+        "ordering": false,
         "columnDefs": [
             { targets: 5, width: "300px" ,className: "text-truncate" } // Tetapkan lebar kolom "Keterangan"
         ],
