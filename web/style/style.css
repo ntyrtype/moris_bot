@@ -137,31 +137,55 @@ table td {
   font-size: 14px; 
   text-align: left;
   background: #f9f9f9; 
+  max-width: 100%
+}
+table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  font-size: 14px; 
+  text-align: left;
+  background: #f9f9f9; 
+  max-width: 100%;
 }
 
-/* Pastikan kolom tidak melebar */
-td.text-container {
-  max-width: 300px; /* Lebar maksimal tetap 300px */
-  word-wrap: break-word; /* Paksa kata panjang turun ke baris berikutnya */
-  overflow-wrap: break-word; /* Pecah kata jika terlalu panjang */
-  white-space: normal; /* Pastikan teks turun ke bawah */
-  vertical-align: top; /* Tetapkan posisi agar teks tidak naik-turun */
+/* Bungkus konten dalam div agar tidak melebarkan kolom */
+.keterangan-container {
+  width: 300px; /* Batasi lebar */
+  max-width: 300px;
+  overflow: hidden;
+  word-wrap: break-word;
+  white-space: normal;
 }
 
-/* Default: tampilkan teks pendek dengan batasan */
-.short-text {
-  display: block; 
+.text-truncate {
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap; /* Biarkan teks pendek tetap dalam satu baris */
 }
 
-/* Saat teks penuh muncul, pastikan ukurannya tetap */
-.hidden-text {
-  display: none;
-  white-space: pre-line; /* Tetap pertahankan format teks */
+
+/* Pastikan kolom "Keterangan" tidak melebar */
+td.text-container {
+  max-width: 300px; /* Atur lebar maksimum */
+  overflow: hidden; /* Hindari teks memaksa td melebar */
+  white-space: normal; /* Pastikan teks turun ke bawah */
+  word-wrap: break-word; /* Biarkan kata panjang turun */
+  vertical-align: top; /* Tetapkan posisi teks ke atas */
+}
+
+/* Kontainer teks dalam cell */
+.short-text, .hidden-text {
+  max-width: 300px; /* Batasi lebar teks agar tidak melebar */
+  display: block;
   word-wrap: break-word;
   overflow-wrap: break-word;
+}
+
+/* Tambahkan scrollbar jika teks terlalu panjang */
+.hidden-text {
+  display: none;
+  overflow-y: auto; /* Tambahkan scroll hanya jika teks panjang */
+  max-height: 150px; /* Batasi tinggi teks agar tidak terlalu panjang */
 }
 
 /* Pastikan tombol tidak membuat tabel melebar */

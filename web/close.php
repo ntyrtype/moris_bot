@@ -139,7 +139,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </form>
         </div>
         <div class="table-responsive">
-            <table id="dataTable" class="display nowrap" style="width:100%">
+            <table id="dataTable" class="display" style="width:100%">
             <thead>
                 <tr>
                     <th>No</th>
@@ -165,14 +165,17 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <td><?= htmlspecialchars($order['transaksi']) ?></td>
                         <td><?= htmlspecialchars($order['tanggal']) ?></td>
                         <td class="text-container">
+                            <div>
                                 <?php
-                                $text = nl2br(htmlspecialchars($order['Keterangan']));
-                                $shortText = substr($text, 0, 80); // Ambil 80 karakter pertama
+                                    $text = nl2br(htmlspecialchars($order['Keterangan']));
+                                    $shortText = substr($text, 0, 80); // Ambil 80 karakter pertama
                                 ?>
-                                <span class="short-text"><?= $shortText ?>...</span>
-                                <span class="hidden-text" style="display: none;"><?= $text ?></span>
+                                <div class="short-text"><?= $shortText ?>...</div>
+                                <div class="hidden-text" style="display: none;"><?= $text ?></div>
                                 <button class="show-more">Show More</button>
+                            </div>
                         </td>
+
                         <td><?= htmlspecialchars($order['no_tiket']) ?></td>
                         <td>
                             <a href="https://t.me/<?= htmlspecialchars($order['username_telegram']) ?>" target="_blank">
@@ -195,6 +198,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </table>
         </div>
         <button id="downloadButton" class="download-btn">Download Excel</button>
+
     </div>
 
 <script src="./js/sidebar.js"></script>

@@ -1,6 +1,7 @@
 $(document).on('click', '.show-more', function() {
-    let shortText = $(this).prev().prev();
-    let fullText = $(this).prev();
+    let textContainer = $(this).prev();
+    let shortText = textContainer.find('.short-text');
+    let fullText = textContainer.find('.hidden-text');
 
     if (fullText.is(":hidden")) {
         shortText.hide();
@@ -11,4 +12,7 @@ $(document).on('click', '.show-more', function() {
         fullText.hide();
         $(this).text("Show More");
     }
+
+    // Pastikan DataTables tetap menyesuaikan ukuran setelah teks diperluas
+    $('#dataTable').DataTable().columns.adjust();
 });
