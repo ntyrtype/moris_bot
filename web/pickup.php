@@ -234,7 +234,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <th>Transaksi</th>
                     <th>Tanggal</th>
                     <th>Keterangan</th>
-                    <!--<th>No Tiket</th>-->
+                    <th>No Tiket</th>
                     <th>Nama</th>
                     <th>Progress</th>
                     <th>Aksi</th>
@@ -250,18 +250,16 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <td><?= htmlspecialchars($order['kategori']) ?></td>
                         <td><?= htmlspecialchars($order['transaksi']) ?></td>
                         <td><?= htmlspecialchars($order['tanggal']) ?></td>
-                        <td>
-                            <div class="text-container">
-                                <?php
+                        <td class="text-container">
+                            <?php
                                 $text = nl2br(htmlspecialchars($order['Keterangan']));
                                 $shortText = substr($text, 0, 80); // Ambil 80 karakter pertama
-                                ?>
-                                <span class="short-text"><?= $shortText ?>...</span>
-                                <span class="hidden-text" style="display: none;"><?= $text ?></span>
-                                <button class="show-more">Show More</button>
-                            </div>
+                            ?>
+                            <div class="short-text"><?= $shortText ?>...</div>
+                            <div class="hidden-text" style="display: none;"><?= $text ?></div>
+                            <button class="show-more">Show More</button>
                         </td>
-                        <!--<td><?= htmlspecialchars($order['no_tiket']) ?></td>-->
+                        <td><?= htmlspecialchars($order['no_tiket']) ?></td>
                         <td>
                             <a href="https://t.me/<?= htmlspecialchars($order['username_telegram']) ?>" target="_blank">
                                 <?= htmlspecialchars($order['nama']) ?>

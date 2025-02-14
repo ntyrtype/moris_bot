@@ -181,17 +181,14 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <td><?= htmlspecialchars($order['transaksi']) ?></td>
                         <td><?= htmlspecialchars($order['tanggal']) ?></td>
                         <td class="text-container">
-                            <div>
-                                <?php
-                                    $text = nl2br(htmlspecialchars($order['Keterangan']));
-                                    $shortText = substr($text, 0, 80); // Ambil 80 karakter pertama
-                                ?>
-                                <div class="short-text"><?= $shortText ?>...</div>
-                                <div class="hidden-text" style="display: none;"><?= $text ?></div>
-                                <button class="show-more">Show More</button>
-                            </div>
+                            <?php
+                                $text = nl2br(htmlspecialchars($order['Keterangan']));
+                                $shortText = substr($text, 0, 80); // Ambil 80 karakter pertama
+                            ?>
+                            <div class="short-text"><?= $shortText ?>...</div>
+                            <div class="hidden-text" style="display: none;"><?= $text ?></div>
+                            <button class="show-more">Show More</button>
                         </td>
-
                         <td><?= htmlspecialchars($order['no_tiket']) ?></td>
                         <td>
                             <a href="https://t.me/<?= htmlspecialchars($order['username_telegram']) ?>" target="_blank">
