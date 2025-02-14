@@ -161,7 +161,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="content" id="content">
         <div class="navbar">
             <button id="toggleSidebar">☰</button>
-            <a href="" class="home-icon"><i class="fas fa-home"></i></a>
+            <a href="home.php" class="home-icon"><i class="fas fa-home"></i></a>
             <a href="close.php?order_by=Plaza">Plasa</a>
             <p>|</p>
             <a href="close.php?order_by=Teknisi">Teknisi</a>
