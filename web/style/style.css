@@ -252,8 +252,7 @@ table tr:hover {
   align-items: center;
 }
 
-.filter select,
-.filter_date{
+.filter select, input{
   width: fit-content;
   padding: 10px;
   margin: 0px 20px 20px 10px;
@@ -266,13 +265,7 @@ table tr:hover {
   box-shadow: 0 5px 10px 0 rgba(9, 64, 88, 0.25);
   cursor: pointer;
 }
-.filter_date input{
-  background-color: #EEEEEE;
-  color: #2c3e50;
-  border: none;
-  outline: none;
-  cursor: pointer;
-}
+
 
 
 /* close */
