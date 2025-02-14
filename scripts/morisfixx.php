@@ -69,12 +69,12 @@ function handleUserMessage($user_id, $chat_id, $text, $username, $chat_type, $me
         } elseif (isset($_SESSION['state']) && $_SESSION['state'] == 'awaiting_name') {
             // Menyimpan nama yang diterima
             $_SESSION['name'] = $text;
-            sendMessage($chat_id, "Masukkan role Anda (Teknisi/Plaza):");
+            sendMessage($chat_id, "Masukkan role Anda (Teknisi/Plasa):");
             $_SESSION['state'] = 'awaiting_role';
         } elseif (isset($_SESSION['state']) && $_SESSION['state'] == 'awaiting_role') {
             // Validasi role yang dimasukkan
             $role = strtolower($text);
-            if ($role === 'teknisi' || $role === 'plaza') {
+            if ($role === 'teknisi' || $role === 'plasa') {
                 $_SESSION['role'] = ucfirst($role); // Simpan role dengan format kapital
                 
                 // Menyimpan data pengguna baru ke dalam database
@@ -94,7 +94,7 @@ function handleUserMessage($user_id, $chat_id, $text, $username, $chat_type, $me
                 unset($_SESSION['name']);
                 unset($_SESSION['role']);
             } else {
-                sendMessage($chat_id, "Role tidak valid. Masukkan role 'Teknisi' atau 'Plaza'.");
+                sendMessage($chat_id, "Role tidak valid. Masukkan role 'Teknisi' atau 'Plasa'.");
             }
         }
     } elseif ($chat_type === 'group' || $chat_type === 'supergroup') {
@@ -165,9 +165,9 @@ function handleOrder($text, $chat_id, $message_id, $user_id, $username) {
         return;
     }
 
-    // Jika user bukan Teknisi/Plaza, tolak akses
-    if (!in_array($user['role'], ['teknisi', 'plaza'])) {
-        replyMessage($chat_id, "Maaf, fitur ini hanya bisa digunakan oleh Teknisi atau Plaza. Hubungi admin untuk mendapatkan akses.", $message_id);
+    // Jika user bukan Teknisi/Plasa, tolak akses
+    if (!in_array($user['role'], ['teknisi', 'plasa'])) {
+        replyMessage($chat_id, "Maaf, fitur ini hanya bisa digunakan oleh Teknisi atau Plasa. Hubungi admin untuk mendapatkan akses.", $message_id);
         return;
     }
 
@@ -234,7 +234,7 @@ function sendNotifications() {
         $progress_order = $notification['progress_order'];
         $keterangan = !empty($notification['keterangan']) ? $notification['keterangan'] : "-"; // Jika NULL atau kosong, ubah jadi "-"
         $nama = $notification['nama']; // Nama yang menangani order
-        $order_by = $notification['order_by']; // Teknisi atau Plaza
+        $order_by = $notification['order_by']; // Teknisi atau Plasa
 
         // Format pesan berdasarkan status
         if ($status === 'Pickup') {

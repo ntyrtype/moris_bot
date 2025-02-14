@@ -162,7 +162,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="navbar">
             <button id="toggleSidebar">☰</button>
             <a href="home.php" class="home-icon"><i class="fas fa-home"></i></a>
-            <a href="close.php?order_by=Plaza">Plasa</a>
+            <a href="close.php?order_by=Plasa">Plasa</a>
             <p>|</p>
             <a href="close.php?order_by=Teknisi">Teknisi</a>
             <div class="profile-dropdown">
