@@ -214,12 +214,12 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <option value="OLO" <?= ($kategori === 'OLO') ? 'selected' : '' ?>>OLO</option>
                 </select>
 
-                <div class="filter_date">
+                <!-- <div class="filter_date"> -->
                     <label for="start_date">Date:</label>
                     <input type="date" name="start_date" id="start_date" value="<?= isset($_GET['start_date']) ? htmlspecialchars($_GET['start_date']) : '' ?>">
                     <label for="end_date">to:</label>
                     <input type="date" name="end_date" id="end_date" value="<?= isset($_GET['end_date']) ? htmlspecialchars($_GET['end_date']) : '' ?>">
-                </div>
+                <!-- </div> -->
 
                 <button type="submit">Filter</button>
             </form>
