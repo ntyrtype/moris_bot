@@ -172,9 +172,9 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="navbar">
             <button id="toggleSidebar">☰</button>
             <a href="home.php" class="home-icon"><i class="fas fa-home"></i></a>
-            <a href="close.php?order_by=Plasa">Plasa</a>
+            <a href="pickup.php?order_by=Plasa">Plasa</a>
             <p>|</p>
-            <a href="close.php?order_by=Teknisi">Teknisi</a>
+            <a href="pickup.php?order_by=Teknisi">Teknisi</a>
             <div class="profile-dropdown">
                 <button id="profileButton"><?php echo htmlspecialchars($_SESSION['nama']); ?></button>
                 <div class="profile-content" id="profileContent">
@@ -269,7 +269,6 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <td><?= htmlspecialchars($order['progress']) ?></td>
                         <td>
                             <button onclick="openModal('<?php echo htmlspecialchars($order['no_tiket'], ENT_QUOTES, 'UTF-8'); ?>')">Reply</button>
-
                         </td>
                     </tr>
                     <?php $no++; ?>
