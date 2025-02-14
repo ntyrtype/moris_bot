@@ -92,6 +92,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -154,7 +155,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </form>
         </div>
         <div class="table-responsive">
-            <table id="dataTable" class="display nowrap" style="width:100%">
+            <table id="dataTable" class="display" style="width:100%">
             <thead>
                 <tr>
                     <th>No</th>
@@ -179,17 +180,18 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <td><?= htmlspecialchars($order['kategori']) ?></td>
                         <td><?= htmlspecialchars($order['transaksi']) ?></td>
                         <td><?= htmlspecialchars($order['tanggal']) ?></td>
-                        <td>
-                            <div class="text-container">
+                        <td class="text-container">
+                            <div>
                                 <?php
-                                $text = nl2br(htmlspecialchars($order['Keterangan']));
-                                $shortText = substr($text, 0, 80); // Ambil 80 karakter pertama
+                                    $text = nl2br(htmlspecialchars($order['Keterangan']));
+                                    $shortText = substr($text, 0, 80); // Ambil 80 karakter pertama
                                 ?>
-                                <span class="short-text"><?= $shortText ?>...</span>
-                                <span class="hidden-text" style="display: none;"><?= $text ?></span>
+                                <div class="short-text"><?= $shortText ?>...</div>
+                                <div class="hidden-text" style="display: none;"><?= $text ?></div>
                                 <button class="show-more">Show More</button>
                             </div>
                         </td>
+
                         <td><?= htmlspecialchars($order['no_tiket']) ?></td>
                         <td>
                             <a href="https://t.me/<?= htmlspecialchars($order['username_telegram']) ?>" target="_blank">
@@ -211,6 +213,8 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </tbody>
         </table>
         </div>
+        <button id="downloadButton" class="download-btn">Download Excel</button>
+
     </div>
 
     <!-- log aktifitas -->
@@ -236,6 +240,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <script src="./js/datatable.js"></script>
 <script src="./js/showmore.js"></script>
 <script src="./js/cancel.js"></script>
+<script src="./js/download.js"></script>
 <script src="./js/log.js"></script>
 
 </body>

@@ -226,7 +226,7 @@ function sendNotifications() {
     $notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($notifications as $notification) {
-        $chat_id = -4712566458; // ID Telegram penerima
+        $chat_id = -4712566458; // ID Grup Telegram penerima
         $no_tiket = $notification['No_Tiket'];
         $order_id = $notification['order_id'];
         $transaksi = $notification['transaksi'];
@@ -235,11 +235,6 @@ function sendNotifications() {
         $keterangan = !empty($notification['keterangan']) ? $notification['keterangan'] : "-"; // Jika NULL atau kosong, ubah jadi "-"
         $nama = $notification['nama']; // Nama yang menangani order
         $order_by = $notification['order_by']; // Teknisi atau Plaza
-
-        // Pastikan ID Telegram valid sebelum mengirim pesan
-        if (empty($chat_id)) {
-            continue;
-        }
 
         // Format pesan berdasarkan status
         if ($status === 'Pickup') {

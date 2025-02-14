@@ -312,6 +312,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </tbody>
             </table>
         </div>
+        <button id="downloadButton" class="download-btn">Download Excel</button>
     </div>
 
 <script src="./js/sidebar.js"></script>
