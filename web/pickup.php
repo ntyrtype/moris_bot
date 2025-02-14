@@ -227,58 +227,59 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
         <div class="table-responsive">
             <table id="dataTable" class="display" style="width:100%">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Order ID</th>
-                    <th>Kategori</th>
-                    <th>Transaksi</th>
-                    <th>Tanggal</th>
-                    <th>Keterangan</th>
-                    <th>No Tiket</th>
-                    <th>Nama</th>
-                    <th>Progress</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-            <?php if (!empty($orders)): ?>
-                <?php $no = 1; ?>
-                <?php foreach ($orders as $order): ?>
+                <thead>
                     <tr>
-                        <td><?= $no ?></td>
-                        <td><?= htmlspecialchars($order['order_id']) ?></td>
-                        <td><?= htmlspecialchars($order['kategori']) ?></td>
-                        <td><?= htmlspecialchars($order['transaksi']) ?></td>
-                        <td><?= htmlspecialchars($order['tanggal']) ?></td>
-                        <td class="text-container">
-                            <?php
-                                $text = nl2br(htmlspecialchars($order['Keterangan']));
-                                $shortText = substr($text, 0, 80); // Ambil 80 karakter pertama
-                            ?>
-                            <div class="short-text"><?= $shortText ?>...</div>
-                            <div class="hidden-text" style="display: none;"><?= $text ?></div>
-                            <button class="show-more">Show More</button>
-                        </td>
-                        <td><?= htmlspecialchars($order['no_tiket']) ?></td>
-                        <td>
-                            <a href="https://t.me/<?= htmlspecialchars($order['username_telegram']) ?>" target="_blank">
-                                <?= htmlspecialchars($order['nama']) ?>
-                            </a>
-                        <td><?= htmlspecialchars($order['progress']) ?></td>
-                        <td>
-                            <button onclick="openModal('<?php echo htmlspecialchars($order['no_tiket'], ENT_QUOTES, 'UTF-8'); ?>')">Reply</button>
-                        </td>
+                        <th>No</th>
+                        <th>Order ID</th>
+                        <th>Kategori</th>
+                        <th>Transaksi</th>
+                        <th>Tanggal</th>
+                        <th>Keterangan</th>
+                        <th>No Tiket</th>
+                        <th>Nama</th>
+                        <th>Progress</th>
+                        <th>Aksi</th>
                     </tr>
-                    <?php $no++; ?>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <tr>
-                    <td colspan="9">Tidak ada data order.</td>
-                </tr>
-            <?php endif; ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    <?php if (!empty($orders)): ?>
+                        <?php $no = 1; ?>
+                        <?php foreach ($orders as $order): ?>
+                            <tr>
+                                <td><?= $no ?></td>
+                                <td><?= htmlspecialchars($order['order_id']) ?></td>
+                                <td><?= htmlspecialchars($order['kategori']) ?></td>
+                                <td><?= htmlspecialchars($order['transaksi']) ?></td>
+                                <td><?= htmlspecialchars($order['tanggal']) ?></td>
+                                <td class="text-container">
+                                    <?php
+                                        $text = nl2br(htmlspecialchars($order['Keterangan']));
+                                        $shortText = substr($text, 0, 80); // Ambil 80 karakter pertama
+                                    ?>
+                                    <div class="short-text"><?= $shortText ?>...</div>
+                                    <div class="hidden-text" style="display: none;"><?= $text ?></div>
+                                    <button class="show-more">Show More</button>
+                                </td>
+                                <td><?= htmlspecialchars($order['no_tiket']) ?></td>
+                                <td>
+                                    <a href="https://t.me/<?= htmlspecialchars($order['username_telegram']) ?>" target="_blank">
+                                        <?= htmlspecialchars($order['nama']) ?>
+                                    </a>
+                                <td><?= htmlspecialchars($order['progress']) ?></td>
+                                <td>
+                                    <button onclick="openModal('<?php echo htmlspecialchars($order['no_tiket'], ENT_QUOTES, 'UTF-8'); ?>')">Reply</button>
+                                </td>
+                            </tr>
+                            <?php $no++; ?>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="9">Tidak ada data order.</td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
         <button id="downloadButton" class="download-btn">Download Excel</button>
     </div>
 
