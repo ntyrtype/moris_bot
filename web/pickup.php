@@ -225,7 +225,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </form>
         </div>
         <div class="table-responsive">
-            <table id="dataTable" class="display nowrap" style="width:100%">
+            <table id="dataTable" class="display" style="width:100%">
             <thead>
                 <tr>
                     <th>No</th>
@@ -278,6 +278,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <?php endif; ?>
             </tbody>
         </table>
+        <button id="downloadButton" class="download-btn">Download Excel</button>
     </div>
 
     <div id="modal" class="modal">
@@ -301,7 +302,6 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <button type="submit" class="btn_close">Submit</button>
             </form>
         </div>
-        <button id="downloadButton" class="download-btn">Download Excel</button>
     </div>
 
 <script src="./js/sidebar.js"></script>
@@ -309,6 +309,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <script src="./js/datatable.js"></script>
 <script src="./js/showmore.js"></script>
 <script src="./js/keterangan.js"></script>
+<script src="./js/download.js"></script>
 
 </body>
 </html>

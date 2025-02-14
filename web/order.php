@@ -247,7 +247,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </form>
         </div>
         <div class="table-responsive">
-            <table id="dataTable" class="display nowrap" style="width:100%">
+            <table id="dataTable" class="display" style="width:100%">
                 <thead>
                     <tr>
                         <th>No</th>
@@ -318,6 +318,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <script src="./js/datatable.js"></script>
 <script src="./js/showmore.js"></script>
 <script src="./js/cancel.js"></script>
+<script src="./js/download.js"></script>
 
 </body>
 </html>
