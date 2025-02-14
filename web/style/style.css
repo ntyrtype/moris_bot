@@ -138,6 +138,41 @@ table td {
   text-align: left;
   background: #f9f9f9; 
 }
+
+/* Pastikan kolom tidak melebar */
+td.text-container {
+  max-width: 300px; /* Lebar maksimal tetap 300px */
+  word-wrap: break-word; /* Paksa kata panjang turun ke baris berikutnya */
+  overflow-wrap: break-word; /* Pecah kata jika terlalu panjang */
+  white-space: normal; /* Pastikan teks turun ke bawah */
+  vertical-align: top; /* Tetapkan posisi agar teks tidak naik-turun */
+}
+
+/* Default: tampilkan teks pendek dengan batasan */
+.short-text {
+  display: block; 
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; /* Biarkan teks pendek tetap dalam satu baris */
+}
+
+/* Saat teks penuh muncul, pastikan ukurannya tetap */
+.hidden-text {
+  display: none;
+  white-space: pre-line; /* Tetap pertahankan format teks */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Pastikan tombol tidak membuat tabel melebar */
+.show-more {
+  display: block;
+  width: fit-content; /* Ukuran tombol mengikuti teks */
+  margin-top: 5px; /* Beri jarak agar tidak terlalu dekat */
+}
+
+
+
 /* 
 table tr:nth-child(even) {
   background: #f1f1f1; 
