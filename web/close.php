@@ -126,6 +126,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <h1 class="headtitle">Close Menu</h1>
         <div class="filter">
             <form action="" method="GET">
+            <input type="hidden" name="order_by" value="<?= htmlspecialchars($order_by) ?>">
                 <select aria-label="transaksi" name="transaksi" id="transaksi">
                     <option value="">All Transaksi</option>
                     <option value="PDA" <?= ($transaksi === 'PDA') ? 'selected' : '' ?>>PDA</option>
