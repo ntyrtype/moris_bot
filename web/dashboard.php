@@ -98,21 +98,6 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
         </div>
     </div>
     <h1 class="headtitle">Dashboard</h1>
-    <!-- Kartu Statistik -->
-    <div class="stats">
-        <div class="card_order">
-            <h3>Total Order</h3>
-            <p class="record-count"></p>
-        </div>
-        <div class="card_pickup">
-            <h3>Total Pickup</h3>
-            <p class="record-count"></p>
-        </div>
-        <div class="card_close">
-            <h3>Total Close</h3>
-            <p class="record-count"></p>
-        </div>
-    </div>
     <!-- Filter -->
     <div class="filter">
         <form action="" method="GET">
@@ -136,19 +121,33 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
             </select>
 
             <!-- <div class="filter_date"> -->
-                <label for="start_date">Date:</label>
-                <input type="date" name="start_date" id="start_date" value="<?= isset($_GET['start_date']) ? htmlspecialchars($_GET['start_date']) : '' ?>">
-                <label for="end_date">to:</label>
-                <input type="date" name="end_date" id="end_date" value="<?= isset($_GET['end_date']) ? htmlspecialchars($_GET['end_date']) : '' ?>">
+            <label for="start_date">Date:</label>
+            <input type="date" name="start_date" id="start_date" value="<?= isset($_GET['start_date']) ? htmlspecialchars($_GET['start_date']) : '' ?>">
+            <label for="end_date">to:</label>
+            <input type="date" name="end_date" id="end_date" value="<?= isset($_GET['end_date']) ? htmlspecialchars($_GET['end_date']) : '' ?>">
             <!-- </div> -->
 
             <button type="submit">Filter</button>
         </form>
     </div>
+    <!-- Kartu Statistik -->
+    <div class="stats">
+        <div class="card_order">
+            <h3>Total Order</h3>
+            <p class="record-count"></p>
+        </div>
+        <div class="card_pickup">
+            <h3>Total Pickup</h3>
+            <p class="record-count"></p>
+        </div>
+        <div class="card_close">
+            <h3>Total Close</h3>
+            <p class="record-count"></p>
+        </div>
+    </div>
     <!-- Tabel dan Grafik -->
     <div class="dashboard-content">
         <div class="table-container">
-            <h2>Produktifitas by Nama</h2>
             <table id="productivityTable">
                 <thead>
                     <tr>
@@ -168,19 +167,9 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
         </div>
     <!-- Grafik Progress by Tanggal -->
     <div class="chart-container">
-        <h2>Progres Tren</h2>
         <canvas id="progressChart"></canvas>
-    </div>
-
-        <div class="chart-container">
-            <h2>Produktifitas Kategori</h2>
-            <canvas id="categoryChart"></canvas>
-        </div>
-
-        <div class="chart-container">
-            <h2>Progres</h2>
-            <canvas id="progressTypeChart"></canvas>
-        </div>
+        <canvas id="categoryChart"></canvas>
+        <canvas id="progressTypeChart"></canvas>
     </div>
 </div>
 
