@@ -105,7 +105,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     <h1 class="headtitle">Dashboard</h1>
     <!-- Filter -->
     <div class="filter">
-        <form action="" method="GET">
+        <form action="" id="filterForm" method="GET">
         <input type="hidden" name="order_by" value="<?= htmlspecialchars($order_by) ?>">
             <select aria-label="transaksi" name="transaksi" id="transaksi">
                 <option value="">All Transaksi</option>

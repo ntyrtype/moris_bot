@@ -8,7 +8,7 @@ $(document).ready(function() {
     fetchData();
 
     // Event listener for filter form submission
-    $('form').on('submit', function(e) {
+    $('#filterForm').on('submit', function(e) {
         e.preventDefault(); // Prevent form from submitting the traditional way
         fetchData();
     });
