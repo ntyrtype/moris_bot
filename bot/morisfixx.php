@@ -165,7 +165,7 @@ function handleOrder($text, $chat_id, $message_id, $user_id, $username) {
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$user) {
-        replyMessage($chat_id, "User tidak ditemukan dalam database.", $message_id);
+        replyMessage($chat_id, "User tidak ditemukan dalam database. Daftarkan anda terlebih dahulu", $message_id);
         return;
     }
 
@@ -209,7 +209,7 @@ function handleOrder($text, $chat_id, $message_id, $user_id, $username) {
 
         $pdo->commit();
 
-        replyMessage($chat_id, "Hallo $nama. Permintaan Anda $wonum $transaksi $kategori sedang kami dengan no tiket $no_tiket.", $message_id);
+        replyMessage($chat_id, "Hallo $nama. Permintaan Anda $wonum $transaksi $kategori dengan no tiket $no_tiket sedang kami check, silahkan tunggu.", $message_id);
     } catch (Exception $e) {
         $pdo->rollBack();
         replyMessage($chat_id, "Terjadi kesalahan saat menyimpan order. Coba lagi nanti.\n\nError: " . $e->getMessage(), $message_id);
