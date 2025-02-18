@@ -63,6 +63,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./style/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <title>Dashboard</title>
 </head>
@@ -96,30 +97,89 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
         </div>
     </div>
     <h1 class="headtitle">Dashboard</h1>
-
-    <div class="dashboard-container">
+    <!-- Kartu Statistik -->
+    <div class="stats">
         <div class="card_order">
-            <h2>Order</h2>
-            <p id="order_count"><?= $order_count ?> Order</p>
+            <h3>Total Order</h3>
+            <p class="record-count"></p>
         </div>
         <div class="card_pickup">
-            <h2>Pickup</h2>
-            <p id="pickup_count"><?= $pickup_count ?> Pickup</p>
+            <h3>Total Pickup</h3>
+            <p class="record-count"></p>
         </div>
         <div class="card_close">
-            <h2>Close</h2>
-            <p id="close_count"><?= $close_count ?> Close</p>
+            <h3>Total Close</h3>
+            <p class="record-count"></p>
         </div>
     </div>
+    <!-- Filter -->
+    <div class="filter">
+        <form action="" method="GET">
+        <input type="hidden" name="order_by" value="<?= htmlspecialchars($order_by) ?>">
+            <select aria-label="transaksi" name="transaksi" id="transaksi">
+                <option value="">All Transaksi</option>
+                <option value="PDA">PDA</option>
+                <option value="MO">MO</option>
+                <option value="ORBIT">ORBIT</option>
+                <option value="FFG">FFG</option>
+                <option value="UNSPEk">UNSPEK</option>
+            </select>
 
-    <div class="filter-container">
-        <label for="filter_date">Filter Date:</label>
-        <input type="date" id="filter_date" value="<?php echo date('Y-m-d'); ?>">
-        <button id="filter">Filter</button>
+            <select aria-label="kategori" name="kategori" id="kategori">
+                <option value="">All Kategori</option>
+                <option value="Indibiz">Indibiz</option>
+                <option value="Indihome">Indihome</option>
+                <option value="Datin">Datin</option>
+                <option value="WMS">WMS</option>
+                <option value="OLO">OLO</option>
+            </select>
+
+            <!-- <div class="filter_date"> -->
+                <label for="start_date">Date:</label>
+                <input type="date" name="start_date" id="start_date" value="<?= isset($_GET['start_date']) ? htmlspecialchars($_GET['start_date']) : '' ?>">
+                <label for="end_date">to:</label>
+                <input type="date" name="end_date" id="end_date" value="<?= isset($_GET['end_date']) ? htmlspecialchars($_GET['end_date']) : '' ?>">
+            <!-- </div> -->
+
+            <button type="submit">Filter</button>
+        </form>
+    </div>
+    <!-- Tabel dan Grafik -->
+    <div class="dashboard-content">
+        <div class="table-container">
+            <h2>Produktifitas by Nama</h2>
+            <table id="productivityTable">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama</th>
+                        <th>Record Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    <!-- Grafik Progress by Tanggal -->
+    <div class="chart-container">
+        <h2>Progres Tren</h2>
+        <canvas id="progressChart"></canvas>
     </div>
 
-    <div id="transaksi_table">
-        <!-- Table for transaksi data will be inserted here by JavaScript -->
+        <div class="chart-container">
+            <h2>Produktifitas Kategori</h2>
+            <canvas id="categoryChart"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <h2>Progres</h2>
+            <canvas id="progressTypeChart"></canvas>
+        </div>
     </div>
 </div>
 

@@ -375,8 +375,17 @@ button:hover {
   margin-top: 20px;
 }
 
+/* ----- Kartu Statistik ----- */
+.stats {
+  display: flex;
+  justify-content: center;
+  margin: 20px;
+  margin-bottom: 50px;
+  gap: 20px;
+}
+
 .card_order, .card_pickup, .card_close {
-  width: 200px;
+  width: 150px;
   padding: 20px;
   border-radius: 10px;
   text-align: center;
@@ -388,24 +397,79 @@ button:hover {
 }
 
 .card_order {
-  background-color: #f39c12; /* Orange */
+  background-color: #f39c12;
 }
 
 .card_pickup {
-  background-color: #3498db; /* Blue */
+  background-color: #3498db;
 }
 
 .card_close {
   background-color: #B82132;
 }
 
-.filter-container {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 20px;
-  justify-content: center
+.card_order:hover, .card_pickup:hover, .card_close:hover {
+  transform: translateY(-5px);
 }
+
+.card h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.record-count {
+  font-size: 32px;
+  font-weight: bold;
+}
+
+/* ----- Grafik ----- */
+canvas {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin: 10px;
+}
+
+/* ----- Dashboard Content (Tabel & Grafik) ----- */
+.dashboard-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin: 10px;
+}
+
+.table-container, .chart-container {
+  flex: content;
+  min-width: 300px;
+  background: white;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* ----- Tabel Produktifitas ----- */
+#productivityTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+#productivityTable thead {
+  background: #0099ff;
+  color: white;
+}
+
+#productivityTable th, #productivityTable td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+#productivityTable tbody tr:hover {
+  background: #f1f1f1;
+}
+
 
 /* home */
 .container {
