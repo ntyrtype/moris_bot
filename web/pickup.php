@@ -174,9 +174,6 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="navbar">
             <button id="toggleSidebar">☰</button>
             <a href="home.php" class="home-icon"><i class="fas fa-home"></i></a>
-            <!-- <a href="pickup.php?order_by=Plasa">Plasa</a>
-            <p>|</p>
-            <a href="pickup.php?order_by=Teknisi">Teknisi</a> -->
             <div class="profile-dropdown">
                 <button id="profileButton"><?php echo htmlspecialchars($_SESSION['nama']); ?></button>
                 <div class="profile-content" id="profileContent">
@@ -198,12 +195,12 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <?php endif; ?>
         <div class="filter">
             <form action="" method="GET">
-                <select aria-label="transaksi" name="transaksi" id="transaksi">
+                <select aria-label="order_by" name="order_by" id="order_by">
                     <option value="">All</option>
-                    <option value="PLASA">PLASA</option>
-                    <option value="TEKNISI">TEKNISI</option>
-                    <option value="OLO">OLO</option>
+                    <option value="Plasa" <?= ($order_by === 'Plasa') ? 'selected' : '' ?>>PLASA</option>
+                    <option value="Teknisi" <?= ($order_by === 'Teknisi') ? 'selected' : '' ?>>TEKNISI</option>
                 </select>
+
                 <select aria-label="transaksi" name="transaksi" id="transaksi">
                     <option value="">All Transaksi</option>
                     <option value="PDA" <?= ($transaksi === 'PDA') ? 'selected' : '' ?>>PDA</option>
@@ -215,11 +212,13 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                 <select aria-label="kategori" name="kategori" id="kategori">
                     <option value="">All Kategori</option>
-                    <option value="Indibiz" <?= ($kategori === 'Indibiz') ? 'selected' : '' ?>>Indibiz</option>
-                    <option value="Indihome" <?= ($kategori === 'Indihome') ? 'selected' : '' ?>>Indihome</option>
-                    <option value="Datin" <?= ($kategori === 'Datin') ? 'selected' : '' ?>>Datin</option>
-                    <option value="WMS" <?= ($kategori === 'WMS') ? 'selected' : '' ?>>WMS</option>
-                    <option value="OLO" <?= ($kategori === 'OLO') ? 'selected' : '' ?>>OLO</option>
+                    <option value="Indibiz">Indibiz</option>
+                    <option value="Indihome">Indihome</option>
+                    <option value="Wifiid">Wifi.id</option>
+                    <option value="Astinet">Astinet</option>
+                    <option value="Metro">Metro</option>
+                    <option value="VPNIP">VPNIP</option>
+                    <option value="OLO">OLO</option>
                 </select>
 
                 <!-- <div class="filter_date"> -->

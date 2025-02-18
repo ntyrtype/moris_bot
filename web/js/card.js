@@ -14,6 +14,7 @@ $(document).ready(function() {
     });
 
     function fetchData() {
+        let order_by = $('#order_by').val();
         let transaksi = $('#transaksi').val();
         let kategori = $('#kategori').val();
         let start_date = $('#start_date').val();
@@ -24,6 +25,7 @@ $(document).ready(function() {
             type: "GET",
             data: {
                 ajax: "true",
+                order_by: order_by,
                 transaksi: transaksi,
                 kategori: kategori,
                 start_date: start_date,

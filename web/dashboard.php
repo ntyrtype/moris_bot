@@ -7,6 +7,7 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: index.php");
     exit();
 }
+
 $order_count = 0;
 $pickup_count = 0;
 $close_count = 0;
@@ -14,12 +15,17 @@ $close_count = 0;
 if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     header("Content-Type: application/json");
 
-    $transaksi = $_GET['transaksi'] ?? '';
-    $kategori = $_GET['kategori'] ?? '';
-    $start_date = $_GET['start_date'] ?? '';
-    $end_date = $_GET['end_date'] ?? '';
+    $transaksi = htmlspecialchars(trim($_GET['transaksi'] ?? ''), ENT_QUOTES, 'UTF-8');
+    $kategori = htmlspecialchars(trim($_GET['kategori'] ?? ''), ENT_QUOTES, 'UTF-8');
+    $start_date = htmlspecialchars(trim($_GET['start_date'] ?? ''), ENT_QUOTES, 'UTF-8');
+    $end_date = htmlspecialchars(trim($_GET['end_date'] ?? ''), ENT_QUOTES, 'UTF-8');
+    $order_by = htmlspecialchars(trim($_GET['order_by'] ?? ''), ENT_QUOTES, 'UTF-8');
 
     $sql = "SELECT Status, COUNT(*) AS jumlah FROM orders WHERE 1=1";
+
+    if (!empty($order_by)) {
+        $sql .= " AND order_by = :order_by";
+    }
 
     if (!empty($transaksi)) {
         $sql .= " AND transaksi = :transaksi";
@@ -35,6 +41,9 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
 
     $stmt = $pdo->prepare($sql);
 
+    if (!empty($order_by)) {
+        $stmt->bindParam(":order_by", $order_by);
+    }
     if (!empty($transaksi)) {
         $stmt->bindParam(':transaksi', $transaksi);
     }
@@ -58,8 +67,6 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     ]);
     exit();
 }
-
-
 ?>
 
 <!DOCTYPE html>
@@ -103,11 +110,10 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     <!-- Filter -->
     <div class="filter">
         <form action="" id="filterForm" method="GET">
-            <select aria-label="transaksi" name="transaksi" id="transaksi">
+            <select aria-label="order_by" name="order_by" id="order_by">
                 <option value="">All</option>
-                <option value="PLASA">PLASA</option>
-                <option value="TEKNISI">TEKNISI</option>
-                <option value="OLO">OLO</option>
+                <option value="Plasa" <?= (isset($order_by) && $order_by === 'Plasa') ? 'selected' : '' ?>>PLASA</option>
+                <option value="Teknisi" <?= (isset($order_by) && $order_by === 'Teknisi') ? 'selected' : '' ?>>TEKNISI</option>
             </select>
             <select aria-label="transaksi" name="transaksi" id="transaksi">
                 <option value="">All Transaksi</option>
@@ -122,8 +128,10 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
                 <option value="">All Kategori</option>
                 <option value="Indibiz">Indibiz</option>
                 <option value="Indihome">Indihome</option>
-                <option value="Datin">Datin</option>
-                <option value="WMS">WMS</option>
+                <option value="Wifiid">Wifi.id</option>
+                <option value="Astinet">Astinet</option>
+                <option value="Metro">Metro</option>
+                <option value="VPNIP">VPNIP</option>
                 <option value="OLO">OLO</option>
             </select>
 

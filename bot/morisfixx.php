@@ -114,7 +114,11 @@ function sendHelpMessage($chat_id, $message_id) {
                 . "\nKategori:"
                 . "\n- INDIHOME"
                 . "\n- INDIBIZ"
-                . "\n- DATIN"
+                . "\n- Wifiid"
+                . "\n- Astinet"
+                . "\n- Metro"
+                . "\n- VPNIP"
+                . "\n- OLO"
                 . "\n\nJenis Transaksi:"
                 . "\n- PDA"
                 . "\n- MO"
@@ -136,7 +140,7 @@ function handleOrder($text, $chat_id, $message_id, $user_id, $username) {
     global $pdo;
 
     // Perbaikan regex agar sesuai format
-    preg_match("/^\/moban #(INDIHOME|INDIBIZ|DATIN|WMS|OLO) #([A-Z0-9]+) #([A-Z0-9]+) #([\s\S]+)/i", $text, $matches);
+    preg_match("/^\/moban #(INDIHOME|INDIBIZ|Wifiid|Astinet|Metro|VPNIP|WMS|OLO) #([A-Z0-9]+) #([A-Z0-9]+) #([\s\S]+)/i", $text, $matches);
 
     if (count($matches) !== 5) {
         $message = "Format Order Tidak Valid!\n\n";
