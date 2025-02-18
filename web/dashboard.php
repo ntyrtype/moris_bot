@@ -14,46 +14,51 @@ $close_count = 0;
 if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     header("Content-Type: application/json");
 
-    $filter_date = $_GET['filter_date'] ?? '';
+    $transaksi = $_GET['transaksi'] ?? '';
+    $kategori = $_GET['kategori'] ?? '';
+    $start_date = $_GET['start_date'] ?? '';
+    $end_date = $_GET['end_date'] ?? '';
 
     $sql = "SELECT Status, COUNT(*) AS jumlah FROM orders WHERE 1=1";
-    $sql_transaksi = "SELECT transaksi, Status, COUNT(*) AS jumlah FROM orders WHERE 1=1";
 
-    if (!empty($filter_date)) {
-        $sql .= " AND DATE(tanggal) = :filter_date";
-        $sql_transaksi .= " AND DATE(tanggal) = :filter_date";
+    if (!empty($transaksi)) {
+        $sql .= " AND transaksi = :transaksi";
+    }
+    if (!empty($kategori)) {
+        $sql .= " AND kategori = :kategori";
+    }
+    if (!empty($start_date) && !empty($end_date)) {
+        $sql .= " AND DATE(tanggal) BETWEEN :start_date AND :end_date";
     }
 
     $sql .= " GROUP BY Status";
-    $sql_transaksi .= " GROUP BY transaksi, Status";
 
     $stmt = $pdo->prepare($sql);
-    $stmt_transaksi = $pdo->prepare($sql_transaksi);
 
-    if (!empty($filter_date)) {
-        $stmt->bindParam(':filter_date', $filter_date);
-        $stmt_transaksi->bindParam(':filter_date', $filter_date);
+    if (!empty($transaksi)) {
+        $stmt->bindParam(':transaksi', $transaksi);
+    }
+    if (!empty($kategori)) {
+        $stmt->bindParam(':kategori', $kategori);
+    }
+    if (!empty($start_date) && !empty($end_date)) {
+        $stmt->bindParam(':start_date', $start_date);
+        $stmt->bindParam(':end_date', $end_date);
     }
 
     $stmt->execute();
-    $stmt_transaksi->execute();
 
     $orders_count = [];
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $orders_count[$row['Status']] = $row['jumlah'];
     }
 
-    $transaksi_count = [];
-    while ($row = $stmt_transaksi->fetch(PDO::FETCH_ASSOC)) {
-        $transaksi_count[$row['transaksi']][$row['Status']] = $row['jumlah'];
-    }
-
     echo json_encode([
-        'orders_count' => $orders_count,
-        'transaksi_count' => $transaksi_count
+        'orders_count' => $orders_count
     ]);
     exit();
 }
+
 
 ?>
 
@@ -89,7 +94,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
             <button id="profileButton"><?php echo htmlspecialchars($_SESSION['nama']); ?></button>
             <div class="profile-content" id="profileContent">
                 <?php if ($_SESSION['role'] === 'admin'): ?>
-                    <a href="add_user.php">Tambah User</a>
+                <a href="add_user.php">Tambah User</a>
                 <?php endif; ?>
                 <form action="logout.php" method="POST">
                     <button type="submit" class="logout-btn" style="width: 100%; border: none; background: none; text-align: left;">Logout</button>
@@ -134,42 +139,45 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     <div class="stats">
         <div class="card_order">
             <h3>Total Order</h3>
-            <p class="record-count"></p>
+            <p class="record-count" id="order_count">0</p>
         </div>
         <div class="card_pickup">
             <h3>Total Pickup</h3>
-            <p class="record-count"></p>
+            <p class="record-count" id="pickup_count">0</p>
         </div>
         <div class="card_close">
             <h3>Total Close</h3>
-            <p class="record-count"></p>
+            <p class="record-count" id="close_count">0</p>
         </div>
     </div>
     <!-- Tabel dan Grafik -->
     <div class="dashboard-content">
-        <div class="table-container">
-            <table id="productivityTable">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Nama</th>
-                        <th>Record Count</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    <!-- Grafik Progress by Tanggal -->
-    <div class="chart-container">
-        <canvas id="progressChart"></canvas>
-        <canvas id="categoryChart"></canvas>
-        <canvas id="progressTypeChart"></canvas>
+        <?php if ($_SESSION['role'] === 'admin'): ?>
+            <div class="table-container">
+                <table id="productivityTable">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama</th>
+                            <th>Record Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Grafik Progress by Tanggal -->
+            <div class="chart-container">
+                <canvas id="progressChart"></canvas>
+                <canvas id="categoryChart"></canvas>
+                <canvas id="progressTypeChart"></canvas>
+            </div>
+        <?php endif; ?>
     </div>
 </div>
 
