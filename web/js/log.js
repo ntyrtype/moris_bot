@@ -1,29 +1,35 @@
 function showLog(noTiket) {
-    let logContent = document.getElementById("logContent");
-    logContent.innerHTML = "<p>Loading...</p>";
+    console.log("Tombol Lihat Log diklik. No Tiket:", noTiket);
 
-    fetch("get_log.php?no_tiket=" + encodeURIComponent(noTiket))
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                logContent.innerHTML = "<p style='color:red'>" + data.error + "</p>";
-            } else if (data.message) {
-                logContent.innerHTML = "<p>" + data.message + "</p>";
-            } else {
-                let logHTML = "<ul>";
-                data.forEach(log => {
-                    logHTML += `<li>${log.log_aktivitas} <br><small><i>${log.waktu_log}</i></small></li>`;
+    $.ajax({
+        url: 'get_log.php',
+        type: 'GET',
+        data: { no_tiket: noTiket },
+        success: function(response) {
+            console.log("Response dari server:", response);
+
+            try {
+                var logs = response;
+                var logContent = '';
+
+                logs.forEach(function(log) {
+                    logContent += '<p><strong>Waktu:</strong> ' + log.waktu + '</p>';
+                    logContent += '<p><strong>Status:</strong> ' + log.status + '</p>';
+                    logContent += '<p><strong>Progress Order:</strong> ' + log.progress_order + '</p>';
+                    logContent += '<p><strong>Keterangan:</strong> ' + log.keterangan + '</p>';
+                    logContent += '<p><strong>Nama:</strong> ' + log.nama + '</p>';
+                    logContent += '<p><strong>Role:</strong> ' + log.role + '</p>';
+                    logContent += '<hr>';
                 });
-                logHTML += "</ul>";
-                logContent.innerHTML = logHTML;
-            }
 
-            // Tampilkan modal Bootstrap
-            let myModal = new bootstrap.Modal(document.getElementById("logModal"));
-            myModal.show();
-        })
-        .catch(error => {
-            logContent.innerHTML = "<p style='color:red'>Terjadi kesalahan saat mengambil data.</p>";
-            console.error("Error:", error);
-        });
+                $('#logContent').html(logContent);
+                $('#logModal').modal('show'); // Tampilkan modal
+            } catch (e) {
+                console.error("Error parsing JSON:", e);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching log data:', error);
+        }
+    });
 }

@@ -90,6 +90,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="./style/style.css">
     <title>Close</title>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
@@ -219,20 +220,21 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="modal fade" id="logModal" tabindex="-1" aria-labelledby="logModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="logModalLabel">Log Aktivitas</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" id="logContent">
-                <!-- Data log akan dimuat di sini -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-            </div>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logModalLabel">Log Aktivitas</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="logContent">
+                    <!-- Data log akan dimuat di sini -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                </div>
             </div>
         </div>
     </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="./js/sidebar.js"></script>
 <script src="./js/profile.js"></script>
 <script src="./js/datatable.js"></script>
