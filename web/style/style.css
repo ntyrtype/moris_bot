@@ -118,7 +118,6 @@ table {
   width: 100%;
   table-layout: fixed;
   border-collapse: collapse;
-  margin: 10px;
   white-space: nowrap; 
 }
 
@@ -441,7 +440,7 @@ canvas {
 
 .table-container, .chart-container {
   flex: content;
-  min-width: 300px;
+  width: 100%;
   background: white;
   padding: 10px;
   border-radius: 10px;
@@ -452,7 +451,7 @@ canvas {
 #productivityTable {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
+  padding: 10px;
 }
 
 #productivityTable thead {
@@ -461,6 +460,7 @@ canvas {
 }
 
 #productivityTable th, #productivityTable td {
+  margin: 10px;
   padding: 10px;
   text-align: left;
   border-bottom: 1px solid #ddd;
