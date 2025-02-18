@@ -87,9 +87,6 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     <div class="navbar">
         <button id="toggleSidebar">☰</button>
         <a href="home.php" class="home-icon"><i class="fas fa-home"></i></a>
-        <a href="">Plasa</a>
-        <p>|</p>
-        <a href="">Teknisi</a>
         <div class="profile-dropdown">
             <button id="profileButton"><?php echo htmlspecialchars($_SESSION['nama']); ?></button>
             <div class="profile-content" id="profileContent">
@@ -106,7 +103,12 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     <!-- Filter -->
     <div class="filter">
         <form action="" id="filterForm" method="GET">
-        <input type="hidden" name="order_by" value="<?= htmlspecialchars($order_by) ?>">
+            <select aria-label="transaksi" name="transaksi" id="transaksi">
+                <option value="">All</option>
+                <option value="PLASA">PLASA</option>
+                <option value="TEKNISI">TEKNISI</option>
+                <option value="OLO">OLO</option>
+            </select>
             <select aria-label="transaksi" name="transaksi" id="transaksi">
                 <option value="">All Transaksi</option>
                 <option value="PDA">PDA</option>

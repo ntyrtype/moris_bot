@@ -221,6 +221,12 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="filter">
             <form action="" method="GET">
                 <select aria-label="transaksi" name="transaksi" id="transaksi">
+                    <option value="">All</option>
+                    <option value="PLASA">PLASA</option>
+                    <option value="TEKNISI">TEKNISI</option>
+                    <option value="OLO">OLO</option>
+                </select>
+                <select aria-label="transaksi" name="transaksi" id="transaksi">
                     <option value="">All Transaksi</option>
                     <option value="PDA" <?= ($transaksi === 'PDA') ? 'selected' : '' ?>>PDA</option>
                     <option value="MO" <?= ($transaksi === 'MO') ? 'selected' : '' ?>>MO</option>

@@ -33,9 +33,9 @@ $(document).ready(function() {
                 console.log(response); // Debugging to see the received data
 
                 // Update order, pickup, and close counts
-                $('#order_count').text((response.orders_count.Order || 0) + " Order");
-                $('#pickup_count').text((response.orders_count.Pickup || 0) + " Pickup");
-                $('#close_count').text((response.orders_count.Close || 0) + " Close");
+                $('#order_count').text((response.orders_count.Order || 0));
+                $('#pickup_count').text((response.orders_count.Pickup || 0));
+                $('#close_count').text((response.orders_count.Close || 0));
             },
             error: function() {
                 alert("Terjadi kesalahan saat mengambil data.");

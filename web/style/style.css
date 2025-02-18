@@ -385,7 +385,7 @@ button:hover {
 
 .card_order, .card_pickup, .card_close {
   width: 150px;
-  padding: 20px;
+  padding: 15px;
   border-radius: 10px;
   text-align: center;
   color: white;
@@ -411,14 +411,20 @@ button:hover {
   transform: translateY(-5px);
 }
 
-.card h3 {
-  font-size: 18px;
-  margin-bottom: 10px;
+.card_order h3,
+.card_pickup h3,
+.card_close h3 {
+    display: block;
+    font-size: 1.17em;
+    margin: 5px;
+    font-weight: bold;
+    unicode-bidi: isolate;
 }
 
 .record-count {
   font-size: 32px;
   font-weight: bold;
+  margin: 5px;
 }
 
 /* ----- Grafik ----- */

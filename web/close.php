@@ -110,9 +110,9 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="navbar">
             <button id="toggleSidebar">☰</button>
             <a href="home.php" class="home-icon"><i class="fas fa-home"></i></a>
-            <a href="close.php?order_by=Plasa">Plasa</a>
+            <!-- <a href="close.php?order_by=Plasa">Plasa</a>
             <p>|</p>
-            <a href="close.php?order_by=Teknisi">Teknisi</a>
+            <a href="close.php?order_by=Teknisi">Teknisi</a> -->
             <div class="profile-dropdown">
                 <button id="profileButton"><?php echo htmlspecialchars($_SESSION['nama']); ?></button>
                 <div class="profile-content" id="profileContent">
@@ -129,6 +129,12 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="filter">
             <form action="" method="GET">
             <input type="hidden" name="order_by" value="<?= htmlspecialchars($order_by) ?>">
+                <select aria-label="transaksi" name="transaksi" id="transaksi">
+                    <option value="">All</option>
+                    <option value="PLASA">PLASA</option>
+                    <option value="TEKNISI">TEKNISI</option>
+                    <option value="OLO">OLO</option>
+                </select>
                 <select aria-label="transaksi" name="transaksi" id="transaksi">
                     <option value="">All Transaksi</option>
                     <option value="PDA" <?= ($transaksi === 'PDA') ? 'selected' : '' ?>>PDA</option>
