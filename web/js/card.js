@@ -1,8 +1,8 @@
 $(document).ready(function() {
     // Set default date to today
-    let today = new Date().toISOString().split('T')[0];
-    $('#start_date').val(today);
-    $('#end_date').val(today);
+    // let today = new Date().toISOString().split('T')[0];
+    // $('#start_date').val(today);
+    // $('#end_date').val(today);
 
     // Trigger the filter automatically when the page loads
     fetchData();
