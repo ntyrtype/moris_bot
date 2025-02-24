@@ -1,54 +1,88 @@
-$(document).ready(function() {
-    // Ambil data dari PHP (AJAX request)
-    $.getJSON("", function(data) {
-        let labels = [];
-        let values = [];
+document.addEventListener("DOMContentLoaded", function () {
+    fetch("../web/dashboard.php")
+        .then(response => response.json())
+        .then(data => {
+            console.log("Data diterima:", data); // Debugging
 
-        data.forEach(item => {
-            labels.push(item.kategori);
-            values.push(item.total);
-        });
-
-        // **1️⃣ Tampilkan grafik batang (Bar Chart)**
-        let ctx1 = document.getElementById("categoryChart").getContext("2d");
-        new Chart(ctx1, {
-            type: "bar",
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: "Kategori",
-                    data: values,
-                    backgroundColor: "blue"
-                }]
-            }
-        });
-
-        // **2️⃣ Tampilkan Pie Chart (Jenis Progres)**
-        let ctx2 = document.getElementById("progressTypeChart").getContext("2d");
-        new Chart(ctx2, {
-            type: "pie",
-            data: {
-                labels: ["In Progress", "On Rekap"],
-                datasets: [{
-                    data: [50, 50], // Bisa diambil dari data.php juga
-                    backgroundColor: ["cyan", "blue"]
-                }]
-            }
-        });
-
-        // **3️⃣ Tampilkan grafik line (Progres by Tanggal)**
-        let ctx3 = document.getElementById("progressChart").getContext("2d");
-        new Chart(ctx3, {
-            type: "line",
-            data: {
-                labels: ["12 Feb", "13 Feb"], // Bisa diambil dari data
-                datasets: [{
-                    label: "Record Count",
-                    data: [1, 1], // Bisa diambil dari data
-                    borderColor: "blue",
-                    fill: false
-                }]
-            }
-        });
-    });
+            // Panggil fungsi untuk update chart
+            updateProgressChart(data.progressChart);
+            updateCategoryChart(data.categoryChart);
+            updateProgressTypeChart(data.progressTypeChart);
+        })
+        .catch(error => console.error("Error fetching data:", error));
 });
+
+//Fungsi untuk Progress Chart (by Tanggal)
+function updateProgressChart(data) {
+    let ctx = document.getElementById("progressChart").getContext("2d");
+    let labels = data.map(item => item.tanggal);
+    let values = data.map(item => item.total);
+
+    new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Total Orders per Date",
+                data: values,
+                backgroundColor: "rgba(54, 162, 235, 0.5)",
+                borderColor: "rgba(54, 162, 235, 1)",
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+//Fungsi untuk Category Chart (by Kategori)
+function updateCategoryChart(data) {
+    let ctx = document.getElementById("categoryChart").getContext("2d");
+    let labels = data.map(item => item.Kategori);
+    let values = data.map(item => item.total);
+
+    new Chart(ctx, {
+        type: "pie",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Total Orders by Category",
+                data: values,
+                backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0"],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+}
+
+//Fungsi untuk Progress Type Chart (by Progress Order)
+function updateProgressTypeChart(data) {
+    let ctx = document.getElementById("progressTypeChart").getContext("2d");
+    let labels = data.map(item => item.progress_order);
+    let values = data.map(item => item.total);
+
+    new Chart(ctx, {
+        type: "doughnut",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Order Progress Status",
+                data: values,
+                backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0"],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+}
