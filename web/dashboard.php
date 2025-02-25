@@ -11,6 +11,7 @@ if (!isset($_SESSION['user_id'])) {
 $order_count = 0;
 $pickup_count = 0;
 $close_count = 0;
+$produktifitiData = [];
 
 if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     header("Content-Type: application/json");
@@ -62,6 +63,49 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
         $orders_count[$row['Status']] = $row['jumlah'];
     }
 
+    // Query untuk tabel produktifiti dengan filter
+    $queryProduktifiti = "SELECT 
+                            lo.nama AS Nama, 
+                            COUNT(CASE WHEN lo.status IN ('Pickup', 'Close') THEN 1 END) AS RecordCount
+                        FROM 
+                            log_orders lo
+                        WHERE 
+                            lo.role = 'Helpdesk'";
+
+    if (!empty($order_by)) {
+        $queryProduktifiti .= " AND lo.order_by = :order_by";
+    }
+    if (!empty($transaksi)) {
+        $queryProduktifiti .= " AND lo.transaksi = :transaksi";
+    }
+    if (!empty($kategori)) {
+        $queryProduktifiti .= " AND lo.kategori = :kategori";
+    }
+    if (!empty($start_date) && !empty($end_date)) {
+        $queryProduktifiti .= " AND DATE(lo.tanggal) BETWEEN :start_date AND :end_date";
+    }
+
+    $queryProduktifiti .= " GROUP BY lo.id_user, lo.nama ORDER BY RecordCount DESC";
+
+    $stmtProduktifiti = $pdo->prepare($queryProduktifiti);
+
+    if (!empty($order_by)) {
+        $stmtProduktifiti->bindParam(":order_by", $order_by);
+    }
+    if (!empty($transaksi)) {
+        $stmtProduktifiti->bindParam(':transaksi', $transaksi);
+    }
+    if (!empty($kategori)) {
+        $stmtProduktifiti->bindParam(':kategori', $kategori);
+    }
+    if (!empty($start_date) && !empty($end_date)) {
+        $stmtProduktifiti->bindParam(':start_date', $start_date);
+        $stmtProduktifiti->bindParam(':end_date', $end_date);
+    }
+
+    $stmtProduktifiti->execute();
+    $produktifitiData = $stmtProduktifiti->fetchAll(PDO::FETCH_ASSOC);
+
     // Ambil Data untuk progressChart (Order by Tanggal)
     $queryProgress = "SELECT tanggal, COUNT(*) as total FROM orders GROUP BY tanggal ORDER BY tanggal";
     $stmtProgress = $pdo->query($queryProgress);
@@ -80,6 +124,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     // Gabungkan semua data dalam satu output JSON
     echo json_encode([
         "orders_count" => $orders_count,
+        "produktifitiData" => $produktifitiData,
         "progressChart" => $dataProgress,
         "categoryChart" => $dataCategory,
         "progressTypeChart" => $dataProgressType
@@ -88,27 +133,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     exit();
 }
 
-// Query untuk tabel produktifiti
-$query = "SELECT 
-            lo.nama AS Nama, 
-            COUNT(CASE WHEN lo.transaksi  = 'PDA' THEN 1 END) AS PDA,
-            COUNT(CASE WHEN lo.transaksi  = 'MO' THEN 1 END) AS MO,
-            COUNT(CASE WHEN lo.transaksi  = 'ORBIT' THEN 1 END) AS ORBIT,
-            COUNT(CASE WHEN lo.transaksi  = 'FFG' THEN 1 END) AS FFG,
-            COUNT(CASE WHEN lo.transaksi  = 'UNSPEK' THEN 1 END) AS UNSPEK,
-            COUNT(CASE WHEN lo.status IN ('Pickup', 'Close') THEN 1 END) AS RecordCount
-        FROM 
-            log_orders lo
-        WHERE 
-            lo.role = 'Helpdesk'
-        GROUP BY 
-            lo.id_user, lo.nama
-        ORDER BY 
-            RecordCount DESC";
-
-
-$stmt = $pdo->query($query);
-
+// Jika tidak ada request AJAX, lanjutkan dengan menampilkan halaman biasa
 ?>
 
 <!DOCTYPE html>
@@ -212,29 +237,11 @@ $stmt = $pdo->query($query);
                         <tr>
                             <th>No</th>
                             <th>Nama</th>
-                            <th>PDA</th>
-                            <th>MO</th>
-                            <th>ORBIT</th>
-                            <th>FFG</th>
-                            <th>UNSPEK</th>
                             <th>Record Count</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <?php 
-                        $no = 1;
-                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) : ?>
-                                <tr>
-                                    <td><?= $no++; ?></td>
-                                    <td><?= htmlspecialchars($row['Nama']); ?></td>
-                                    <td><?= htmlspecialchars($row['PDA']); ?></td>
-                                    <td><?= htmlspecialchars($row['MO']); ?></td>
-                                    <td><?= htmlspecialchars($row['ORBIT']); ?></td>
-                                    <td><?= htmlspecialchars($row['FFG']); ?></td>
-                                    <td><?= htmlspecialchars($row['UNSPEK']); ?></td>
-                                    <td><?= $row['RecordCount']; ?></td>
-                                </tr>
-                        <?php endwhile; ?>
+                    <tbody id="table-body">
+                        <tr><td colspan="8">Loading...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -258,6 +265,7 @@ $stmt = $pdo->query($query);
 <script src="./js/card.js"></script>
 <script src="./js/profile.js"></script>
 <script src="./js/chart.js"></script>
+
 
 </body>
 </html>
