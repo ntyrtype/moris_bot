@@ -44,7 +44,7 @@ function handleUserMessage($user_id, $chat_id, $text, $username, $chat_type, $me
     global $pdo;
 
     // ID grup yang ditargetkan
-    $target_group_id = -4712566458;
+    $target_group_id = -1002447741047;
 
     if ($chat_type === 'private') {
         
