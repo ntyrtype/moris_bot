@@ -111,7 +111,7 @@ $stmt = $pdo->query($query);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="60">
+    <!-- <meta http-equiv="refresh" content="60"> -->
     <link rel="stylesheet" href="./style/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -224,12 +224,18 @@ $stmt = $pdo->query($query);
                 </table>
             </div>
             <!-- Grafik Progress by Tanggal -->
-            <div class="chart-container">
+            <div class="table-container">
                 <canvas id="progressChart"></canvas>
-                <canvas id="categoryChart"></canvas>
-                <canvas id="progressTypeChart"></canvas>
             </div>
         <?php endif; ?>
+    </div>
+    <div class="chart-container">
+        <div class="chart-box">
+            <canvas id="categoryChart"></canvas>
+        </div>
+        <div class="chart-box">
+            <canvas id="progressTypeChart"></canvas>
+        </div>
     </div>
 </div>
 

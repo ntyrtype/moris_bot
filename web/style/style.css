@@ -429,11 +429,20 @@ button:hover {
 
 /* ----- Grafik ----- */
 canvas {
+  max-width: 100%;
   background: white;
   padding: 15px;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   margin: 10px;
+}
+
+#categoryChart, 
+#progressTypeChart {
+  max-width: 500px;
+  max-height: 400px;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 /* ----- Dashboard Content (Tabel & Grafik) ----- */
@@ -444,7 +453,7 @@ canvas {
   margin: 10px;
 }
 
-.table-container, .chart-container {
+.table-container{
   flex: content;
   width: 100%;
   background: white;
@@ -452,7 +461,22 @@ canvas {
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
-
+.chart-container {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 20px;
+  background: white;
+  padding: 10px;
+  margin: 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  justify-content: space-between; 
+}
+.chart-box {
+  flex: 1;
+  min-width: 300px; 
+  max-width: 500px; 
+}
 /* ----- Tabel Produktifitas ----- */
 #productivityTable {
   width: 100%;
