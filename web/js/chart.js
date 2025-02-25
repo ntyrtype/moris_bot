@@ -1,10 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
-    fetch("../web/dashboard.php")
+    fetch("http://localhost/moris_bot/web/dashboard.php?ajax=true")
         .then(response => response.json())
         .then(data => {
-            console.log("Data diterima:", data); // Debugging
-
-            // Panggil fungsi untuk update chart
+            console.log("Data diterima:", data);
             updateProgressChart(data.progressChart);
             updateCategoryChart(data.categoryChart);
             updateProgressTypeChart(data.progressTypeChart);

@@ -21,12 +21,12 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     $end_date = htmlspecialchars(trim($_GET['end_date'] ?? ''), ENT_QUOTES, 'UTF-8');
     $order_by = htmlspecialchars(trim($_GET['order_by'] ?? ''), ENT_QUOTES, 'UTF-8');
 
+    // Query Filter Order Count
     $sql = "SELECT Status, COUNT(*) AS jumlah FROM orders WHERE 1=1";
 
     if (!empty($order_by)) {
         $sql .= " AND order_by = :order_by";
     }
-
     if (!empty($transaksi)) {
         $sql .= " AND transaksi = :transaksi";
     }
@@ -62,41 +62,48 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
         $orders_count[$row['Status']] = $row['jumlah'];
     }
 
+    // Ambil Data untuk progressChart (Order by Tanggal)
+    $queryProgress = "SELECT tanggal, COUNT(*) as total FROM orders GROUP BY tanggal ORDER BY tanggal";
+    $stmtProgress = $pdo->query($queryProgress);
+    $dataProgress = $stmtProgress->fetchAll(PDO::FETCH_ASSOC);
+
+    // Ambil Data untuk categoryChart (Order by Kategori)
+    $queryCategory = "SELECT Kategori, COUNT(*) as total FROM orders GROUP BY Kategori";
+    $stmtCategory = $pdo->query($queryCategory);
+    $dataCategory = $stmtCategory->fetchAll(PDO::FETCH_ASSOC);
+
+    // Ambil Data untuk progressTypeChart (Order by Progress Status)
+    $queryProgressType = "SELECT progress_order, COUNT(*) as total FROM orders GROUP BY progress_order";
+    $stmtProgressType = $pdo->query($queryProgressType);
+    $dataProgressType = $stmtProgressType->fetchAll(PDO::FETCH_ASSOC);
+
+    // Gabungkan semua data dalam satu output JSON
     echo json_encode([
-        'orders_count' => $orders_count
+        "orders_count" => $orders_count,
+        "progressChart" => $dataProgress,
+        "categoryChart" => $dataCategory,
+        "progressTypeChart" => $dataProgressType
     ]);
+
     exit();
 }
+
 // Query untuk tabel produktifiti
-$query = "SELECT u.Nama, COUNT(o.Order_ID) AS RecordCount 
-          FROM users u 
-          LEFT JOIN orders o ON u.ID_Telegram = o.id_telegram 
-          GROUP BY u.ID 
-          ORDER BY RecordCount DESC";
+$query = "SELECT 
+        lo.nama AS Nama, 
+        COUNT(CASE WHEN lo.status IN ('Pickup', 'Close') THEN 1 END) AS RecordCount
+        FROM 
+        log_orders lo
+        WHERE 
+        lo.role = 'Helpdesk'
+        GROUP BY 
+        lo.id_user, lo.nama
+        ORDER BY 
+        RecordCount DESC";
+
 
 $stmt = $pdo->query($query);
 
-// Ambil Data untuk progressChart (Order by Tanggal)
-$queryProgress = "SELECT tanggal, COUNT(*) as total FROM orders GROUP BY tanggal ORDER BY tanggal";
-$stmtProgress = $pdo->query($queryProgress);
-$dataProgress = $stmtProgress->fetchAll(PDO::FETCH_ASSOC);
-
-// Ambil Data untuk categoryChart (Order by Kategori)
-$queryCategory = "SELECT Kategori, COUNT(*) as total FROM orders GROUP BY Kategori";
-$stmtCategory = $pdo->query($queryCategory);
-$dataCategory = $stmtCategory->fetchAll(PDO::FETCH_ASSOC);
-
-// Ambil Data untuk progressTypeChart (Order by Progress Status)
-$queryProgressType = "SELECT progress_order, COUNT(*) as total FROM orders GROUP BY progress_order";
-$stmtProgressType = $pdo->query($queryProgressType);
-$dataProgressType = $stmtProgressType->fetchAll(PDO::FETCH_ASSOC);
-
-// Mengembalikan data dalam format JSON
-echo json_encode([
-    "progressChart" => $dataProgress,
-    "categoryChart" => $dataCategory,
-    "progressTypeChart" => $dataProgressType
-]);
 ?>
 
 <!DOCTYPE html>
