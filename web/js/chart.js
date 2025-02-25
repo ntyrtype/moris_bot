@@ -17,7 +17,7 @@ function updateProgressChart(data) {
     let values = data.map(item => item.total);
 
     new Chart(ctx, {
-        type: "bar",
+        type: "line",
         data: {
             labels: labels,
             datasets: [{
@@ -29,12 +29,20 @@ function updateProgressChart(data) {
             }]
         },
         options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Total Orders per Date',
+                    padding: {
+                      bottom: 20
+                    },
+                    font: {
+                      size: 17,
+                      color: 'black'
+                    }
                 }
-            }
+            },
+            responsive: true
         }
     });
 }
@@ -46,7 +54,7 @@ function updateCategoryChart(data) {
     let values = data.map(item => item.total);
 
     new Chart(ctx, {
-        type: "pie",
+        type: "bar",
         data: {
             labels: labels,
             datasets: [{
@@ -57,7 +65,26 @@ function updateCategoryChart(data) {
             }]
         },
         options: {
-            responsive: true
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Orders by Category',
+                    padding: {
+                      bottom: 20
+                    },
+                    font: {
+                      size: 17,
+                      color: 'black'
+                    }
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
         }
     });
 }
@@ -69,7 +96,7 @@ function updateProgressTypeChart(data) {
     let values = data.map(item => item.total);
 
     new Chart(ctx, {
-        type: "doughnut",
+        type: "pie",
         data: {
             labels: labels,
             datasets: [{
@@ -80,7 +107,21 @@ function updateProgressTypeChart(data) {
             }]
         },
         options: {
-            responsive: true
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Type of Progress',
+                    padding: {
+                      bottom: 20
+                    },
+                    font: {
+                      size: 17,
+                      color: 'black'
+                    }
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false
         }
     });
 }
