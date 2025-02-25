@@ -21,7 +21,7 @@ if (empty($no_tiket)) {
 // Query untuk mengambil data log berdasarkan no_tiket
 $query = "
     SELECT 
-        waktu,
+        tanggal,
         status,
         progress_order,
         keterangan,
@@ -32,7 +32,7 @@ $query = "
     WHERE 
         No_Tiket = :no_tiket
     ORDER BY 
-        waktu DESC
+        tanggal DESC
 ";
 
 try {

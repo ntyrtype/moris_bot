@@ -14,7 +14,7 @@ function showLog(noTiket) {
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th>Waktu</th>
+                                <th>Tanggal</th>
                                 <th>Status</th>
                                 <th>Progress Order</th>
                                 <th>Keterangan</th>
@@ -28,7 +28,7 @@ function showLog(noTiket) {
                 logs.forEach(function(log) {
                     logContent += `
                         <tr>
-                            <td>${log.waktu}</td>
+                            <td>${log.tanggal}</td>
                             <td>${log.status}</td>
                             <td>${log.progress_order}</td>
                             <td>${log.keterangan}</td>

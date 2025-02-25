@@ -122,7 +122,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
             </div>
         </div>
-        <h1 class="headtitle">Close Menu</h1>
+        <h1 class="headtitle">Log Menu</h1>
         <div class="filter">
             <form action="" method="GET">
                 <select aria-label="order_by" name="order_by" id="order_by">
