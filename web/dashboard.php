@@ -90,16 +90,21 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
 
 // Query untuk tabel produktifiti
 $query = "SELECT 
-        lo.nama AS Nama, 
-        COUNT(CASE WHEN lo.status IN ('Pickup', 'Close') THEN 1 END) AS RecordCount
+            lo.nama AS Nama, 
+            COUNT(CASE WHEN lo.transaksi  = 'PDA' THEN 1 END) AS PDA,
+            COUNT(CASE WHEN lo.transaksi  = 'MO' THEN 1 END) AS MO,
+            COUNT(CASE WHEN lo.transaksi  = 'ORBIT' THEN 1 END) AS ORBIT,
+            COUNT(CASE WHEN lo.transaksi  = 'FFG' THEN 1 END) AS FFG,
+            COUNT(CASE WHEN lo.transaksi  = 'UNSPEK' THEN 1 END) AS UNSPEK,
+            COUNT(CASE WHEN lo.status IN ('Pickup', 'Close') THEN 1 END) AS RecordCount
         FROM 
-        log_orders lo
+            log_orders lo
         WHERE 
-        lo.role = 'Helpdesk'
+            lo.role = 'Helpdesk'
         GROUP BY 
-        lo.id_user, lo.nama
+            lo.id_user, lo.nama
         ORDER BY 
-        RecordCount DESC";
+            RecordCount DESC";
 
 
 $stmt = $pdo->query($query);
@@ -207,6 +212,11 @@ $stmt = $pdo->query($query);
                         <tr>
                             <th>No</th>
                             <th>Nama</th>
+                            <th>PDA</th>
+                            <th>MO</th>
+                            <th>ORBIT</th>
+                            <th>FFG</th>
+                            <th>UNSPEK</th>
                             <th>Record Count</th>
                         </tr>
                     </thead>
@@ -214,11 +224,16 @@ $stmt = $pdo->query($query);
                         <?php 
                         $no = 1;
                         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) : ?>
-                            <tr>
-                                <td><?= $no++; ?></td>
-                                <td><?= htmlspecialchars($row['Nama']); ?></td>
-                                <td><?= $row['RecordCount']; ?></td>
-                            </tr>
+                                <tr>
+                                    <td><?= $no++; ?></td>
+                                    <td><?= htmlspecialchars($row['Nama']); ?></td>
+                                    <td><?= htmlspecialchars($row['PDA']); ?></td>
+                                    <td><?= htmlspecialchars($row['MO']); ?></td>
+                                    <td><?= htmlspecialchars($row['ORBIT']); ?></td>
+                                    <td><?= htmlspecialchars($row['FFG']); ?></td>
+                                    <td><?= htmlspecialchars($row['UNSPEK']); ?></td>
+                                    <td><?= $row['RecordCount']; ?></td>
+                                </tr>
                         <?php endwhile; ?>
                     </tbody>
                 </table>
