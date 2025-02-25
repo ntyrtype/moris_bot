@@ -41,6 +41,7 @@ if (!isset($_SESSION['user_id'])) {
                 <?php if ($_SESSION['role'] === 'admin'): ?>
                     <a href="add_user.php">Tambah User</a>
                 <?php endif; ?>
+                <a href="reset_password.php">Reset Password</a>
                 <form action="logout.php" method="POST">
                     <button type="submit" class="logout-btn" style="width: 100%; border: none; background: none; text-align: left;">Logout</button>
                 </form>
