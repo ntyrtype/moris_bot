@@ -1,4 +1,3 @@
-// log.js
 function showLog(noTiket) {
     console.log("Tombol Lihat Log diklik. No Tiket:", noTiket);
 
@@ -11,22 +10,38 @@ function showLog(noTiket) {
 
             try {
                 var logs = response;
-                var logTableBody = $('#logTable tbody');
-                logTableBody.empty(); // Kosongkan tabel sebelum menambahkan data baru
+                var logContent = `
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Waktu</th>
+                                <th>Status</th>
+                                <th>Progress Order</th>
+                                <th>Keterangan</th>
+                                <th>Nama</th>
+                                <th>Role</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
 
                 logs.forEach(function(log) {
-                    var row = '<tr>' +
-                        '<td>' + log.waktu + '</td>' +
-                        '<td>' + log.status + '</td>' +
-                        '<td>' + log.progress_order + '</td>' +
-                        '<td>' + log.keterangan + '</td>' +
-                        '<td>' + log.nama + '</td>' +
-                        '<td>' + log.role + '</td>' +
-                        '</tr>';
-                    logTableBody.append(row);
+                    logContent += `
+                        <tr>
+                            <td>${log.waktu}</td>
+                            <td>${log.status}</td>
+                            <td>${log.progress_order}</td>
+                            <td>${log.keterangan}</td>
+                            <td>${log.nama}</td>
+                            <td>${log.role}</td>
+                        </tr>
+                    `;
                 });
 
-                $('#logSection').show(); // Tampilkan tabel log jika tersembunyi
+                logContent += `</tbody></table>`;
+
+                $('#logContent').html(logContent);
+                $('#logModal').modal('show'); // Tampilkan modal
             } catch (e) {
                 console.error("Error parsing JSON:", e);
             }
