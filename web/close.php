@@ -216,27 +216,27 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <?php endif; ?>
             </tbody>
         </table>
+            <!-- log aktifitas -->
+            <div id="logSection" style="display: none;">
+            <h3>Log Tiket</h3>
+            <table id="logTable" border="1">
+                <thead>
+                    <tr>
+                        <th>Waktu</th>
+                        <th>Status</th>
+                        <th>Progress Order</th>
+                        <th>Keterangan</th>
+                        <th>Nama</th>
+                        <th>Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data log akan dimasukkan di sini -->
+                </tbody>
+            </table>
+        </div>
         </div>
         <button id="downloadButton" class="download-btn">Download Excel</button>
-
-    </div>
-
-    <!-- log aktifitas -->
-    <div class="modal fade" id="logModal" tabindex="-1" aria-labelledby="logModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="logModalLabel">Log Aktivitas</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body" id="logContent">
-                    <!-- Data log akan dimuat di sini -->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                </div>
-            </div>
-        </div>
     </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>

@@ -55,10 +55,10 @@ if (!isset($_SESSION['user_id'])) {
         <section>
             <h2>2. Fitur Utama</h2>
             <ul>
-                <li>✅ <strong>Manajemen Data</strong>: Menampilkan, mencari, dan memfilter data dengan mudah.</li>
-                <li>✅ <strong>Tracking Order</strong>: Melacak dan mengelola status tiket atau pesanan.</li>
-                <li>✅ <strong>Notifikasi & Reminder</strong>: Mengingatkan tugas atau jadwal penting.</li>
-                <li>✅ <strong>Otomasi Tugas</strong>: Update status, generate laporan, atau pengolahan data otomatis.</li>
+                <li>✅ <strong>Manajemen Pengguna</strong>: Role Admin, Helpdesk, Teknis, Plasa.</li>
+                <li>✅ <strong>Manajemen Order</strong>: Tracking Pembaruan Status.</li>
+                <li>✅ <strong>Log Aktivitas</strong>: Merekam perubahan status setiap pesanan.</li>
+                <li>✅ <strong>Integrasi Telegram</strong>: Notifikasi otomatis untuk perubahan status.</li>
             </ul>
         </section>
 
@@ -67,29 +67,17 @@ if (!isset($_SESSION['user_id'])) {
             <p><strong>🔹 Navigasi Menu:</strong></p>
             <ul>
                 <li><strong>Dashboard</strong>: Ringkasan informasi penting mengenai productivity dan progres order.</li>
-                <li><strong>Order</strong>: Mengelola pesanan atau tiket layanan.</li>
-                <li><strong>Pickup</strong>: Mengelola pesanan atau tiket layanan.</li>
-                <li><strong>Close</strong>: Mengelola pesanan atau tiket layanan.</li>
-                <li><strong>Laporan</strong>: Mengunduh laporan aktivitas atau transaksi.</li>
+                <li><strong>Order</strong>: Melihat dan mengelola data pesanan dari bot telegram yang dapat memantau status setiap order dan mengambil tindakan seperti memproses atau membatalkan pesanan.</li>
+                <li><strong>Pickup</strong>: Menampilkan data pesanan yang sudah di pickup dari order yang sedang dalam proses pengerjaan dan memerlukan pembaruan status untuk memantau perkembangan.</li>
+                <li><strong>Close</strong>: Menampilkan daftar pesanan yang sudah diselesaikan. Semua order yang ada di halaman ini memiliki status final, artinya tidak memerlukan tindakan lanjutan selain pencatatan dan monitoring.</li>
+                <li><strong>Nama Pengguna</strong>: Pengguna yang sedang login jika di klik akan menampilkan fitur tambah user hanya untuk admin dan logout untuk semua pengguna.</li>
             </ul>
             <p><strong>🔹 Interaksi dengan Bot:</strong></p>
             <ul>
-                <li>Ketik <code>"Cari Order #ID"</code> untuk melihat detail pesanan.</li>
-                <li>Ketik <code>"Tampilkan laporan hari ini"</code> untuk melihat aktivitas terbaru.</li>
+                <li>Ketik <code>"/help"</code> untuk melihat template /moban.</li>
+                <li>Ketik <code>"/moban"</code> untuk mengorder.</li>
                 <li>Gunakan tombol aksi seperti <button class="action-btn">Pickup</button>, <button class="action-btn">Cancel</button>, atau <button class="action-btn">Reply</button> untuk merespons tiket.</li>
             </ul>
-        </section>
-
-        <section>
-            <h2>4. FAQ (Pertanyaan Umum)</h2>
-            <p><strong>❓ Bagaimana cara login?</strong><br>➡ Gunakan akun yang sudah terdaftar di sistem.</p>
-            <p><strong>❓ Bagaimana jika ada error saat input data?</strong><br>➡ Cek kembali format data, jika masih bermasalah hubungi admin.</p>
-            <p><strong>❓ Apakah bisa diakses dari HP?</strong><br>➡ Ya, Moris Bot sudah mendukung tampilan responsif untuk mobile.</p>
-        </section>
-
-        <section>
-            <h2>5. Hubungi Admin</h2>
-            <p>Jika mengalami kendala, hubungi <strong>Admin IT</strong> melalui email atau WhatsApp.</p>
         </section>
     </div>
 </div>

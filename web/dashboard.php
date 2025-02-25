@@ -67,6 +67,36 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     ]);
     exit();
 }
+// Query untuk tabel produktifiti
+$query = "SELECT u.Nama, COUNT(o.Order_ID) AS RecordCount 
+          FROM users u 
+          LEFT JOIN orders o ON u.ID_Telegram = o.id_telegram 
+          GROUP BY u.ID 
+          ORDER BY RecordCount DESC";
+
+$stmt = $pdo->query($query);
+
+// Ambil Data untuk progressChart (Order by Tanggal)
+$queryProgress = "SELECT tanggal, COUNT(*) as total FROM orders GROUP BY tanggal ORDER BY tanggal";
+$stmtProgress = $pdo->query($queryProgress);
+$dataProgress = $stmtProgress->fetchAll(PDO::FETCH_ASSOC);
+
+// Ambil Data untuk categoryChart (Order by Kategori)
+$queryCategory = "SELECT Kategori, COUNT(*) as total FROM orders GROUP BY Kategori";
+$stmtCategory = $pdo->query($queryCategory);
+$dataCategory = $stmtCategory->fetchAll(PDO::FETCH_ASSOC);
+
+// Ambil Data untuk progressTypeChart (Order by Progress Status)
+$queryProgressType = "SELECT progress_order, COUNT(*) as total FROM orders GROUP BY progress_order";
+$stmtProgressType = $pdo->query($queryProgressType);
+$dataProgressType = $stmtProgressType->fetchAll(PDO::FETCH_ASSOC);
+
+// Mengembalikan data dalam format JSON
+echo json_encode([
+    "progressChart" => $dataProgress,
+    "categoryChart" => $dataCategory,
+    "progressTypeChart" => $dataProgressType
+]);
 ?>
 
 <!DOCTYPE html>
@@ -77,6 +107,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     <meta http-equiv="refresh" content="60">
     <link rel="stylesheet" href="./style/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <title>Dashboard</title>
 </head>
@@ -173,11 +204,15 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
+                        <?php 
+                        $no = 1;
+                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) : ?>
+                            <tr>
+                                <td><?= $no++; ?></td>
+                                <td><?= htmlspecialchars($row['Nama']); ?></td>
+                                <td><?= $row['RecordCount']; ?></td>
+                            </tr>
+                        <?php endwhile; ?>
                     </tbody>
                 </table>
             </div>
@@ -194,6 +229,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
 <script src="./js/sidebar.js"></script>
 <script src="./js/card.js"></script>
 <script src="./js/profile.js"></script>
+<script src="./js/chart.js"></script>
 
 </body>
 </html>
