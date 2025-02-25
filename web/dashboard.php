@@ -156,6 +156,9 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     <a href="order.php">Order</a>
     <a href="pickup.php">PickUp</a>
     <a href="close.php">Close</a>
+    <?php if ($_SESSION['role'] === 'admin'): ?>
+    <a href="log.php">Log</a>
+    <?php endif; ?>
 </div>
 
 <div class="content" id="content">

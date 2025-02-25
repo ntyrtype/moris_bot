@@ -18,42 +18,39 @@ $order_by = htmlspecialchars(trim($_GET['order_by'] ?? ''), ENT_QUOTES, 'UTF-8')
 // Query untuk mengambil data order
 $query = "
     SELECT 
-        o.Order_ID AS order_id,
-        o.Kategori AS kategori,
-        o.Transaksi AS transaksi,
-        o.Keterangan AS Keterangan,
-        o.No_Tiket AS no_tiket,
-        o.id_telegram AS id_telegram,
-        o.username_telegram AS username_telegram,
-        u.Nama AS nama,
-        o.tanggal AS tanggal,
-        o.Status AS status,
-        o.order_by AS order_by
+        lo.id_user AS id_user,
+        lo.order_id AS order_id,
+        lo.transaksi AS transaksi,
+        lo.Kategori AS kategori,
+        lo.No_Tiket AS no_tiket,
+        lo.status AS status,
+        lo.progress_order AS progress_order,
+        lo.keterangan AS keterangan,
+        lo.tanggal AS tanggal,
+        lo.nama AS nama,
+        lo.role AS role,
+        lo.order_by AS order_by
     FROM 
-        orders o
-    LEFT JOIN 
-        users u ON o.id_telegram = u.id_telegram
-    WHERE 
-        o.Status = 'Close'
-";
+        log_orders lo
+    WHERE 1=1";
 
 // Tambahkan filter jika ada input order_by
 if ($order_by) {
-    $query .= " AND o.order_by = :order_by";
+    $query .= " AND lo.order_by = :order_by";
 }
 
 if ($transaksi) {
-    $query .= " AND o.Transaksi = :transaksi";
+    $query .= " AND lo.Transaksi = :transaksi";
 }
 if ($kategori) {
-    $query .= " AND o.Kategori = :kategori";
+    $query .= " AND lo.Kategori = :kategori";
 }
 if (!empty($start_date) && !empty($end_date)) {
-    $query .= " AND o.tanggal BETWEEN :start_date AND :end_date";
+    $query .= " AND lo.tanggal BETWEEN :start_date AND :end_date";
 } elseif (!empty($start_date)) {
-    $query .= " AND o.tanggal >= :start_date";
+    $query .= " AND lo.tanggal >= :start_date";
 } elseif (!empty($end_date)) {
-    $query .= " AND o.tanggal <= :end_date";
+    $query .= " AND lo.tanggal <= :end_date";
 }
 
 // Eksekusi query
@@ -169,15 +166,18 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <thead>
                 <tr>
                     <th>No</th>
+                    <th>User ID</th>
                     <th>Order ID</th>
                     <th>Kategori</th>
                     <th>Transaksi</th>
                     <th>Tanggal</th>
                     <th>Keterangan</th>
                     <th>No Tiket</th>
-                    <th>Nama</th>
+                    <th>Progress Order</th>
                     <th>Status</th>
-                    <th>Log</th>
+                    <th>Nama</th>
+                    <th>Role</th>
+                    <th>Order BY</th>
                 </tr>
             </thead>
             <tbody>
@@ -186,30 +186,18 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php foreach ($orders as $order): ?>
                     <tr>
                         <td><?= $no ?></td>
+                        <td><?= htmlspecialchars($order['id_user']) ?></td>
                         <td><?= htmlspecialchars($order['order_id']) ?></td>
                         <td><?= htmlspecialchars($order['kategori']) ?></td>
                         <td><?= htmlspecialchars($order['transaksi']) ?></td>
                         <td><?= htmlspecialchars($order['tanggal']) ?></td>
-                        <td class="text-container">
-                            <?php
-                                $text = nl2br(htmlspecialchars($order['Keterangan']));
-                                $shortText = substr($text, 0, 80); // Ambil 80 karakter pertama
-                            ?>
-                            <div class="short-text"><?= $shortText ?>...</div>
-                            <div class="hidden-text" style="display: none;"><?= $text ?></div>
-                            <button class="show-more">Show More</button>
-                        </td>
+                        <td><?= htmlspecialchars($order['keterangan']) ?></td>
                         <td><?= htmlspecialchars($order['no_tiket']) ?></td>
-                        <td>
-                            <a href="https://t.me/<?= htmlspecialchars($order['username_telegram']) ?>" target="_blank">
-                                <?= htmlspecialchars($order['nama']) ?>
-                            </a>
-                        </td>
-                        <td>
-                        <?= htmlspecialchars($order['status']) ?>
-                        </td>
-                        <td><a href="#" onclick="showLog('<?php echo htmlspecialchars($order['no_tiket'], ENT_QUOTES, 'UTF-8'); ?>')">Lihat Log</a></td>
-                    </tr>
+                        <td><?= htmlspecialchars($order['progress_order']) ?></td>
+                        <td><?= htmlspecialchars($order['status']) ?></td>
+                        <td><?= htmlspecialchars($order['nama']) ?></td>
+                        <td><?= htmlspecialchars($order['role']) ?></td>
+                        <td><?= htmlspecialchars($order['order_by']) ?></td>
                     <?php $no++; ?>
                 <?php endforeach; ?>
             <?php else: ?>
@@ -219,25 +207,6 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <?php endif; ?>
             </tbody>
         </table>
-            <!-- log aktifitas -->
-            <div id="logSection" style="display: none;">
-            <h3>Log Tiket</h3>
-            <table id="logTable" border="1">
-                <thead>
-                    <tr>
-                        <th>Waktu</th>
-                        <th>Status</th>
-                        <th>Progress Order</th>
-                        <th>Keterangan</th>
-                        <th>Nama</th>
-                        <th>Role</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Data log akan dimasukkan di sini -->
-                </tbody>
-            </table>
-        </div>
         </div>
         <button id="downloadButton" class="download-btn">Download Excel</button>
     </div>
@@ -246,10 +215,8 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <script src="./js/sidebar.js"></script>
 <script src="./js/profile.js"></script>
 <script src="./js/datatable.js"></script>
-<script src="./js/showmore.js"></script>
 <script src="./js/cancel.js"></script>
 <script src="./js/download.js"></script>
-<script src="./js/log.js"></script>
 
 </body>
 </html>
