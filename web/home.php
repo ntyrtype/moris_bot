@@ -79,8 +79,32 @@ if (!isset($_SESSION['user_id'])) {
             <p><strong>🔹 Interaksi dengan Bot:</strong></p>
             <ul>
                 <li>Ketik <code>"/help"</code> untuk melihat template /moban.</li>
-                <li>Ketik <code>"/moban"</code> untuk mengorder.</li>
+                <li>Ketik <code>"/moban"</code> untuk mengorder dengan format <code>"/moban #kategori #transaksi #order_id #keteranga"</code>.</li>
                 <li>Gunakan tombol aksi seperti <button class="action-btn">Pickup</button>, <button class="action-btn">Cancel</button>, atau <button class="action-btn">Reply</button> untuk merespons tiket.</li>
+            </ul>
+        </section>
+        <section>
+            <h2>4. Jenis Transaksi</h2>
+            <p>Setiap order memiliki transaksi tertentu untuk memudahkan identifikasi dan eksekusi. Berikut adalah beberapa jenis transaksi yang tersedia:</p>
+            <ul>
+                <li>📌 <strong>PDA</strong> → Pindah Alamat</li>
+                <li>📌 <strong>MO</strong> → Modifi Order (modifikasi paket)</li>
+                <li>📌 <strong>ORBIT</strong> → Modem Internet</li>
+                <li>📌 <strong>FFG</strong> → Fulfillment Guarantee, Garansi Pasang Baru</li>
+                <li>📌 <strong>UNSPEK</strong> → Unspecified (Kategori yang tidak teridentifikasi secara spesifik)</li>
+            </ul>
+        </section>
+        <section>
+            <h2>5. Kategori Layanan</h2>
+            <p>Berikut adalah kategori layanan yang tersedia dalam sistem:</p>
+            <ul>
+                <li>📌 <strong>INDIHOME</strong></li>
+                <li>📌 <strong>INDIBIZ</strong></li>
+                <li>📌 <strong>Wifi.id</strong></li>
+                <li>📌 <strong>Astinet</strong></li>
+                <li>📌 <strong>Metro</strong></li>
+                <li>📌 <strong>VPNIP</strong></li>
+                <li>📌 <strong>OLO</strong></li>
             </ul>
         </section>
     </div>
