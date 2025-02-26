@@ -32,7 +32,8 @@ $query = "
         lo.order_by AS order_by
     FROM 
         log_orders lo
-    WHERE 1=1";
+    WHERE 1=1
+    ORDER BY lo.tanggal DESC";
 
 // Tambahkan filter jika ada input order_by
 if ($order_by) {
