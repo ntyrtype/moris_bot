@@ -2,9 +2,19 @@
 session_start();
 require "../config/Database.php";
 
+// Set response header agar terbaca sebagai JSON
+header('Content-Type: application/json');
+ob_clean(); // Membersihkan output buffer sebelum mengirim response JSON
+
 // Memastikan pengguna sudah login
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(["status" => "error", "message" => "Anda harus login!"]);
+    exit();
+}
+
+// Pastikan database terhubung
+if (!isset($pdo)) {
+    echo json_encode(["status" => "error", "message" => "Koneksi database gagal!"]);
     exit();
 }
 
