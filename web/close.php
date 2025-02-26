@@ -247,7 +247,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <script src="./js/datatable.js"></script>
 <script src="./js/showmore.js"></script>
 <script src="./js/cancel.js"></script>
-<script src="./js/download.js"></script>
+<!-- <script src="./js/download.js"></script> -->
 <script src="./js/log.js"></script>
 
 </body>
