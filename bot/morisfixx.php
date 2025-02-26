@@ -275,8 +275,25 @@ function sendNotifications() {
 }
 
 
+// function generateTicket() {
+//     return 'TKT' . strtoupper(substr(uniqid(rand(), true), -5));
+// }
+
 function generateTicket() {
-    return 'TKT' . strtoupper(substr(uniqid(rand(), true), -5));
+    global $pdo;
+    do {
+        $no_tiket = 'TKT' . strtoupper(substr(uniqid(rand(), true), -5));
+
+        // Menggunakan prepared statement untuk keamanan
+        $query = "SELECT COUNT(*) FROM orders WHERE No_Tiket = :no_tiket";
+        $stmt = $pdo->prepare($query);
+        $stmt->bindParam(':no_tiket', $no_tiket, PDO::PARAM_STR);
+        $stmt->execute();
+        $count = $stmt->fetchColumn();
+    } while ($count > 0); // Jika sudah ada di DB, ulangi generate
+
+    return $no_tiket;
 }
+
 
 ?>

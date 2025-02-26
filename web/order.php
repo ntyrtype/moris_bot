@@ -181,6 +181,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 </head>
 <body>
 
@@ -322,6 +323,8 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </table>
         </div>
         <button id="downloadButton" class="download-btn">Download Excel</button>
+        <button id="uploadButton" class="upload-btn">Upload Excel</button>
+        <input type="file" id="fileInput" style="display:none;" accept=".csv, .xlsx, .xls">
     </div>
 
 <script src="./js/sidebar.js"></script>
@@ -329,6 +332,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <script src="./js/datatable.js"></script>
 <script src="./js/showmore.js"></script>
 <script src="./js/cancel.js"></script>
+<script src="./js/upload.js"></script>
 <!-- <script src="./js/download.js"></script> -->
 
 </body>
