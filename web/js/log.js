@@ -16,7 +16,7 @@ function showLog(noTiket) {
                             <tr>
                                 <th>Tanggal</th>
                                 <th>Status</th>
-                                <th>Progress Order</th>
+                                <th>Progress</th>
                                 <th>Keterangan</th>
                                 <th>Nama</th>
                                 <th>Role</th>

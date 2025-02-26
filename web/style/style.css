@@ -334,7 +334,12 @@ table tr:hover {
   padding: 20px;
   border: 1px solid #888;
   width: 100%;
-  max-width: 80%;
+  max-width: fit-content;
+}
+.table-striped{
+  width: max-content;
+  border-collapse: collapse;
+  white-space: nowrap;
 }
 .close {
   padding: 5px 10px;
@@ -366,6 +371,7 @@ button:hover {
 }
 .btn-secondary{
   display: block;
+  margin-top: 10px;
   margin-left: auto; 
   margin-right: 10px;
   background: #e91d1d;
@@ -564,6 +570,7 @@ section ul li {
   background: #2980b9;
 }
 
+
 /* download */
 .download-btn{
   display: block;
@@ -580,8 +587,19 @@ section ul li {
   background: #3f763a;
 }
 
+/* Upload */
+.upload-btn {
+  display: block;
+  background: #4680b9;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-left: 10px; 
+  margin-right: auto;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+}
 
-
-
-
-
+.upload-btn:hover {
+  background: #3c6a98;
+}

@@ -258,6 +258,8 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <button type="submit">Filter</button>
             </form>
         </div>
+        <button id="uploadButton" class="upload-btn">Upload Excel</button>
+        <input type="file" id="fileInput" style="display:none;" accept=".csv, .xlsx, .xls">
         <div class="table-responsive">
             <table id="dataTable" class="display" style="width:100%">
                 <thead>
@@ -323,8 +325,6 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </table>
         </div>
         <button id="downloadButton" class="download-btn">Download Excel</button>
-        <button id="uploadButton" class="upload-btn">Upload Excel</button>
-        <input type="file" id="fileInput" style="display:none;" accept=".csv, .xlsx, .xls">
     </div>
 
 <script src="./js/sidebar.js"></script>
