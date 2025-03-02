@@ -48,18 +48,25 @@ $(document).ready(function () {
     function updateProduktifitiTable(data) {
         let tableBody = $("#table-body");
         tableBody.empty(); // Kosongkan tabel sebelum mengisi ulang
-
+    
         if (!data || data.length === 0) {
             tableBody.html("<tr><td colspan='8'>Tidak ada data</td></tr>");
             return;
         }
-
+    
         $.each(data, function (index, item) {
+            let logLink = `log.php?nama=${encodeURIComponent(item.Nama)}`;
             let row = `
                 <tr>
                     <td>${index + 1}</td>
                     <td>${item.Nama || '-'}</td>
+                    <td>${item.PDA || 0}</td>
+                    <td>${item.MO || 0}</td>
+                    <td>${item.ORBIT || 0}</td>
+                    <td>${item.FFG || 0}</td>
+                    <td>${item.UNSPEK || 0}</td>
                     <td>${item.RecordCount || 0}</td>
+                    <td><a href="${logLink}">Lihat Log</a></td>
                 </tr>
             `;
             tableBody.append(row);

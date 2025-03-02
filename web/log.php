@@ -14,6 +14,7 @@ $kategori = htmlspecialchars(trim($_GET['kategori'] ?? ''), ENT_QUOTES, 'UTF-8')
 $start_date = htmlspecialchars(trim($_GET['start_date'] ?? ''), ENT_QUOTES, 'UTF-8');
 $end_date = htmlspecialchars(trim($_GET['end_date'] ?? ''), ENT_QUOTES, 'UTF-8');
 $order_by = htmlspecialchars(trim($_GET['order_by'] ?? ''), ENT_QUOTES, 'UTF-8');
+$nama = htmlspecialchars(trim($_GET['nama'] ?? ''), ENT_QUOTES, 'UTF-8');
 
 // Query untuk mengambil data order
 $query = "
@@ -33,7 +34,13 @@ $query = "
     FROM 
         log_orders lo
     WHERE 1=1
-    ORDER BY lo.tanggal DESC";
+    ";
+
+
+// Tambahkan filter jika ada input nama
+if ($nama) {
+    $query .= " AND lo.nama = :nama";
+}
 
 // Tambahkan filter jika ada input order_by
 if ($order_by) {
@@ -58,6 +65,9 @@ if (!empty($start_date) && !empty($end_date)) {
 $stmt = $pdo->prepare($query);
 
 // Bind parameter jika ada
+if ($nama) {
+    $stmt->bindParam(":nama", $nama, PDO::PARAM_STR);
+}
 if ($order_by) {
     $stmt->bindParam(":order_by", $order_by, PDO::PARAM_STR);
 }
@@ -76,6 +86,9 @@ if (!empty($start_date) && !empty($end_date)) {
     $stmt->bindParam(":end_date", $end_date, PDO::PARAM_STR);
 }
 
+// Tambahkan ORDER BY di akhir
+$query .= " ORDER BY lo.tanggal DESC";
+
 $stmt->execute();
 $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -85,7 +98,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="60">
+    <!-- <meta http-equiv="refresh" content="60"> -->
     <link rel="stylesheet" href="./style/style.css">
     <title>Close</title>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
