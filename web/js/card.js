@@ -47,15 +47,44 @@ $(document).ready(function () {
 
     function updateProduktifitiTable(data) {
         let tableBody = $("#table-body");
-        tableBody.empty(); // Kosongkan tabel sebelum mengisi ulang
+        tableBody.empty();
     
         if (!data || data.length === 0) {
             tableBody.html("<tr><td colspan='8'>Tidak ada data</td></tr>");
             return;
         }
     
+        // Ambil nilai filter dari form
+        let order_by = $("#order_by").val();
+        let transaksi = $("#transaksi").val();
+        let kategori = $("#kategori").val();
+        let start_date = $("#start_date").val();
+        let end_date = $("#end_date").val();
+    
+        // Debug: Tampilkan nilai filter di console
+        console.log("Filter Values:", {
+            order_by: order_by,
+            transaksi: transaksi,
+            kategori: kategori,
+            start_date: start_date,
+            end_date: end_date
+        });
+    
+        // Loop melalui data dan buat baris tabel
         $.each(data, function (index, item) {
+            // Buat URL dasar dengan nama
             let logLink = `log.php?nama=${encodeURIComponent(item.Nama)}`;
+    
+            // Tambahkan parameter filter jika ada nilainya
+            if (order_by) logLink += `&order_by=${encodeURIComponent(order_by)}`;
+            if (transaksi) logLink += `&transaksi=${encodeURIComponent(transaksi)}`;
+            if (kategori) logLink += `&kategori=${encodeURIComponent(kategori)}`;
+            if (start_date) logLink += `&start_date=${encodeURIComponent(start_date)}`;
+            if (end_date) logLink += `&end_date=${encodeURIComponent(end_date)}`;
+    
+            // Debug: Tampilkan URL yang dihasilkan
+            console.log("Generated Log Link:", logLink);
+    
             let row = `
                 <tr>
                     <td>${index + 1}</td>
