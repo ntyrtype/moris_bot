@@ -13,12 +13,11 @@ if ($_SESSION['role'] !== 'admin') {
   exit();
 }
 
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nama = trim($_POST['nama']);
     $username = trim($_POST['username']);
-    $password = $password = hash('sha256', $_POST['password']); // Enkripsi password
-    $role = 'helpdesk'; // Default role
+    $password = hash('sha256', $_POST['password']); // Enkripsi password
+    $role = $_POST['role']; // Role dari dropdown
     $status = 'active'; // Default status
 
     try {
@@ -76,23 +75,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       margin-bottom: 2px;
     }
     .wrapper form .form-group span {color: red;}
-
     .form-group{
       margin-bottom: 20px;
       padding: 10px;
     }
     .btn{
-    border-color: #2c3e50;
+      border-color: #2c3e50;
     }
     .btn-customs{
       color: #2c3e50;
     }
     .btn:hover{
-    background: #2c3e50;
-    border-color: #2c3e50;
+      background: #2c3e50;
+      border-color: #2c3e50;
     }
-
-
   </style>
 </head>
 <body>
@@ -103,10 +99,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <p class="text-center">Isi inputan di bawah untuk menambahkan user baru</p>
       
       <form action="" method="POST"> 
-
         <div class="form-group">
-            <input type="text" name="nama" id="name" class="form-control" placeholder="Name" required >
-          </div>
+          <input type="text" name="nama" id="name" class="form-control" placeholder="Name" required >
+        </div>
 
         <div class="form-group">
           <input type="text" name="username" id="username" class="form-control" placeholder="Username" required >
@@ -114,6 +109,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <div class="form-group">
           <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
+        </div>
+
+        <div class="form-group">
+          <select name="role" class="form-control" required>
+            <option value="helpdesk">Helpdesk</option>
+            <option value="admin">Admin</option>
+          </select>
         </div>
 
         <div class="form-group">
