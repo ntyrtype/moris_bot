@@ -267,13 +267,15 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
             </div>
         <?php endif; ?>
     </div>
+    <?php if ($_SESSION['role'] === 'admin'): ?>
     <div class="chart-container">
-        <div class="chart-box">
-            <canvas id="categoryChart"></canvas>
-        </div>
-        <div class="chart-box">
-            <canvas id="progressTypeChart"></canvas>
-        </div>
+            <div class="chart-box">
+                <canvas id="categoryChart"></canvas>
+            </div>
+            <div class="chart-box">
+                <canvas id="progressTypeChart"></canvas>
+            </div>
+        <?php endif; ?>
     </div>
 </div>
 

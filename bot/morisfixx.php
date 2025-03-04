@@ -230,7 +230,7 @@ function sendNotifications() {
     $notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($notifications as $notification) {
-        $chat_id = -4712566458; // ID Grup Telegram penerima
+        $chat_id = -1002387652955; // ID Grup Telegram penerima
         $no_tiket = $notification['No_Tiket'];
         $order_id = $notification['order_id'];
         $transaksi = $notification['transaksi'];
