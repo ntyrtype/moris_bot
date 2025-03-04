@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+ document.addEventListener("DOMContentLoaded", function () {
     fetch("http://localhost/moris_bot/web/dashboard.php?ajax=true")
         .then(response => response.json())
         .then(data => {
@@ -23,8 +23,7 @@ function updateProgressChart(data) {
             datasets: [{
                 label: "Total Orders per Date",
                 data: values,
-                backgroundColor: "rgba(54, 162, 235, 0.5)",
-                borderColor: "rgba(54, 162, 235, 1)",
+                borderColor: "#34495e",
                 borderWidth: 1
             }]
         },
@@ -50,6 +49,9 @@ function updateProgressChart(data) {
 //Fungsi untuk Category Chart (by Kategori)
 function updateCategoryChart(data) {
     let ctx = document.getElementById("categoryChart").getContext("2d");
+
+    data.sort((a, b) => b.total - a.total);
+
     let labels = data.map(item => item.Kategori);
     let values = data.map(item => item.total);
 
@@ -60,7 +62,7 @@ function updateCategoryChart(data) {
             datasets: [{
                 label: "Total Orders by Category",
                 data: values,
-                backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0"],
+                backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#8D6E63", "#FF9F40", "#9966FF"],
                 borderWidth: 1
             }]
         },
@@ -75,7 +77,7 @@ function updateCategoryChart(data) {
                     font: {
                       size: 17,
                       color: 'black'
-                    }
+                    },
                 }
             },
             responsive: true,
@@ -102,7 +104,7 @@ function updateProgressTypeChart(data) {
             datasets: [{
                 label: "Order Progress Status",
                 data: values,
-                backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0"],
+                backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#8D6E63", "#FF9F40", "#9966FF"],
                 borderWidth: 1
             }]
         },
