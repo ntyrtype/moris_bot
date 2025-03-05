@@ -40,6 +40,7 @@ if (!isset($_SESSION['user_id'])) {
             <div class="profile-content" id="profileContent">
                 <?php if ($_SESSION['role'] === 'admin'): ?>
                     <a href="add_user.php">Tambah User</a>
+                    <a href="admin.php">Tools</a>
                 <?php endif; ?>
                 <a href="reset_password.php">Reset Password</a>
                 <form action="logout.php" method="POST">

@@ -301,6 +301,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
             <div class="profile-content" id="profileContent">
                 <?php if ($_SESSION['role'] === 'admin'): ?>
                 <a href="add_user.php">Tambah User</a>
+                <a href="admin.php">Tools</a>
                 <?php endif; ?>
                 <a href="reset_password.php">Reset Password</a>
                 <form action="logout.php" method="POST">
@@ -368,6 +369,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
         <?php if ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'helpdesk'): ?>
             <div class="table-container">
                 <table id="productivityTable" class="display">
+                <!-- <table id="dataTable" class="display" style="width:100%"> -->
                     <thead>
                         <tr>
                             <th>No</th>
