@@ -1,4 +1,7 @@
 $(document).ready(function () {
+    let progressChartInstance = null;
+    let categoryChartInstance = null;
+    let progressTypeChartInstance = null;
     // Panggil fetchData saat halaman dimuat
     fetchData();
 
@@ -37,14 +40,17 @@ $(document).ready(function () {
 
                 // ✅ Update tabel produktivitas
                 updateProduktifitiTable(response.produktifitiData);
+                updateCharts(response);
             },
             error: function (xhr, status, error) {
                 console.error("Error:", error);
                 $("#table-body").html("<tr><td colspan='8'>Gagal mengambil data</td></tr>");
+                console.log("Response Text:", xhr.responseText);
             }
         });
     }
 
+    
     function updateProduktifitiTable(data) {
         let tableBody = $("#table-body");
         tableBody.empty();
@@ -99,6 +105,117 @@ $(document).ready(function () {
                 </tr>
             `;
             tableBody.append(row);
+        });
+    }
+
+    function updateCharts(data) {
+        updateProgressChart(data.progressChart);
+        updateCategoryChart(data.categoryChart);
+        updateProgressTypeChart(data.progressTypeChart);
+    }
+
+    function updateProgressChart(data) {
+        const ctx = document.getElementById('progressChart')?.getContext('2d');
+        if (!ctx) return;
+
+        if (progressChartInstance) progressChartInstance.destroy();
+
+        progressChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.map(d => d.tanggal),
+                datasets: [{
+                    label: 'Total Orders per Date',
+                    data: data.map(d => d.total),
+                    borderColor: '#34495e',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Total Orders per Date',
+                        padding: {
+                        bottom: 20
+                        },
+                        font: {
+                        size: 17,
+                        color: 'black'
+                        }
+                    }
+                },
+                responsive: true
+            }
+        });
+    }
+
+    function updateCategoryChart(data) {
+        const ctx = document.getElementById('categoryChart')?.getContext('2d');
+        if (!ctx) return;
+
+        data.sort((a, b) => b.total - a.total);
+
+        if (categoryChartInstance) categoryChartInstance.destroy();
+
+        categoryChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.map(d => d.Kategori),
+                datasets: [{
+                    label: 'Total Orders by Category',
+                    data: data.map(d => d.total),
+                    backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#8D6E63", "#FF9F40", "#9966FF"],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Orders by Category',
+                        padding: { bottom: 20 },
+                        font: { size: 17, color: 'black' }
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    }
+
+    function updateProgressTypeChart(data) {
+        const ctx = document.getElementById('progressTypeChart')?.getContext('2d');
+        if (!ctx) return;
+
+        if (progressTypeChartInstance) progressTypeChartInstance.destroy();
+
+        progressTypeChartInstance = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: data.map(d => d.progress_order),
+                datasets: [{
+                    label: 'Order Progress Status',
+                    data: data.map(d => d.total),
+                    backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#8D6E63", "#FF9F40", "#9966FF"],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Type of Progress',
+                        padding: { bottom: 20 },
+                        font: { size: 17, color: 'black' }
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: false
+            }
         });
     }
 });

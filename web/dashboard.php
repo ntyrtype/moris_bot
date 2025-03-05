@@ -63,6 +63,9 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
         $orders_count[$row['Status']] = $row['jumlah'];
     }
 
+    $userRole = $_SESSION['role'];
+    $userId = $_SESSION['user_id'];
+
     // Query untuk tabel produktifiti dengan filter
     $queryProduktifiti = "SELECT 
                         lo.nama AS Nama, 
@@ -78,6 +81,9 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
                         lo.role = 'Helpdesk'";
 
     // Tambahkan filter jika ada
+    if ($userRole === 'helpdesk') {
+        $queryProduktifiti .= " AND lo.id_user = :user_id";
+    }
     if (!empty($order_by)) {
         $queryProduktifiti .= " AND lo.order_by = :order_by";
     }
@@ -95,6 +101,9 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
 
     $stmtProduktifiti = $pdo->prepare($queryProduktifiti);
 
+    if ($userRole === 'helpdesk') {
+        $stmtProduktifiti->bindParam(':user_id', $userId);
+    }
     if (!empty($order_by)) {
         $stmtProduktifiti->bindParam(":order_by", $order_by);
     }
@@ -112,20 +121,131 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     $stmtProduktifiti->execute();
     $produktifitiData = $stmtProduktifiti->fetchAll(PDO::FETCH_ASSOC);
 
-    // Ambil Data untuk progressChart (Order by Tanggal)
-    $queryProgress = "SELECT tanggal, COUNT(*) as total FROM orders GROUP BY tanggal ORDER BY tanggal";
-    $stmtProgress = $pdo->query($queryProgress);
+    // Query untuk progressChart dengan filter
+    $queryProgress = "SELECT tanggal, COUNT(*) as total FROM orders WHERE 1=1";
+
+    if (!empty($order_by)) {
+        $queryProgress .= " AND order_by = :order_by";
+    }
+    if (!empty($transaksi)) {
+        $queryProgress .= " AND transaksi = :transaksi";
+    }
+    if (!empty($kategori)) {
+        $queryProgress .= " AND kategori = :kategori";
+    }
+    if (!empty($start_date) && !empty($end_date)) {
+        $queryProgress .= " AND DATE(tanggal) BETWEEN :start_date AND :end_date";
+    }
+
+    $queryProgress .= " GROUP BY tanggal ORDER BY tanggal";
+    $stmtProgress = $pdo->prepare($queryProgress);
+
+    // Bind parameter untuk progressChart
+    if (!empty($order_by)) {
+        $stmtProgress->bindParam(":order_by", $order_by);
+    }
+    if (!empty($transaksi)) {
+        $stmtProgress->bindParam(':transaksi', $transaksi);
+    }
+    if (!empty($kategori)) {
+        $stmtProgress->bindParam(':kategori', $kategori);
+    }
+    if (!empty($start_date) && !empty($end_date)) {
+        $stmtProgress->bindParam(':start_date', $start_date);
+        $stmtProgress->bindParam(':end_date', $end_date);
+    }
+
+    $stmtProgress->execute();
     $dataProgress = $stmtProgress->fetchAll(PDO::FETCH_ASSOC);
 
-    // Ambil Data untuk categoryChart (Order by Kategori)
-    $queryCategory = "SELECT Kategori, COUNT(*) as total FROM orders GROUP BY Kategori";
-    $stmtCategory = $pdo->query($queryCategory);
+    // Query untuk categoryChart dengan filter
+    $queryCategory = "SELECT Kategori, COUNT(*) as total FROM orders WHERE 1=1";
+
+    if (!empty($order_by)) {
+        $queryCategory .= " AND order_by = :order_by";
+    }
+    if (!empty($transaksi)) {
+        $queryCategory .= " AND transaksi = :transaksi";
+    }
+    if (!empty($kategori)) {
+        $queryCategory .= " AND kategori = :kategori";
+    }
+    if (!empty($start_date) && !empty($end_date)) {
+        $queryCategory .= " AND DATE(tanggal) BETWEEN :start_date AND :end_date";
+    }
+
+    $queryCategory .= " GROUP BY Kategori";
+    $stmtCategory = $pdo->prepare($queryCategory);
+
+    // Bind parameter untuk categoryChart
+    if (!empty($order_by)) {
+        $stmtCategory->bindParam(":order_by", $order_by);
+    }
+    if (!empty($transaksi)) {
+        $stmtCategory->bindParam(':transaksi', $transaksi);
+    }
+    if (!empty($kategori)) {
+        $stmtCategory->bindParam(':kategori', $kategori);
+    }
+    if (!empty($start_date) && !empty($end_date)) {
+        $stmtCategory->bindParam(':start_date', $start_date);
+        $stmtCategory->bindParam(':end_date', $end_date);
+    }
+
+    $stmtCategory->execute();
     $dataCategory = $stmtCategory->fetchAll(PDO::FETCH_ASSOC);
 
-    // Ambil Data untuk progressTypeChart (Order by Progress Status)
-    $queryProgressType = "SELECT progress_order, COUNT(*) as total FROM orders GROUP BY progress_order";
-    $stmtProgressType = $pdo->query($queryProgressType);
+    // Query untuk progressTypeChart dengan filter
+    $queryProgressType = "SELECT progress_order, COUNT(*) as total FROM orders WHERE 1=1";
+    
+    if (!empty($order_by)) {
+        $queryProgressType .= " AND order_by = :order_by";
+    }
+    if (!empty($transaksi)) {
+        $queryProgressType.= " AND transaksi = :transaksi";
+    }
+    if (!empty($kategori)) {
+        $queryProgressType .= " AND kategori = :kategori";
+    }
+    if (!empty($start_date) && !empty($end_date)) {
+        $queryProgressType .= " AND DATE(tanggal) BETWEEN :start_date AND :end_date";
+    }
+
+    $queryProgressType .= " GROUP BY progress_order";
+    $stmtProgressType = $pdo->prepare($queryProgressType);
+
+    // Bind parameter untuk progressTypeChart
+    if (!empty($order_by)) {
+        $stmtProgressType ->bindParam(":order_by", $order_by);
+    }
+    if (!empty($transaksi)) {
+        $stmtProgressType ->bindParam(':transaksi', $transaksi);
+    }
+    if (!empty($kategori)) {
+        $stmtProgressType ->bindParam(':kategori', $kategori);
+    }
+    if (!empty($start_date) && !empty($end_date)) {
+        $stmtProgressType ->bindParam(':start_date', $start_date);
+        $stmtProgressType ->bindParam(':end_date', $end_date);
+    }
+
+    $stmtProgressType->execute();
     $dataProgressType = $stmtProgressType->fetchAll(PDO::FETCH_ASSOC);
+
+    // // Ambil Data untuk progressChart (Order by Tanggal)
+    // $queryProgress = "SELECT tanggal, COUNT(*) as total FROM orders GROUP BY tanggal ORDER BY tanggal";
+    // $stmtProgress = $pdo->query($queryProgress);
+    // $dataProgress = $stmtProgress->fetchAll(PDO::FETCH_ASSOC);
+
+    // // Ambil Data untuk categoryChart (Order by Kategori)
+    // $queryCategory = "SELECT Kategori, COUNT(*) as total FROM orders GROUP BY Kategori";
+    // $stmtCategory = $pdo->query($queryCategory);
+    // $dataCategory = $stmtCategory->fetchAll(PDO::FETCH_ASSOC);
+
+    // // Ambil Data untuk progressTypeChart (Order by Progress Status)
+    // $queryProgressType = "SELECT progress_order, COUNT(*) as total FROM orders GROUP BY progress_order";
+    // $stmtProgressType = $pdo->query($queryProgressType);
+    // $dataProgressType = $stmtProgressType->fetchAll(PDO::FETCH_ASSOC);
 
     // Gabungkan semua data dalam satu output JSON
     echo json_encode([
@@ -240,7 +360,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     </div>
     <!-- Tabel dan Grafik -->
     <div class="dashboard-content">
-        <?php if ($_SESSION['role'] === 'admin'): ?>
+        <?php if ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'helpdesk'): ?>
             <div class="table-container">
                 <table id="productivityTable">
                     <thead>
@@ -260,14 +380,14 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
                         <tr><td colspan="8">Loading...</td></tr>
                     </tbody>
                 </table>
+                <?php endif; ?>
             </div>
-            <!-- Grafik Progress by Tanggal -->
-            <div class="table-container">
-                <canvas id="progressChart"></canvas>
-            </div>
-        <?php endif; ?>
-    </div>
+        </div>
+    <!-- Grafik Progress by Tanggal -->
     <?php if ($_SESSION['role'] === 'admin'): ?>
+    <div class="table-container">
+            <canvas id="progressChart"></canvas>
+    </div>
     <div class="chart-container">
             <div class="chart-box">
                 <canvas id="categoryChart"></canvas>
@@ -282,7 +402,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
 <script src="./js/sidebar.js"></script>
 <script src="./js/card.js"></script>
 <script src="./js/profile.js"></script>
-<script src="./js/chart.js"></script>
+
 
 
 </body>
