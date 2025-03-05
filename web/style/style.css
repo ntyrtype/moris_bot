@@ -462,7 +462,7 @@ canvas {
 }
 #categoryChart, 
 #progressTypeChart {
-  max-width: 500px;
+  max-width: 475px;
   max-height: 400px;
   width: 100% !important;
   height: 100% !important;
@@ -478,9 +478,9 @@ canvas {
 
 .table-container{
   flex: content;
-  width: 100%;
   background: white;
   padding: 10px;
+  margin: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
@@ -490,10 +490,10 @@ canvas {
   gap: 20px;
   background: white;
   padding: 10px;
-  margin: 10px;
+  margin: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  justify-content: space-between; 
+  justify-content: space-around; 
 }
 .chart-box {
   flex: 1;

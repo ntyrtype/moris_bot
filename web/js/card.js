@@ -106,6 +106,14 @@ $(document).ready(function () {
             `;
             tableBody.append(row);
         });
+        // Inisialisasi DataTable dengan konfigurasi yang sama seperti #topProduct
+        $("#produktifitiTable").DataTable({
+            "pageLength": 5,
+            "lengthChange": false, // Hilangkan opsi untuk ubah jumlah data per halaman
+            "searching": false, // Hilangkan fitur pencarian
+            "ordering": true, // Aktifkan sorting di header tabel
+            "destroy": true // Hapus DataTable lama sebelum diinisialisasi ulang
+        });
     }
 
     function updateCharts(data) {
