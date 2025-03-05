@@ -12,44 +12,26 @@ if ($_SESSION['role'] !== 'admin') {
   echo "<script>alert('Anda tidak memiliki akses untuk menambahkan user!'); window.location.href='dashboard.php';</script>";
   exit();
 }
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $nama = trim($_POST['nama']);
-    $username = trim($_POST['username']);
-    $password = hash('sha256', $_POST['password']); // Enkripsi password
-    $role = $_POST['role']; // Role dari dropdown
-    $status = 'active'; // Default status
-
-    try {
-        $stmt = $pdo->prepare("INSERT INTO users (Nama, Username, Password, role, status) VALUES (?, ?, ?, ?, ?)");
-        $stmt->execute([$nama, $username, $password, $role, $status]);
-
-        echo "<script>alert('User berhasil ditambahkan!'); window.location.href='index.php';</script>";
-    } catch (PDOException $e) {
-        echo "<script>alert('Gagal menambahkan user: " . $e->getMessage() . "');</script>";
-    }
-}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>ADD USER</title>
+  <title>Admin Tools</title>
   <link href="https://stackpath.bootstrapcdn.com/bootswatch/4.4.1/cosmo/bootstrap.min.css" rel="stylesheet">
   <style>
-    body{
+    body {
       background-color: #2c3e50;
     }
-    .wrapper { 
-      font-family:'Poppins', sans-serif;
-      width: 500px; 
-      padding: 30px; 
+    .wrapper {
+      font-family: 'Poppins', sans-serif;
+      width: 500px; /* Lebar wrapper disesuaikan */
+      padding: 30px;
       margin: auto;
       margin-top: 50px;
       display: flex;
-      flex-direction: column;
-      text-align: center;
+      flex-direction: column; /* Mengatur tata letak menjadi atas-bawah */
       background-color: #EEEEEE;
       border-radius: 0.5rem;
       position: relative;
@@ -74,20 +56,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       padding: 8px;
       margin-bottom: 2px;
     }
-    .wrapper form .form-group span {color: red;}
-    .form-group{
+    .wrapper form .form-group span {
+      color: red;
+    }
+    .form-group {
       margin-bottom: 20px;
       padding: 10px;
     }
-    .btn{
+    .btn {
       border-color: #2c3e50;
     }
-    .btn-customs{
+    .btn-customs {
       color: #2c3e50;
     }
-    .btn:hover{
+    .btn:hover {
       background: #2c3e50;
       border-color: #2c3e50;
+    }
+    .admin-section {
+      width: 100%; /* Lebar penuh untuk setiap section */
+      margin-bottom: 30px; /* Jarak antara dua section */
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 0.5rem;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .admin-section h3 {
+      margin-bottom: 20px;
+      text-align: center;
     }
   </style>
 </head>
@@ -95,33 +91,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <main>
     <section class="container wrapper">
       <button class="close-btn" onclick="window.history.back();">&times;</button>
-      <h2 class="display-4 pt-3">Tambah User</h2>
-      <p class="text-center">Isi inputan di bawah untuk menambahkan user baru</p>
+      <h2 class="display-4 pt-3">Admin Tools</h2>
       
-      <form action="" method="POST"> 
-        <div class="form-group">
-          <input type="text" name="nama" id="name" class="form-control" placeholder="Name" required >
-        </div>
+      <!-- Section Manajemen Kategori -->
+      <div class="admin-section">
+        <h3>Manajemen Kategori</h3>
+        <form action="" method="POST">
+          <div class="form-group">
+            <input type="text" name="category_name" id="category_name" class="form-control" placeholder="Nama Kategori" required>
+          </div>
+          <div class="form-group">
+            <input type="text" name="category_regex" id="category_regex" class="form-control" placeholder="Regex Pattern" required>
+          </div>
+          <div class="form-group">
+            <input type="submit" class="btn btn-block btn-outline-primary btn-customs" value="Tambah Kategori">
+          </div>
+        </form>
+      </div>
 
-        <div class="form-group">
-          <input type="text" name="username" id="username" class="form-control" placeholder="Username" required >
-        </div>
-
-        <div class="form-group">
-          <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
-        </div>
-
-        <div class="form-group">
-          <select name="role" class="form-control" required>
-            <option value="helpdesk">Helpdesk</option>
-            <option value="admin">Admin</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <input type="submit" class="btn btn-block btn-outline-primary btn-customs" value="Tambah User">
-        </div>
-      </form>
+      <!-- Section Manajemen Group -->
+      <div class="admin-section">
+        <h3>Manajemen Group</h3>
+        <form action="" method="POST">
+          <div class="form-group">
+            <input type="text" name="group_name" id="group_name" class="form-control" placeholder="Nama Group" required>
+          </div>
+          <div class="form-group">
+            <input type="text" name="group_description" id="group_description" class="form-control" placeholder="Deskripsi Group" required>
+          </div>
+          <div class="form-group">
+            <input type="submit" class="btn btn-block btn-outline-primary btn-customs" value="Tambah Group">
+          </div>
+        </form>
+      </div>
     </section>
   </main>
 </body>
