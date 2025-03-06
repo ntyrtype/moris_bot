@@ -139,8 +139,18 @@ function sendMessage($chat_id, $message) {
 function handleOrder($text, $chat_id, $message_id, $user_id, $username) {
     global $pdo;
 
+    // Ambil daftar kategori dari database
+    $stmt = $pdo->query("SELECT regex_pattern FROM kategori LIMIT 1");
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $kategori_regex = $row['regex_pattern']; // Contoh: "INDIHOME|INDIBIZ|Wifiid|Astinet|Metro|VPNIP|WMS|OLO"
+
+    // Perbaikan regex agar sesuai format dengan kategori yang diambil dari database
+    $pattern = "/^\/moban #($kategori_regex) #([A-Z0-9]+) #([A-Z0-9]+) #([\s\S]+)/i";
+    preg_match($pattern, $text, $matches);
+
     // Perbaikan regex agar sesuai format
-    preg_match("/^\/moban #(INDIHOME|INDIBIZ|Wifiid|Astinet|Metro|VPNIP|WMS|OLO) #([A-Z0-9]+) #([A-Z0-9]+) #([\s\S]+)/i", $text, $matches);
+    // preg_match("/^\/moban #(INDIHOME|INDIBIZ|Wifiid|Astinet|Metro|VPNIP|WMS|OLO) #([A-Z0-9]+) #([A-Z0-9]+) #([\s\S]+)/i", $text, $matches);
 
     if (count($matches) !== 5) {
         $message = "Format Order Tidak Valid!\n\n";
