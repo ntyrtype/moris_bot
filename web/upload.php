@@ -48,9 +48,32 @@ $query = "INSERT INTO orders (Order_ID, Transaksi, Kategori, Keterangan, No_Tike
         VALUES (:order_id, :transaksi, :kategori, :keterangan, :no_tiket, :status, 'On Check', :order_by, CURDATE())";
 $stmt = $pdo->prepare($query);
 
+// Array untuk menyimpan order_id yang sudah diproses
+$processed_order_ids = [];
+
 // Loop untuk Memasukkan Data
 foreach ($data as $row) {
     $order_id  = isset($row["order_id"]) ? strtoupper(trim($row["order_id"])) : "";
+
+    // Cek apakah order_id sudah diproses atau sudah ada di database
+    if (in_array($order_id, $processed_order_ids)) {
+        continue; // Lewati baris ini jika order_id duplikat
+    }
+
+    // Cek apakah order_id sudah ada di database
+    $check_query = "SELECT COUNT(*) FROM orders WHERE Order_ID = :order_id";
+    $check_stmt = $pdo->prepare($check_query);
+    $check_stmt->bindParam(':order_id', $order_id, PDO::PARAM_STR);
+    $check_stmt->execute();
+    $count = $check_stmt->fetchColumn();
+
+    if ($count > 0) {
+        continue; // Lewati baris ini jika order_id sudah ada di database
+    }
+
+    // Tambahkan order_id ke array processed_order_ids
+    $processed_order_ids[] = $order_id;
+
     $transaksi = isset($row["transaksi"]) ? strtoupper(trim($row["transaksi"])) : "";
     $kategori  = isset($row["kategori"]) ? strtoupper(trim($row["kategori"])) : "";
     $keterangan = isset($row["keterangan"]) ? trim($row["keterangan"]) : "";

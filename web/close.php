@@ -56,6 +56,9 @@ if (!empty($start_date) && !empty($end_date)) {
     $query .= " AND o.tanggal <= :end_date";
 }
 
+// Tambahkan ORDER BY di akhir
+$query .= " ORDER BY o.tanggal DESC";
+
 // Eksekusi query
 $stmt = $pdo->prepare($query);
 
