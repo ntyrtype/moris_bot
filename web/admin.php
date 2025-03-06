@@ -162,22 +162,16 @@ if ($_SESSION['role'] !== 'admin') {
         <h3>Manajemen Kategori</h3>
         <form action="" method="POST">
           <div class="form-group">
-            <input type="text" name="category_regex" id="category_regex" class="form-control" placeholder="Masukkan Kategori Sesuai Format Di Bawah" required>
+            <input type="text" name="category_regex" id="category_regex" class="form-control" placeholder="INDIHOME, INDIBIZ, Wifiid, Astinet, Metro, VPNIP, WMS, OLO" required>
             <label for="category_regex">
-              Format 
+              Format Edit Kategori 
               <a href="#" id="regexInfo" class="info-icon">ℹ️</a>
             </label>
           </div>
 
           <!-- Modal atau Tooltip untuk Menampilkan Info Regex -->
           <div id="regexModal" style="display: none; position: absolute; background: white; border: 1px solid #ccc; padding: 10px;">
-            <strong>Format Regex:</strong>
-            <ul>
-              <li><code>^[a-zA-Z0-9]+$</code> → Hanya huruf dan angka</li>
-              <li><code>^\d{4}-\d{2}-\d{2}$</code> → Format tanggal YYYY-MM-DD</li>
-              <li><code>^[A-Za-z]+@[A-Za-z]+\.[A-Za-z]{2,}$</code> → Format email</li>
-            </ul>
-            <strong>Kategori yang tersedia saat ini:</strong>
+            <strong>Format:</strong>
             <p>INDIHOME|INDIBIZ|Wifiid|Astinet|Metro|VPNIP|WMS|OLO</p>
           </div>
 
