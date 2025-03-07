@@ -19,21 +19,20 @@ if (empty($no_tiket)) {
 }
 
 // Query untuk mengambil data log berdasarkan no_tiket
-$query = "
-    SELECT 
-        tanggal,
-        status,
-        progress_order,
-        keterangan,
-        nama,
-        role
-    FROM 
-        log_orders
-    WHERE 
-        No_Tiket = :no_tiket
-    ORDER BY 
-        tanggal DESC
-";
+$query = "SELECT 
+                tanggal,
+                status,
+                progress_order,
+                keterangan,
+                nama,
+                role
+            FROM 
+                log_orders
+            WHERE 
+                No_Tiket = :no_tiket
+            ORDER BY 
+                tanggal DESC
+        ";
 
 try {
     // Eksekusi query
