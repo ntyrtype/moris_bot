@@ -15,11 +15,10 @@ if ($_SESSION['role'] !== 'admin') {
     exit();
 }
 
-
 // Ambil regex kategori dari database
 $stmt = $pdo->query("SELECT regex_pattern FROM kategori LIMIT 1");
 $row = $stmt->fetch(PDO::FETCH_ASSOC);
-$kategori_regex = isset($row['regex_pattern']) ? $row['regex_pattern'] : '';
+$kategori_regex = $row['regex_pattern'] ?? '';
 
 // Ubah "|" menjadi ", " untuk placeholder
 $kategori_placeholder = str_replace('|', ', ', $kategori_regex);
@@ -44,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Jika valid, update database
         try {
-            $stmt = $pdo->prepare("UPDATE kategori SET regex_pattern = ? LIMIT 1");
+            $stmt = $pdo->prepare("UPDATE kategori SET regex_pattern = ?");
             $stmt->execute([$category_regex]);
 
             $_SESSION['message'] = "Kategori berhasil diperbarui!";
@@ -55,14 +54,64 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             header("Location: admin.php");
             exit();
         }
+    } elseif (isset($_POST['group_name'], $_POST['group_id'])) {
+        // Handle tambah group
+        $group_name = trim($_POST['group_name']);
+        $group_id = trim($_POST['group_id']);
+        
+        // Validasi input
+        if (empty($group_name) || empty($group_id)) {
+            $_SESSION['message'] = "Nama Group dan ID Group harus diisi!";
+            header("Location: admin.php");
+            exit();
+        }
+        
+        if (!is_numeric($group_id)) {
+            $_SESSION['message'] = "ID Group harus berupa angka!";
+            header("Location: admin.php");
+            exit();
+        }
+
+        try {
+            // Cek apakah group sudah ada
+            $stmt = $pdo->prepare("SELECT * FROM groups WHERE group_id = ?");
+            $stmt->execute([$group_id]);
+            
+            if ($stmt->rowCount() > 0) {
+                $_SESSION['message'] = "Group ID sudah terdaftar!";
+                header("Location: admin.php");
+                exit();
+            }
+            
+            // Tambahkan group baru
+            $stmt = $pdo->prepare("INSERT INTO groups (group_id, group_name) VALUES (?, ?)");
+            $stmt->execute([$group_id, $group_name]);
+            
+            $_SESSION['message'] = "Group berhasil ditambahkan!";
+            header("Location: admin.php");
+            exit();
+            
+        } catch (PDOException $e) {
+            $_SESSION['message'] = "Gagal menambahkan group: " . $e->getMessage();
+            header("Location: admin.php");
+            exit();
+        }
     } else {
         $_SESSION['message'] = "Input tidak boleh kosong!";
         header("Location: admin.php");
         exit();
     }
 }
-?>
 
+// Ambil data groups untuk datatable
+try {
+    $stmt = $pdo->query("SELECT * FROM groups");
+    $groups = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $groups = [];
+    $_SESSION['message'] = "Gagal mengambil data groups: " . $e->getMessage();
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -250,18 +299,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </table>
         </div>
         <h4 style="margin: 20px;">Tambah Group</h4>
+              <!-- Di dalam form tambah group -->
         <form action="" method="POST">
-          <div class="flex-group">
-            <div class="form-group">
-              <input type="text" name="group_name" id="group_name" class="form-control" placeholder="Nama Group" required>
+            <div class="flex-group">
+                <div class="form-group">
+                    <input type="text" name="group_name" class="form-control" placeholder="Nama Group" required>
+                </div>
+                <div class="form-group">
+                    <input type="number" name="group_id" class="form-control" placeholder="ID Group" required>
+                </div>
+                <div class="form-group">
+                    <input type="submit" class="btn btn-outline-primary btn-customs" value="Tambah Group">
+                </div>
             </div>
-            <div class="form-group">
-              <input type="text" name="group_description" id="group_description" class="form-control" placeholder="ID Group" required>
-            </div>
-            <div class="form-group">
-              <input type="submit" class="btn btn-outline-primary btn-customs" value="Tambah Group">
-            </div>
-          </div>
         </form>
       </div>
     </section>
@@ -282,6 +332,72 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
   });
   </script>
-  <script src="./js/datatable.js"></script>
+  <script>
+    $(document).ready(function() {
+      // Inisialisasi DataTable untuk Group
+      const groupTable = $('#dataTable').DataTable({
+          ajax: {
+              url: 'fetch_groups.php', // Endpoint PHP untuk mengambil data
+              dataSrc: ''
+          },
+          scrollX: true,
+          ordering: false,
+          columns: [
+              { 
+                  data: null, 
+                  render: function(data, type, row, meta) {
+                      return meta.row + 1;
+                  },
+                  width: "50px"
+              },
+              { 
+                  data: 'group_name',
+                  width: "200px"
+              },
+              { 
+                  data: 'group_id',
+                  width: "100px" 
+              },
+              { 
+                  data: 'is_active', 
+                  render: function(data, type, row) {
+                      return `
+                          <button class="btn btn-sm ${data ? 'btn-success' : 'btn-danger'}" 
+                                  onclick="toggleGroupStatus(${row.group_id}, ${data})">
+                              ${data ? 'Aktif' : 'Nonaktif'}
+                          </button>
+                      `;
+                  },
+                  width: "100px"
+              }
+          ],
+          columnDefs: [{ targets: '_all', className: 'text-center' }]
+      });
+
+      // Fungsi toggle status
+      window.toggleGroupStatus = function(groupId, currentStatus) {
+          if (confirm(`Apakah Anda yakin ingin ${currentStatus ? 'menonaktifkan' : 'mengaktifkan'} group ini?`)) {
+              $.ajax({
+                  url: 'toggle_group.php',
+                  method: 'POST',
+                  data: { group_id: groupId },
+                  dataType: 'json', // Pastikan respons dibaca sebagai JSON
+                  success: function(response) {
+                      if (response.success) {
+                          alert(response.message);
+                          groupTable.ajax.reload(null, false); // Refresh DataTable tanpa reset pagination
+                      } else {
+                          alert("Error: " + response.message);
+                      }
+                  },
+                  error: function(xhr) {
+                      alert("Terjadi kesalahan: " + xhr.responseText);
+                  }
+              });
+          }
+      }
+  });
+  </script>
+  <!-- <script src="./js/datatable.js"></script> -->
 </body>
 </html>

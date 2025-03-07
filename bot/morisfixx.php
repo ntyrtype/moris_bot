@@ -100,13 +100,13 @@ function handleUserMessage($user_id, $chat_id, $text, $username, $chat_type, $me
     } elseif ($chat_type === 'group' || $chat_type === 'supergroup') {
         // Hanya cek database jika pesan adalah /moban atau /help
         if (strpos($text, "/moban") === 0 || $text == "/help") {
-            $stmt = $pdo->prepare("SELECT * FROM groups WHERE group_id = ?");
+            $stmt = $pdo->prepare("SELECT * FROM groups WHERE group_id = ? AND is_active = 1");
             $stmt->execute([$chat_id]);
             $group = $stmt->fetch();
 
             // Jika grup tidak terdaftar, kirim pesan dan hentikan eksekusi
             if (!$group) {
-                sendMessage($chat_id, "Grup belum terdaftar di bot.\n\nHubungi admin untuk mendaftarkan grup ini.");
+                sendMessage($chat_id, "Grup belum terdaftar sedang dinonaktifkan di bot.\n\nHubungi admin untuk mendaftarkan grup ini.");
                 return;
             }
 
@@ -270,6 +270,17 @@ function sendNotifications() {
         $nama = $notification['nama']; // Nama yang menangani order
         $order_by = $notification['order_by']; // Teknisi atau Plasa
 
+        // Cek apakah chat_id valid sebelum lanjut
+        if (empty($chat_id) || $chat_id == 0) {
+            error_log("Lewati notifikasi karena tidak ada message_id untuk No Tiket: $no_tiket");
+
+            //  Tetap update is_sent agar tidak diulang di pemanggilan berikutnya
+            $stmtUpdate = $pdo->prepare("UPDATE log_orders SET is_sent = 1 WHERE no = ?");
+            $stmtUpdate->execute([$notification['no']]);
+
+            continue; // Lewati iterasi ini, tidak kirim pesan
+        }
+
         // Format pesan berdasarkan status
         if ($status === 'Pickup') {
             if (in_array($progress_order, ['In Progress', 'Ada Kendala', 'On Eskalasi'])) {
@@ -302,7 +313,8 @@ function sendNotifications() {
         if ($orderMessage) {
             replyMessage($chat_id, $message, $orderMessage['message_id']);
         } else {
-            sendMessage($chat_id, $message);
+            // Jika tidak ada message_id, lewati pengiriman
+            error_log("Lewati notifikasi karena tidak ada message_id untuk No Tiket: $no_tiket");
         }
 
         // Update status is_sent menjadi 1 agar tidak dikirim ulang
