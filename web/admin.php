@@ -248,6 +248,14 @@ try {
     .flex-group input {
       width: 100%; /* Agar input mengisi form-group */
     }
+
+    .group-name {
+    display: block; 
+    white-space: normal; /* Izinkan teks turun ke bawah */
+    word-wrap: break-word; /* Pecah kata jika terlalu panjang */
+    overflow-wrap: break-word; /* Pastikan teks bisa wrap */
+    }
+    
   </style>
 </head>
 <body>
@@ -352,6 +360,9 @@ try {
               },
               { 
                   data: 'group_name',
+                  render: function(data) {
+                      return `<span class="group-name">${data}</span>`;
+                  },
                   width: "200px"
               },
               { 
