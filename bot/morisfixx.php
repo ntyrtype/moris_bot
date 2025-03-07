@@ -43,8 +43,8 @@ while (true) {
 function handleUserMessage($user_id, $chat_id, $text, $username, $chat_type, $message_id) {
     global $pdo;
 
-    // ID grup yang ditargetkan
-    $target_group_id = -1002387652955;
+    // // ID grup yang ditargetkan
+    // $target_group_id = -1002387652955;
 
     if ($chat_type === 'private') {
         
@@ -98,12 +98,25 @@ function handleUserMessage($user_id, $chat_id, $text, $username, $chat_type, $me
             }
         }
     } elseif ($chat_type === 'group' || $chat_type === 'supergroup') {
-        // Jika pesan berasal dari grup
-        if ($chat_id == $target_group_id && strpos($text, "/moban") === 0) {
-            handleOrder($text, $chat_id, $message_id, $user_id, $username);
-        } elseif ($chat_id == $target_group_id && $text == "/help") {
-            sendHelpMessage($chat_id, $message_id);
-        }
+        // Hanya cek database jika pesan adalah /moban atau /help
+        if (strpos($text, "/moban") === 0 || $text == "/help") {
+            $stmt = $pdo->prepare("SELECT * FROM groups WHERE group_id = ?");
+            $stmt->execute([$chat_id]);
+            $group = $stmt->fetch();
+
+            // Jika grup tidak terdaftar, kirim pesan dan hentikan eksekusi
+            if (!$group) {
+                sendMessage($chat_id, "Grup belum terdaftar di bot.\n\nHubungi admin untuk mendaftarkan grup ini.");
+                return;
+            }
+
+            // Proses perintah yang valid
+            if (strpos($text, "/moban") === 0) {
+                handleOrder($text, $chat_id, $message_id, $user_id, $username);
+            } elseif ($text == "/help") {
+                sendHelpMessage($chat_id, $message_id);
+            }
+        }   
     }
 }
 
@@ -208,17 +221,18 @@ function handleOrder($text, $chat_id, $message_id, $user_id, $username) {
     try {
         $pdo->beginTransaction();
 
-        // Simpan ke tabel orders
-        $stmt1 = $pdo->prepare("INSERT INTO orders (Order_ID, Transaksi, Kategori, Keterangan, No_Tiket, Status, id_telegram, username_telegram, order_by) 
-        VALUES (?, ?, ?, ?, ?, 'Order', ?, ?, ?)");
-        $stmt1->execute([$wonum, $transaksi, $kategori, $keterangan, $no_tiket, $user_id, $username, $order_by]);
+        // Simpan ke tabel orders (tambahkan group_id)
+        $stmt1 = $pdo->prepare("INSERT INTO orders (Order_ID, Transaksi, Kategori, Keterangan, No_Tiket, Status, id_telegram, username_telegram, order_by, group_id) 
+        VALUES (?, ?, ?, ?, ?, 'Order', ?, ?, ?, ?)");
+        $stmt1->execute([$wonum, $transaksi, $kategori, $keterangan, $no_tiket, $user_id, $username, $order_by, $chat_id]); // <-- $chat_id adalah group_id
 
         // Simpan ke tabel order_messages
-        $stmt2 = $pdo->prepare("INSERT INTO order_messages (no_tiket, message_id) VALUES (?, ?)");
-        $stmt2->execute([$no_tiket, $message_id]);
+        $stmt2 = $pdo->prepare("INSERT INTO order_messages (no_tiket, message_id, group_id) VALUES (?, ?, ?)");
+        $stmt2->execute([$no_tiket, $message_id, $chat_id]); // <-- Simpan group_id
 
         $pdo->commit();
 
+        // Balas pesan di grup asal
         replyMessage($chat_id, "Hallo $nama. Permintaan Anda $wonum $transaksi $kategori dengan no tiket $no_tiket sedang kami check, silahkan tunggu.", $message_id);
     } catch (Exception $e) {
         $pdo->rollBack();
@@ -235,12 +249,18 @@ function replyMessage($chat_id, $message, $reply_to_message_id) {
 function sendNotifications() {
     global $pdo;
 
-    // Ambil notifikasi yang belum terkirim (is_sent = 0) dengan status 'Pickup' atau 'Close'
-    $stmt = $pdo->query("SELECT * FROM log_orders WHERE (status = 'Pickup' OR status = 'Close') AND is_sent = 0");
+    // Ambil notifikasi yang belum terkirim
+    $stmt = $pdo->query("
+        SELECT lo.*, o.group_id 
+        FROM log_orders lo
+        JOIN orders o ON lo.No_Tiket = o.No_Tiket
+        WHERE (lo.status = 'Pickup' OR lo.status = 'Close') 
+        AND lo.is_sent = 0
+    ");
     $notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($notifications as $notification) {
-        $chat_id = -1002387652955; // ID Grup Telegram penerima
+        $chat_id = $notification['group_id']; // Ambil group_id dari order
         $no_tiket = $notification['No_Tiket'];
         $order_id = $notification['order_id'];
         $transaksi = $notification['transaksi'];
@@ -266,10 +286,17 @@ function sendNotifications() {
         }
         
 
-        // Ambil message_id dari tabel order_messages untuk digunakan sebagai reply_to_message_id
-        $stmtMessage = $pdo->prepare("SELECT message_id FROM order_messages WHERE no_tiket = ? ORDER BY id ASC LIMIT 1");
-        $stmtMessage->execute([$no_tiket]);
+        // Ambil message_id dari order_messages yang sesuai dengan grup
+        $stmtMessage = $pdo->prepare("
+        SELECT message_id 
+        FROM order_messages 
+        WHERE no_tiket = ? AND group_id = ?
+        ORDER BY id ASC 
+        LIMIT 1
+        ");
+        $stmtMessage->execute([$no_tiket, $chat_id]);
         $orderMessage = $stmtMessage->fetch(PDO::FETCH_ASSOC);
+
 
         // Kirim pesan dengan atau tanpa reply
         if ($orderMessage) {
