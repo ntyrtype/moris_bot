@@ -121,7 +121,7 @@ if (!empty($start_date) && !empty($end_date)) {
     $query .= " AND o.tanggal <= :end_date";
 }
 
-$query .= " ORDER BY o.tanggal DESC";
+$query .= " ORDER BY o.tanggal ASC";
 
 // Eksekusi query
 $stmt = $pdo->prepare($query);

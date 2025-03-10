@@ -143,7 +143,7 @@ if (!empty($start_date) && !empty($end_date)) {
     $query .= " AND o.tanggal <= :end_date";
 }
 
-$query .= " ORDER BY o.tanggal DESC";
+$query .= " ORDER BY o.tanggal ASC";
 
 // Eksekusi query
 $stmt = $pdo->prepare($query);
@@ -262,6 +262,9 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </form>
         </div>
         <button id="uploadButton" class="upload-btn">Upload Excel</button>
+        <a href="assets/Format.xlsx" download style="margin-left: 10px; margin-right: auto; margin-top: 5px; text-decoration: none; display: block; font-size:11px; color: #4680b9;">
+            Download Format
+        </a>
         <input type="file" id="fileInput" style="display:none;" accept=".csv, .xlsx, .xls">
         <div class="table-responsive">
             <table id="dataTable" class="display" style="width:100%">
