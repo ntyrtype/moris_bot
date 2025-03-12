@@ -68,17 +68,17 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
 
     // Query untuk tabel produktifiti dengan filter
     $queryProduktifiti = "SELECT 
-                        lo.nama AS Nama, 
-                        COUNT(CASE WHEN lo.transaksi = 'PDA' THEN 1 END) AS PDA,
-                        COUNT(CASE WHEN lo.transaksi = 'MO' THEN 1 END) AS MO,
-                        COUNT(CASE WHEN lo.transaksi = 'ORBIT' THEN 1 END) AS ORBIT,
-                        COUNT(CASE WHEN lo.transaksi = 'FFG' THEN 1 END) AS FFG,
-                        COUNT(CASE WHEN lo.transaksi = 'UNSPEK' THEN 1 END) AS UNSPEK,
-                        COUNT(CASE WHEN lo.status IN ('Pickup', 'Close') THEN 1 END) AS RecordCount
+                            lo.nama AS Nama, 
+                            COUNT(DISTINCT CASE WHEN lo.transaksi = 'PDA' THEN lo.order_id END) AS PDA,
+                            COUNT(DISTINCT CASE WHEN lo.transaksi = 'MO' THEN lo.order_id END) AS MO,
+                            COUNT(DISTINCT CASE WHEN lo.transaksi = 'ORBIT' THEN lo.order_id END) AS ORBIT,
+                            COUNT(DISTINCT CASE WHEN lo.transaksi = 'FFG' THEN lo.order_id END) AS FFG,
+                            COUNT(DISTINCT CASE WHEN lo.transaksi = 'UNSPEK' THEN lo.order_id END) AS UNSPEK,
+                            COUNT(DISTINCT CASE WHEN lo.status IN ('Pickup', 'Close') THEN lo.order_id END) AS RecordCount
                         FROM 
-                        log_orders lo
+                            log_orders lo
                         WHERE 
-                        lo.role = 'Helpdesk'";
+                            lo.role = 'Helpdesk'";
 
     // Tambahkan filter jika ada
     if ($userRole === 'helpdesk') {
