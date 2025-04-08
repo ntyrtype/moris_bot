@@ -138,6 +138,10 @@ function sendHelpMessage($chat_id, $message_id) {
                 . "\n- ORBIT"
                 . "\n- FFG"
                 . "\n- UNSPEK"
+                . "\n- PSB"
+                . "\n- DO"
+                . "\n- RO"
+                . "\n- SO"
                 . "\n\n Untuk informasi lebih lanjut, hubungi admin.";
 
     replyMessage($chat_id, $helpMessage, $message_id);

@@ -143,7 +143,7 @@ if (!empty($start_date) && !empty($end_date)) {
     $query .= " AND o.tanggal <= :end_date";
 }
 
-$query .= " ORDER BY o.tanggal ASC";
+$query .= " ORDER BY o.tanggal DESC";
 
 // Eksekusi query
 $stmt = $pdo->prepare($query);
@@ -237,7 +237,11 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <option value="MO" <?= ($transaksi === 'MO') ? 'selected' : '' ?>>MO</option>
                     <option value="ORBIT" <?= ($transaksi === 'ORBIT') ? 'selected' : '' ?>>ORBIT</option>
                     <option value="FFG" <?= ($transaksi === 'FFG') ? 'selected' : '' ?>>FFG</option>
-                    <option value="UNSPEk" <?= ($transaksi === 'UNSPEk') ? 'selected' : '' ?>>UNSPEK</option>
+                    <option value="UNSPEK" <?= ($transaksi === 'UNSPEK') ? 'selected' : '' ?>>UNSPEK</option>
+                    <option value="PSB" <?= ($transaksi === 'PSB') ? 'selected' : '' ?>>PSB</option>
+                    <option value="RO" <?= ($transaksi === 'RO') ? 'selected' : '' ?>>RO</option>
+                    <option value="SO" <?= ($transaksi === 'SO') ? 'selected' : '' ?>>SO</option>
+                    <option value="DO" <?= ($transaksi === 'DO') ? 'selected' : '' ?>>DO</option>
                 </select>
 
                 <select aria-label="kategori" name="kategori" id="kategori">

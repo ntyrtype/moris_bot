@@ -325,7 +325,11 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
                 <option value="MO">MO</option>
                 <option value="ORBIT">ORBIT</option>
                 <option value="FFG">FFG</option>
-                <option value="UNSPEk">UNSPEK</option>
+                <option value="UNSPEK">UNSPEK</option>
+                <option value="PSB">PSB</option>
+                <option value="RO">RO</option>
+                <option value="SO">SO</option>
+                <option value="DO">DO</option>
             </select>
 
             <select aria-label="kategori" name="kategori" id="kategori">

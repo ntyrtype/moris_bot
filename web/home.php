@@ -92,7 +92,11 @@ if (!isset($_SESSION['user_id'])) {
                 <li>📌 <strong>MO</strong> → Modifi Order (modifikasi paket)</li>
                 <li>📌 <strong>ORBIT</strong> → Modem Internet</li>
                 <li>📌 <strong>FFG</strong> → Fulfillment Guarantee, Garansi Pasang Baru</li>
-                <li>📌 <strong>UNSPEK</strong> → Unspecified (Kategori yang tidak teridentifikasi secara spesifik)</li>
+                <li>📌 <strong>UNSPEK</strong> → Layanan pelanggan di luar ketentuan redaman -14 s/d -24 dBm</li>
+                <li>📌 <strong>PSB</strong> → Pasang Sambungan Baru</li>
+                <li>📌 <strong>RO</strong> → Resumption Order </li>
+                <li>📌 <strong>DO</strong> → Disconnect Order </li>
+                <li>📌 <strong>SO</strong> → Disconnect Order </li>
             </ul>
         </section>
         <section>
