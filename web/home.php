@@ -96,7 +96,7 @@ if (!isset($_SESSION['user_id'])) {
                 <li>📌 <strong>PSB</strong> → Pasang Sambungan Baru</li>
                 <li>📌 <strong>RO</strong> → Resumption Order </li>
                 <li>📌 <strong>DO</strong> → Disconnect Order </li>
-                <li>📌 <strong>SO</strong> → Disconnect Order </li>
+                <li>📌 <strong>SO</strong> → Suspend Order </li>
             </ul>
         </section>
         <section>
