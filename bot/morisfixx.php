@@ -288,15 +288,15 @@ function sendNotifications() {
         // Format pesan berdasarkan status
         if ($status === 'Pickup') {
             if ($progress_order === 'On Eskalasi') {
-                $message = " Order Pending\n\n No Tiket: $no_tiket\n Order ID: $order_id\n Transaksi: $transaksi\n Progress: $progress_order\n Ditangani oleh: $nama ($order_by)\n Keterangan: $keterangan";
+                $message = " Order Pending\n\n No Tiket: $no_tiket\n Order ID: $order_id\n Transaksi: $transaksi\n Progress: $progress_order\n Ditangani oleh: $nama\n Keterangan: $keterangan\n Source: $order_by";
             } elseif ($progress_order === 'In Progress') {
-                $message = " Order Proses\n\n No Tiket: $no_tiket\n Order ID: $order_id\n Transaksi: $transaksi\n Progress: $progress_order\n Ditangani oleh: $nama ($order_by)\n Keterangan: $keterangan";
+                $message = " Order Proses\n\n No Tiket: $no_tiket\n Order ID: $order_id\n Transaksi: $transaksi\n Progress: $progress_order\n Ditangani oleh: $nama\n Keterangan: $keterangan\n Source: $order_by";
             }
         } elseif ($status === 'Close') {
             if ($progress_order === 'Cancel') {
-                $message = " Order Cancelled\n\n No Tiket: $no_tiket\n Order ID: $order_id\n Transaksi: $transaksi\n Progress Terakhir: $progress_order\n Ditangani oleh: $nama ($order_by)\n Keterangan: $keterangan";
+                $message = " Order Cancelled\n\n No Tiket: $no_tiket\n Order ID: $order_id\n Transaksi: $transaksi\n Progress Terakhir: $progress_order\n Ditangani oleh: $nama\n Keterangan: $keterangan\n Source: $order_by";
             } elseif (in_array($progress_order, ['Sudah PS', 'CAINPUL'])) {
-                $message = " Order Selesai\n\n No Tiket: $no_tiket\n Order ID: $order_id\n Transaksi: $transaksi\n Progress Terakhir: $progress_order\n Ditangani oleh: $nama ($order_by)\n Keterangan: $keterangan";
+                $message = " Order Selesai\n\n No Tiket: $no_tiket\n Order ID: $order_id\n Transaksi: $transaksi\n Progress Terakhir: $progress_order\n Ditangani oleh: $nama\n Keterangan: $keterangan\n Source: $order_by";
             }
         }
         
