@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pdo->beginTransaction();
 
         // Tentukan status dan progress_order berdasarkan input
-        if ($status === 'Sudah PS') {
+        if ($status === 'Sudah PS' || $status === 'CAINPUL') {
             $new_status = 'Close';
             $new_progress = $status;
         } else {
@@ -81,7 +81,7 @@ $order_by = htmlspecialchars(trim($_GET['order_by'] ?? ''), ENT_QUOTES, 'UTF-8')
 
 // Query untuk mengambil data order
 $query = "
-    SELECT 
+        SELECT
         o.Order_ID AS order_id,
         o.Kategori AS kategori,
         o.Transaksi AS transaksi,
@@ -90,16 +90,26 @@ $query = "
         o.id_telegram AS id_telegram,
         o.username_telegram AS username_telegram,
         u.Nama AS nama,
+        lo.nama AS Provi,
         o.tanggal AS tanggal,
         o.Status AS status,
+        lo.Status AS log_status,
         o.order_by AS order_by,
         o.progress_order AS progress
-    FROM 
+    FROM
         orders o
-    LEFT JOIN 
-        users u ON o.id_telegram = u.id_telegram
-    WHERE 
-        o.Status = 'Pickup'
+    LEFT JOIN users u ON o.id_telegram = u.id_telegram
+    LEFT JOIN (
+        SELECT lo1.*
+        FROM log_orders lo1
+        INNER JOIN (
+            SELECT Order_ID, MAX(no) AS max_no
+            FROM log_orders
+            GROUP BY Order_ID
+        ) lo2 ON lo1.Order_ID = lo2.Order_ID AND lo1.no = lo2.max_no
+    ) lo ON o.Order_ID = lo.Order_ID
+    WHERE
+        o.Status = 'Pickup';
 ";
 
 // Tambahkan filter jika ada input order_by
@@ -154,7 +164,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="60">
+    <!-- <meta http-equiv="refresh" content="60"> -->
     <link rel="stylesheet" href="./style/style.css">
     <title>Pickup</title>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
@@ -254,6 +264,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <th>Keterangan</th>
                         <th>No Tiket</th>
                         <th>Nama</th>
+                        <th>Provi</th>
                         <th>Progress</th>
                         <th>Aksi</th>
                     </tr>
@@ -282,6 +293,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <a href="https://t.me/<?= htmlspecialchars($order['username_telegram']) ?>" target="_blank">
                                         <?= htmlspecialchars($order['nama']) ?>
                                     </a>
+                                <td><?= htmlspecialchars($order['Provi']) ?></td>
                                 <td><?= htmlspecialchars($order['progress']) ?></td>
                                 <td>
                                     <button onclick="openModal('<?php echo htmlspecialchars($order['no_tiket'], ENT_QUOTES, 'UTF-8'); ?>')">Reply</button>
@@ -309,8 +321,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <select name="status" id="status" required>
                     <option value="" disabled selected>Pilih Status</option>
                     <option value="Sudah PS">Sudah PS</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Ada Kendala">Ada Kendala</option>
+                    <option value="CAINPUL">CAINPUL</option>
                     <option value="On Eskalasi">On Eskalasi</option>
                 </select>
                 <br><br>

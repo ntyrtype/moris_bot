@@ -163,7 +163,7 @@ function handleOrder($text, $chat_id, $message_id, $user_id, $username) {
     $kategori_regex = $row['regex_pattern']; // Contoh: "INDIHOME|INDIBIZ|Wifiid|Astinet|Metro|VPNIP|WMS|OLO"
 
     // Perbaikan regex agar sesuai format dengan kategori yang diambil dari database
-    $pattern = "/^\/moban #($kategori_regex) #([A-Z0-9]+) #([A-Z0-9]+) #([\s\S]+)/i";
+    $pattern = "/^\/moban #($kategori_regex) #([A-Z0-9]+) #([A-Za-z0-9]+) #([\s\S]+)/i";
     preg_match($pattern, $text, $matches);
 
     // Perbaikan regex agar sesuai format
@@ -183,7 +183,7 @@ function handleOrder($text, $chat_id, $message_id, $user_id, $username) {
 
     $kategori = strtoupper($matches[1]); // Kategori (INDIHOME, INDIBIZ, DATIN)
     $transaksi = strtoupper($matches[2]); // Transaksi
-    $wonum = strtoupper($matches[3]); // WONUM
+    $wonum = $matches[3]; // WONUM
     $keterangan = trim($matches[4]); // Keterangan
 
     // Ambil role user berdasarkan user_id
@@ -287,15 +287,15 @@ function sendNotifications() {
 
         // Format pesan berdasarkan status
         if ($status === 'Pickup') {
-            if (in_array($progress_order, ['In Progress', 'Ada Kendala', 'On Eskalasi'])) {
+            if ($progress_order === 'On Eskalasi') {
                 $message = " Order Pending\n\n No Tiket: $no_tiket\n Order ID: $order_id\n Transaksi: $transaksi\n Progress: $progress_order\n Ditangani oleh: $nama ($order_by)\n Keterangan: $keterangan";
-            } elseif ($progress_order === 'On Rekap') {
+            } elseif ($progress_order === 'In Progress') {
                 $message = " Order Proses\n\n No Tiket: $no_tiket\n Order ID: $order_id\n Transaksi: $transaksi\n Progress: $progress_order\n Ditangani oleh: $nama ($order_by)\n Keterangan: $keterangan";
             }
         } elseif ($status === 'Close') {
             if ($progress_order === 'Cancel') {
                 $message = " Order Cancelled\n\n No Tiket: $no_tiket\n Order ID: $order_id\n Transaksi: $transaksi\n Progress Terakhir: $progress_order\n Ditangani oleh: $nama ($order_by)\n Keterangan: $keterangan";
-            } elseif ($progress_order === 'Sudah PS') {
+            } elseif (in_array($progress_order, ['Sudah PS', 'CAINPUL'])) {
                 $message = " Order Selesai\n\n No Tiket: $no_tiket\n Order ID: $order_id\n Transaksi: $transaksi\n Progress Terakhir: $progress_order\n Ditangani oleh: $nama ($order_by)\n Keterangan: $keterangan";
             }
         }

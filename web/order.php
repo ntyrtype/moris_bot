@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Update status dan progress_order di tabel orders
         if ($action === 'pickup') {
             $new_status = 'Pickup';
-            $new_progress = 'On Rekap';
+            $new_progress = 'In Progress';
             $_SESSION['message'] = "Order berhasil di pickup.";
         } elseif ($action === 'cancel') {
             $new_status = 'Close';
@@ -143,7 +143,7 @@ if (!empty($start_date) && !empty($end_date)) {
     $query .= " AND o.tanggal <= :end_date";
 }
 
-$query .= " ORDER BY o.tanggal DESC";
+$query .= " ORDER BY o.tanggal ASC";
 
 // Eksekusi query
 $stmt = $pdo->prepare($query);

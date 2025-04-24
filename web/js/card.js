@@ -100,6 +100,10 @@ $(document).ready(function () {
                     <td>${item.ORBIT || 0}</td>
                     <td>${item.FFG || 0}</td>
                     <td>${item.UNSPEK || 0}</td>
+                    <td>${item.PSB || 0}</td>
+                    <td>${item.RO || 0}</td>
+                    <td>${item.SO || 0}</td>
+                    <td>${item.DO || 0}</td>
                     <td>${item.RecordCount || 0}</td>
                     <td><a href="${logLink}">Lihat Log</a></td>
                 </tr>

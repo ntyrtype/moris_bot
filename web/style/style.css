@@ -108,17 +108,8 @@ body {
   margin: 10px;
   padding: 15px;
   z-index: 1;
-  max-width: calc(100% - 10px);
-  overflow-x: auto;
   border-radius: 8px; 
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); 
-}
-
-table {
-  width: 100%;
-  table-layout: fixed;
-  border-collapse: collapse;
-  white-space: nowrap; 
 }
 
 table th {
@@ -137,18 +128,7 @@ table td {
   font-size: 14px; 
   text-align: left;
   background: #f9f9f9; 
-  max-width: 100%
 }
-
-table td {
-  border: 1px solid #ddd;
-  padding: 10px;
-  font-size: 14px; 
-  text-align: left;
-  background: #f9f9f9; 
-  max-width: 100%;
-}
-
 
 /* Pastikan kolom "Keterangan" tidak melebar */
 td.text-container {
@@ -179,31 +159,6 @@ td.text-container {
   display: block;
   width: fit-content; /* Ukuran tombol mengikuti teks */
   margin-top: 5px; /* Beri jarak agar tidak terlalu dekat */
-}
-
-
-
-/* 
-table tr:nth-child(even) {
-  background: #f1f1f1; 
-}
-
-table tr:hover {
-  background: #d5dbdb; 
-  transition: 0.3s ease-in-out;
-} */
-
-/* @media screen and (max-width: 768px) {
-  table th, table td {
-    font-size: 14px; 
-    padding: 10px;
-  }
-} */
-
-#transaksi_table{
-  margin: 0 10px 0 10px;
-  position: relative;
-  z-index: 1;
 }
 
 /* profile */
@@ -475,15 +430,6 @@ canvas {
   gap: 20px;
   margin: 10px;
 }
-
-.table-container{
-  flex: content;
-  background: white;
-  padding: 10px;
-  margin: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
 .chart-container {
   display: flex;
   flex-wrap: nowrap;
@@ -500,29 +446,6 @@ canvas {
   min-width: 300px; 
   max-width: 500px; 
 }
-/* ----- Tabel Produktifitas ----- */
-#productivityTable {
-  width: 100%;
-  border-collapse: collapse;
-  padding: 10px;
-}
-
-#productivityTable thead {
-  background: #0099ff;
-  color: white;
-}
-
-#productivityTable th, #productivityTable td {
-  margin: 10px;
-  padding: 10px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
-
-#productivityTable tbody tr:hover {
-  background: #f1f1f1;
-}
-
 
 /* home */
 .container {

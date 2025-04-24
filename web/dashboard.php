@@ -23,7 +23,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     $order_by = htmlspecialchars(trim($_GET['order_by'] ?? ''), ENT_QUOTES, 'UTF-8');
 
     // Query Filter Order Count
-    $sql = "SELECT Status, COUNT(*) AS jumlah FROM orders WHERE 1=1";
+    $sql = "SELECT Status, COUNT(DISTINCT order_id) AS jumlah FROM log_orders WHERE 1=1";
 
     if (!empty($order_by)) {
         $sql .= " AND order_by = :order_by";
@@ -69,12 +69,16 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     // Query untuk tabel produktifiti dengan filter
     $queryProduktifiti = "SELECT 
                             lo.nama AS Nama, 
-                            COUNT(DISTINCT CASE WHEN lo.transaksi = 'PDA' THEN lo.order_id END) AS PDA,
-                            COUNT(DISTINCT CASE WHEN lo.transaksi = 'MO' THEN lo.order_id END) AS MO,
-                            COUNT(DISTINCT CASE WHEN lo.transaksi = 'ORBIT' THEN lo.order_id END) AS ORBIT,
-                            COUNT(DISTINCT CASE WHEN lo.transaksi = 'FFG' THEN lo.order_id END) AS FFG,
-                            COUNT(DISTINCT CASE WHEN lo.transaksi = 'UNSPEK' THEN lo.order_id END) AS UNSPEK,
-                            COUNT(DISTINCT CASE WHEN lo.status IN ('Pickup', 'Close') THEN lo.order_id END) AS RecordCount
+                            COUNT(DISTINCT CASE WHEN lo.transaksi = 'PDA' AND lo.status = 'Close' THEN lo.order_id END) AS PDA,
+                            COUNT(DISTINCT CASE WHEN lo.transaksi = 'MO' AND lo.status = 'Close' THEN lo.order_id END) AS MO,
+                            COUNT(DISTINCT CASE WHEN lo.transaksi = 'ORBIT' AND lo.status = 'Close' THEN lo.order_id END) AS ORBIT,
+                            COUNT(DISTINCT CASE WHEN lo.transaksi = 'FFG' AND lo.status = 'Close' THEN lo.order_id END) AS FFG,
+                            COUNT(DISTINCT CASE WHEN lo.transaksi = 'UNSPEK' AND lo.status = 'Close' THEN lo.order_id END) AS UNSPEK,
+                            COUNT(DISTINCT CASE WHEN lo.transaksi = 'PSB' AND lo.status = 'Close' THEN lo.order_id END) AS PSB,
+                            COUNT(DISTINCT CASE WHEN lo.transaksi = 'RO' AND lo.status = 'Close' THEN lo.order_id END) AS RO,
+                            COUNT(DISTINCT CASE WHEN lo.transaksi = 'SO' AND lo.status = 'Close' THEN lo.order_id END) AS SO,
+                            COUNT(DISTINCT CASE WHEN lo.transaksi = 'DO' AND lo.status = 'Close' THEN lo.order_id END) AS DO,
+                            COUNT(DISTINCT CASE WHEN lo.status IN ('Close') THEN lo.order_id END) AS RecordCount
                         FROM 
                             log_orders lo
                         WHERE 
@@ -383,6 +387,10 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
                             <th>ORBIT</th>
                             <th>FFG</th>
                             <th>UNSPEK</th>
+                            <th>PSB</th>
+                            <th>RO</th>
+                            <th>SO</th>
+                            <th>DO</th>
                             <th>Total</th>
                             <th>Log</th>
                         </tr>
