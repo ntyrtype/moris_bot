@@ -47,57 +47,53 @@ function handleUserMessage($user_id, $chat_id, $text, $username, $chat_type, $me
     // $target_group_id = -1002387652955;
 
     if ($chat_type === 'private') {
-        
-        // Jika pesan berasal dari chat pribadi
         if ($text == "/start") {
             sendMessage($chat_id, "Selamat datang! Ketik /daftar untuk registrasi");
         } elseif ($text == "/daftar") {
-            // Mengecek apakah ID Telegram sudah terdaftar
+            // Cek apakah user sudah terdaftar
             $stmt = $pdo->prepare("SELECT * FROM users WHERE ID_Telegram = ?");
             $stmt->execute([$user_id]);
             $user = $stmt->fetch();
 
             if ($user) {
-                // Jika pengguna sudah terdaftar, tampilkan role-nya
-                $role = $user['Role'] ?? 'Unknown Role'; // Ambil role dari database
-                sendMessage($chat_id, "Telegram Anda sudah terdaftar sebagai $role.");
+                sendMessage($chat_id, "Anda sudah terdaftar sebagai {$user['Role']}.");
             } else {
+                // Mulai proses registrasi
+                $pdo->prepare("INSERT INTO user_states (user_id, state) VALUES (?, 'awaiting_name') 
+                            ON DUPLICATE KEY UPDATE state = 'awaiting_name'")
+                    ->execute([$user_id]);
                 sendMessage($chat_id, "Masukkan nama Anda:");
-                // Simpan status bahwa bot sedang menunggu input nama
-                $_SESSION['state'] = 'awaiting_name';
             }
-        } elseif (isset($_SESSION['state']) && $_SESSION['state'] == 'awaiting_name') {
-            // Menyimpan nama yang diterima
-            $_SESSION['name'] = $text;
-            sendMessage($chat_id, "Masukkan role Anda (Teknisi/Plasa):");
-            $_SESSION['state'] = 'awaiting_role';
-        } elseif (isset($_SESSION['state']) && $_SESSION['state'] == 'awaiting_role') {
-            // Validasi role yang dimasukkan
-            $role = strtolower($text);
-            if ($role === 'teknisi' || $role === 'plasa') {
-                $_SESSION['role'] = ucfirst($role); // Simpan role dengan format kapital
-                
-                // Menyimpan data pengguna baru ke dalam database
-                $stmt = $pdo->prepare("INSERT INTO users (Nama, Role, ID_Telegram) VALUES (?, ?, ?)");
-                $stmt->execute([
-                    $_SESSION['name'],
-                    $_SESSION['role'],
-                    $user_id
-                ]);
+        } else {
+            // Ambil state dari database
+            $stmt = $pdo->prepare("SELECT * FROM user_states WHERE user_id = ?");
+            $stmt->execute([$user_id]);
+            $state = $stmt->fetch();
 
-                // Mengirim konfirmasi pendaftaran
-                $message = "Anda telah terdaftar sebagai " . $_SESSION['role'] . "!\nNama: " . $_SESSION['name'] . "\nRole: " . $_SESSION['role'];
-                sendMessage($chat_id, $message);
-
-                // Menghapus session setelah pendaftaran selesai
-                unset($_SESSION['state']);
-                unset($_SESSION['name']);
-                unset($_SESSION['role']);
-            } else {
-                sendMessage($chat_id, "Role tidak valid. Masukkan role 'Teknisi' atau 'Plasa'.");
+            if ($state) {
+                if ($state['state'] == 'awaiting_name') {
+                    // Simpan nama dan update state
+                    $pdo->prepare("UPDATE user_states SET name = ?, state = 'awaiting_role' WHERE user_id = ?")
+                        ->execute([$text, $user_id]);
+                    sendMessage($chat_id, "Masukkan role (Teknisi/Plasa):");
+                } elseif ($state['state'] == 'awaiting_role') {
+                    $role = strtolower($text);
+                    if ($role === 'teknisi' || $role === 'plasa') {
+                        // Simpan ke tabel users
+                        $pdo->beginTransaction();
+                        $pdo->prepare("INSERT INTO users (Nama, Role, ID_Telegram) VALUES (?, ?, ?)")
+                            ->execute([$state['name'], ucfirst($role), $user_id]);
+                        // Hapus state
+                        $pdo->prepare("DELETE FROM user_states WHERE user_id = ?")->execute([$user_id]);
+                        $pdo->commit();
+                        sendMessage($chat_id, "Registrasi berhasil! Nama: {$state['name']}, Role: " . ucfirst($role));
+                    } else {
+                        sendMessage($chat_id, "Role tidak valid. Masukkan 'Teknisi' atau 'Plasa'.");
+                    }
+                }
             }
         }
-    } elseif ($chat_type === 'group' || $chat_type === 'supergroup') {
+    }elseif ($chat_type === 'group' || $chat_type === 'supergroup') {
         // Hanya cek database jika pesan adalah /moban atau /help
         if (strpos($text, "/moban") === 0 || $text == "/help") {
             $stmt = $pdo->prepare("SELECT * FROM groups WHERE group_id = ? AND is_active = 1");
