@@ -112,8 +112,78 @@ function handleUserMessage($user_id, $chat_id, $text, $username, $chat_type, $me
             } elseif ($text == "/help") {
                 sendHelpMessage($chat_id, $message_id);
             }
-        }   
+        } elseif (strpos($text, "/cek") === 0) {
+            handleCekOrder($text, $chat_id, $message_id);
+        }  
     }
+}
+
+function handleCekOrder($text, $chat_id, $message_id) {
+    global $pdo;
+
+    // Cek apakah grup terdaftar dan aktif
+    $stmtGroup = $pdo->prepare("SELECT * FROM groups WHERE group_id = ? AND is_active = 1");
+    $stmtGroup->execute([$chat_id]);
+    $group = $stmtGroup->fetch();
+
+    if (!$group) {
+        replyMessage($chat_id, "Grup belum terdaftar atau dinonaktifkan di bot.\n\nHubungi admin untuk mendaftarkan grup ini.", $message_id);
+        return;
+    }
+
+    // Ekstrak Order_ID dari pesan
+    $parts = explode(' ', $text);
+    if (count($parts) < 2) {
+        replyMessage($chat_id, "Format salah. Gunakan: /cek [Order_ID]\nContoh: /cek WO123456789", $message_id);
+        return;
+    }
+    
+    $orderId = trim($parts[1]);
+
+    // Query database
+    $stmt = $pdo->prepare("
+            SELECT 
+                    o.*,
+                    u.Nama AS pembuat,
+                    lo.nama AS penangani,
+                    lo.status AS log_status
+                FROM orders o
+                LEFT JOIN users u ON o.id_telegram = u.ID_Telegram
+                LEFT JOIN log_orders lo ON lo.no = (
+                    SELECT MAX(no)
+                    FROM log_orders
+                    WHERE no_tiket = o.No_Tiket AND status IN ('Pickup', 'Close')
+                )
+                WHERE o.Order_ID = ?
+            ");
+    
+    $stmt->execute([$orderId]);
+    $order = $stmt->fetch(PDO::FETCH_ASSOC);
+
+
+    if (!$order) {
+        replyMessage($chat_id, "Order ID $orderId tidak ditemukan dalam sistem.", $message_id);
+        return;
+    }
+
+    // Format respons
+    $response = "Detail Order\n";
+    $response .= "────────────────────\n";
+    $response .= "• Order ID: {$order['Order_ID']}\n";
+    $response .= "• No Tiket: {$order['No_Tiket']}\n";
+    $response .= "• Kategori: {$order['Kategori']}\n";
+    $response .= "• Transaksi: {$order['Transaksi']}\n";
+    $response .= "• Status: {$order['progress_order']}\n";
+    $response .= "• Dibuat oleh: {$order['pembuat']} (@{$order['username_telegram']})\n";
+    // Tambahkan penangani hanya jika status Pickup/Close
+    if(in_array($order['log_status'], ['Pickup', 'Close'])) {
+        $response .= "• Ditangani oleh: {$order['penangani']}\n";
+    }
+    $response .= "• Tanggal:  {$order['tanggal']}  \n";
+    $response .= "• Keterangan: {$order['Keterangan']}\n";
+    $response .= "────────────────────\n";
+
+    replyMessage($chat_id, $response, $message_id);
 }
 
 function sendHelpMessage($chat_id, $message_id) {
@@ -138,7 +208,9 @@ function sendHelpMessage($chat_id, $message_id) {
                 . "\n- DO"
                 . "\n- RO"
                 . "\n- SO"
-                . "\n\n Untuk informasi lebih lanjut, hubungi admin.";
+                . "\n\n Untuk informasi lebih lanjut, hubungi admin.
+                
+                \n\nPerintah untuk cek status order:\n/cek [Order_ID]\nContoh: /cek MOk42504171139006946cd3d0";
 
     replyMessage($chat_id, $helpMessage, $message_id);
 }
