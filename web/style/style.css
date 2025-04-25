@@ -130,6 +130,65 @@ table td {
   background: #f9f9f9; 
 }
 
+/* Container Tabel */
+.table-container {
+  width: 100%;
+  margin: 5px auto;
+  overflow-x: auto;
+  display: flex;
+  justify-content: center;
+}
+
+/* Styling Tabel */
+#productivityTable {
+  width: auto !important; /* Menghilangkan width 100% default */
+  margin: 0 auto;
+  border-collapse: collapse;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Header Tabel */
+#productivityTable thead th {
+  background-color: #34495e;
+  color: white;
+  padding: 15px;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Isi Tabel */
+#productivityTable tbody td {
+  padding: 12px 15px;
+  text-align: center;
+  border-bottom: 1px solid #dddddd;
+}
+
+/* Baris Genap */
+#productivityTable tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+/* Efek Hover */
+#productivityTable tbody tr:hover {
+  background-color: #f1f1f1;
+  transition: background-color 0.2s;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .table-container {
+    padding: 0 10px;
+  }
+  
+  #productivityTable {
+    width: 100% !important;
+    display: block;
+    overflow-x: auto;
+  }
+}
+
 /* Pastikan kolom "Keterangan" tidak melebar */
 td.text-container {
   max-width: 300px; /* Atur lebar maksimum */
@@ -138,6 +197,7 @@ td.text-container {
   word-wrap: break-word; /* Biarkan kata panjang turun */
   vertical-align: top; /* Tetapkan posisi teks ke atas */
 }
+
 
 /* Kontainer teks dalam cell */
 .short-text, .hidden-text {
@@ -351,7 +411,7 @@ button:hover {
 }
 
 /* ----- Kartu Statistik ----- */
-.stats {
+/* .stats {
   display: flex;
   justify-content: center;
   margin: 20px;
@@ -383,6 +443,19 @@ button:hover {
   background-color: #B82132;
 }
 
+.sisa_order {
+  background-color: #f39c12;
+  width: 150px;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease-in-out;
+}
+
 .card_order:hover, .card_pickup:hover, .card_close:hover {
   transform: translateY(-5px);
 }
@@ -401,6 +474,128 @@ button:hover {
   font-size: 32px;
   font-weight: bold;
   margin: 5px;
+} */
+
+/* ----- Kartu Statistik ----- */
+.stats {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 25px;
+  margin: 30px 0 50px;
+  padding: 0 20px;
+}
+
+.card_order, 
+.card_pickup, 
+.card_close,
+.sisa_order {
+  width: 180px;
+  padding: 20px 15px;
+  border-radius: 12px;
+  text-align: center;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  border: none;
+  cursor: default;
+}
+
+/* Warna dan efek untuk masing-masing kartu */
+.card_order {
+  background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+}
+
+.card_pickup {
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+}
+
+.card_close {
+  background: linear-gradient(135deg, #B82132 0%, #9B1C2A 100%);
+}
+
+.sisa_order {
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+}
+
+/* Efek hover yang lebih halus */
+.card_order:hover, 
+.card_pickup:hover, 
+.card_close:hover,
+.sisa_order:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Judul kartu */
+.card_order h3,
+.card_pickup h3,
+.card_close h3,
+.sisa_order h3 {
+  font-size: 1.1em;
+  margin: 0 0 10px 0;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Angka statistik */
+.record-count {
+  font-size: 36px;
+  font-weight: 700;
+  margin: 5px 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Efek overlay saat hover */
+.card_order::before,
+.card_pickup::before,
+.card_close::before,
+.sisa_order::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card_order:hover::before,
+.card_pickup:hover::before,
+.card_close:hover::before,
+.sisa_order:hover::before {
+  opacity: 1;
+}
+
+/* Responsive untuk mobile */
+@media (max-width: 768px) {
+  .stats {
+    gap: 15px;
+  }
+  
+  .card_order, 
+  .card_pickup, 
+  .card_close,
+  .sisa_order {
+    width: calc(50% - 20px);
+    padding: 15px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .card_order, 
+  .card_pickup, 
+  .card_close,
+  .sisa_order {
+    width: 100%;
+  }
 }
 
 /* ----- Grafik ----- */

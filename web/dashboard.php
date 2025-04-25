@@ -250,10 +250,44 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     // $queryProgressType = "SELECT progress_order, COUNT(*) as total FROM orders GROUP BY progress_order";
     // $stmtProgressType = $pdo->query($queryProgressType);
     // $dataProgressType = $stmtProgressType->fetchAll(PDO::FETCH_ASSOC);
+    $querySisaOrder = "SELECT COUNT(*) as sisa_order FROM orders WHERE status = 'Order'";
+
+    if (!empty($order_by)) {
+        $querySisaOrder .= " AND order_by = :order_by";
+    }
+    if (!empty($transaksi)) {
+        $querySisaOrder .= " AND transaksi = :transaksi";
+    }
+    if (!empty($kategori)) {
+        $querySisaOrder .= " AND kategori = :kategori";
+    }
+    if (!empty($start_date) && !empty($end_date)) {
+        $querySisaOrder .= " AND DATE(tanggal) BETWEEN :start_date AND :end_date";
+    }
+
+    $stmtSisaOrder = $pdo->prepare($querySisaOrder);
+
+    if (!empty($order_by)) {
+        $stmtSisaOrder->bindParam(":order_by", $order_by);
+    }
+    if (!empty($transaksi)) {
+        $stmtSisaOrder->bindParam(':transaksi', $transaksi);
+    }
+    if (!empty($kategori)) {
+        $stmtSisaOrder->bindParam(':kategori', $kategori);
+    }
+    if (!empty($start_date) && !empty($end_date)) {
+        $stmtSisaOrder->bindParam(':start_date', $start_date);
+        $stmtSisaOrder->bindParam(':end_date', $end_date);
+    }
+
+    $stmtSisaOrder->execute();
+    $sisaOrder = $stmtSisaOrder->fetch(PDO::FETCH_ASSOC);
 
     // Gabungkan semua data dalam satu output JSON
     echo json_encode([
         "orders_count" => $orders_count,
+        "sisa_order" => $sisaOrder['sisa_order'],
         "produktifitiData" => $produktifitiData,
         "progressChart" => $dataProgress,
         "categoryChart" => $dataCategory,
@@ -359,6 +393,10 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     </div>
     <!-- Kartu Statistik -->
     <div class="stats">
+        <div class="sisa_order">
+            <h3>Sisa Order</h3>
+            <p class="record-count" id="sisa_order_count">0</p>
+        </div>
         <div class="card_order">
             <h3>Total Order</h3>
             <p class="record-count" id="order_count">0</p>

@@ -34,6 +34,7 @@ $(document).ready(function () {
                 console.log("Response:", response); // Debugging
 
                 // ✅ Update order, pickup, and close counts
+                $("#sisa_order_count").text(response.sisa_order || 0);
                 $("#order_count").text(response.orders_count?.Order || 0);
                 $("#pickup_count").text(response.orders_count?.Pickup || 0);
                 $("#close_count").text(response.orders_count?.Close || 0);
