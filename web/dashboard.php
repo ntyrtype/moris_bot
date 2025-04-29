@@ -284,10 +284,45 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     $stmtSisaOrder->execute();
     $sisaOrder = $stmtSisaOrder->fetch(PDO::FETCH_ASSOC);
 
+    $querySisaPickup = "SELECT COUNT(*) as sisa_pickup FROM orders WHERE status = 'Pickup'";
+
+    if (!empty($order_by)) {
+        $querySisaPickup .= " AND order_by = :order_by";
+    }
+    if (!empty($transaksi)) {
+        $querySisaPickup .= " AND transaksi = :transaksi";
+    }
+    if (!empty($kategori)) {
+        $querySisaPickup .= " AND kategori = :kategori";
+    }
+    if (!empty($start_date) && !empty($end_date)) {
+        $querySisaPickup .= " AND DATE(tanggal) BETWEEN :start_date AND :end_date";
+    }
+
+    $stmtSisaPickup = $pdo->prepare($querySisaPickup);
+
+    if (!empty($order_by)) {
+        $stmtSisaPickup->bindParam(":order_by", $order_by);
+    }
+    if (!empty($transaksi)) {
+        $stmtSisaPickup->bindParam(':transaksi', $transaksi);
+    }
+    if (!empty($kategori)) {
+        $stmtSisaPickup->bindParam(':kategori', $kategori);
+    }
+    if (!empty($start_date) && !empty($end_date)) {
+        $stmtSisaPickup->bindParam(':start_date', $start_date);
+        $stmtSisaPickup->bindParam(':end_date', $end_date);
+    }
+
+    $stmtSisaPickup->execute();
+    $sisaPickup = $stmtSisaPickup->fetch(PDO::FETCH_ASSOC);
+
     // Gabungkan semua data dalam satu output JSON
     echo json_encode([
         "orders_count" => $orders_count,
         "sisa_order" => $sisaOrder['sisa_order'],
+        "sisa_pickup" => $sisaPickup['sisa_pickup'],
         "produktifitiData" => $produktifitiData,
         "progressChart" => $dataProgress,
         "categoryChart" => $dataCategory,
@@ -397,17 +432,17 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
             <h3>Sisa Order</h3>
             <p class="record-count" id="sisa_order_count">0</p>
         </div>
-        <div class="card_order">
-            <h3>Total Order</h3>
-            <p class="record-count" id="order_count">0</p>
-        </div>
-        <div class="card_pickup">
-            <h3>Total Pickup</h3>
-            <p class="record-count" id="pickup_count">0</p>
+        <div class="sisa_pickup">
+            <h3>Sisa Pickup</h3>
+            <p class="record-count" id="sisa_pickup_count">0</p>
         </div>
         <div class="card_close">
             <h3>Total Close</h3>
             <p class="record-count" id="close_count">0</p>
+        </div>
+        <div class="card_order">
+            <h3>Total Order</h3>
+            <p class="record-count" id="order_count">0</p>
         </div>
     </div>
     <!-- Tabel dan Grafik -->
