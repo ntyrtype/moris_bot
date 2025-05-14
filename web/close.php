@@ -42,12 +42,15 @@ if ($order_by) {
     $query .= " AND o.order_by = :order_by";
 }
 
+// Tambahkan filter jika ada input transaksi
 if ($transaksi) {
     $query .= " AND o.Transaksi = :transaksi";
 }
+// Tambahkan filter jika ada input kategori
 if ($kategori) {
     $query .= " AND o.Kategori = :kategori";
 }
+// Tambahkan filter jika ada input date
 if (!empty($start_date) && !empty($end_date)) {
     $query .= " AND o.tanggal BETWEEN :start_date AND :end_date";
 } elseif (!empty($start_date)) {
@@ -95,30 +98,34 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <title>Close</title>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"> -->
+    <!-- Script eksternal jquery datatable dan exceljs-->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 </head>
 <body>
-
+    <!-- Sidebar navigasi -->
     <div class="sidebar" id="sidebar">
         <h1>MORIS BOT</h1>
         <a href="dashboard.php">Dashboard</a>
         <a href="order.php">Order</a>
         <a href="pickup.php">PickUp</a>
         <a href="close.php">Close</a>
+        <!-- hanya terlihat jika admin -->
         <?php if ($_SESSION['role'] === 'admin'): ?>
         <a href="log.php">Log</a>
         <?php endif; ?>
     </div>
 
     <div class="content" id="content">
+        <!-- Navbar dengan toggle sidebar dan menu profil -->
         <div class="navbar">
             <button id="toggleSidebar">☰</button>
             <a href="home.php" class="home-icon"><i class="fas fa-home"></i></a>
             <div class="profile-dropdown">
                 <button id="profileButton"><?php echo htmlspecialchars($_SESSION['nama']); ?></button>
                 <div class="profile-content" id="profileContent">
+                    <!-- hanya terlihat jika yag login admin -->
                     <?php if ($_SESSION['role'] === 'admin'): ?>
                         <a href="add_user.php">Tambah User</a>
                         <a href="admin.php">Tools</a>
@@ -131,6 +138,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </div>
         <h1 class="headtitle">Close Menu</h1>
+        <!-- Filter data -->
         <div class="filter">
             <form action="" method="GET">
                 <select aria-label="order_by" name="order_by" id="order_by">
@@ -173,9 +181,11 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <button type="submit">Filter</button>
             </form>
         </div>
+        <!-- Tabel data order -->
         <div class="table-responsive">
             <table id="dataTable" class="display" style="width:100%">
             <thead>
+                <!-- Kolom tabel -->
                 <tr>
                     <th>No</th>
                     <th>Order ID</th>
@@ -190,6 +200,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </tr>
             </thead>
             <tbody>
+            <!-- Loop data order dari database -->
             <?php if (!empty($orders)): ?>
                 <?php $no = 1; ?>
                 <?php foreach ($orders as $order): ?>
@@ -200,6 +211,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <td><?= htmlspecialchars($order['transaksi']) ?></td>
                         <td><?= htmlspecialchars($order['tanggal']) ?></td>
                         <td class="text-container">
+                            <!-- Fitur show more untuk keterangan panjang -->
                             <?php
                                 $text = nl2br(htmlspecialchars($order['Keterangan']));
                                 $shortText = substr($text, 0, 80); // Ambil 80 karakter pertama
@@ -210,6 +222,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </td>
                         <td><?= htmlspecialchars($order['no_tiket']) ?></td>
                         <td>
+                            <!-- memanggil href link untuk ke telegram -->
                             <a href="https://t.me/<?= htmlspecialchars($order['username_telegram']) ?>" target="_blank">
                                 <?= htmlspecialchars($order['nama']) ?>
                             </a>
@@ -229,6 +242,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </tbody>
         </table>
         </div>
+        <!-- Tombol download Excel -->
         <button id="downloadButton" class="download-btn">Download Excel</button>
     </div>
 
@@ -249,14 +263,15 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 
+<!-- Kumpulan script eksternal -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="./js/sidebar.js"></script>
-<script src="./js/profile.js"></script>
-<script src="./js/datatable.js"></script>
-<script src="./js/showmore.js"></script>
-<script src="./js/cancel.js"></script>
+<script src="./js/sidebar.js"></script> <!-- Script toggle sidebar -->
+<script src="./js/profile.js"></script> <!-- Script menu profil -->
+<script src="./js/datatable.js"></script> <!-- Inisialisasi DataTables -->
+<script src="./js/showmore.js"></script> <!-- Fungsi show more text -->
+<script src="./js/cancel.js"></script> <!-- Fungsi cancel -->
 <!-- <script src="./js/download.js"></script> -->
-<script src="./js/log.js"></script>
+<script src="./js/log.js"></script> <!-- Fungsi tampilkan log -->
 
 </body>
 </html>

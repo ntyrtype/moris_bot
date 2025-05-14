@@ -1,5 +1,7 @@
 <?php 
+//memulai sesi
 session_start();
+//memanggil konfigurasi database
 require "../config/Database.php";
 
 // Memastikan pengguna sudah login

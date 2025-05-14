@@ -1,4 +1,5 @@
 <?php
+// memulai session
 session_start();
 require "../config/Database.php"; // Menggunakan koneksi database dari sini
 
@@ -8,6 +9,7 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+// berdasar user_id yang tertngkap di session
 $user_id = $_SESSION['user_id'];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -38,12 +40,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->execute();
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
+        // jika pengguna tidak ditemukan
         if (!$user) {
             echo "<script>alert('Pengguna tidak ditemukan!'); window.history.back();</script>";
             exit();
         }
 
-        // Hash password lama yang dimasukkan user
+        // Hash password lama yang dimasukkan user (hash menggunaan sha256)
         $hashed_input = hash("sha256", $password_lama);
 
         // Verifikasi apakah password lama cocok
@@ -78,7 +81,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
   <meta charset="UTF-8">
   <title>ADD USER</title>
+  <!-- memanggil bootstrap -->
   <link href="https://stackpath.bootstrapcdn.com/bootswatch/4.4.1/cosmo/bootstrap.min.css" rel="stylesheet">
+  <!-- styling -->
   <style>
     body{
       background-color: #2c3e50;
@@ -144,18 +149,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <h2 class="display-4 pt-3">Reset Password</h2>
       <p class="text-center">Isi inputan di bawah untuk mengganti password</p>
       <form action="reset_password.php" method="POST"> 
+        <!-- memasukkan password lama -->
           <div class="form-group">
               <input type="password" name="password_lama" id="password_lama" class="form-control" placeholder="Password Lama" required>
           </div>
-
+        <!-- memasukkan password baru -->
           <div class="form-group">
               <input type="password" name="password_baru" id="password_baru" class="form-control" placeholder="Password Baru" required>
           </div>
-
+        <!-- mengkonfirmasi password baru -->
           <div class="form-group">
               <input type="password" name="konfirmasi_password" id="konfirmasi_password" class="form-control" placeholder="Konfirmasi Password Baru" required>
           </div>
-
+        <!-- btn submit -->
           <div class="form-group">
               <input type="submit" class="btn btn-block btn-outline-primary btn-customs" value="Submit">
           </div>

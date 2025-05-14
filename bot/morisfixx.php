@@ -43,25 +43,27 @@ while (true) {
 function handleUserMessage($user_id, $chat_id, $text, $username, $chat_type, $message_id) {
     global $pdo;
 
-    // // ID grup yang ditargetkan
-    // $target_group_id = -1002387652955;
-
+    //jika pengguna chat bot secara pribadi
     if ($chat_type === 'private') {
+        //jika pengguna mengirimkan pesan /start
         if ($text == "/start") {
             sendMessage($chat_id, "Selamat datang! Ketik /daftar untuk registrasi");
+        //jika pengguna mengirimkan pesan /daftar
         } elseif ($text == "/daftar") {
             // Cek apakah user sudah terdaftar
             $stmt = $pdo->prepare("SELECT * FROM users WHERE ID_Telegram = ?");
             $stmt->execute([$user_id]);
             $user = $stmt->fetch();
-
+            //jika id_telegram pengguna sudah terdaftar
             if ($user) {
                 sendMessage($chat_id, "Anda sudah terdaftar sebagai {$user['Role']}.");
+            //jika belum. maka..
             } else {
-                // Mulai proses registrasi
+                // Mulai proses registrasi. id telegram pengguna disimpan ke tabel user_states
                 $pdo->prepare("INSERT INTO user_states (user_id, state) VALUES (?, 'awaiting_name') 
                             ON DUPLICATE KEY UPDATE state = 'awaiting_name'")
                     ->execute([$user_id]);
+                //mengirim pesan ke pengguna
                 sendMessage($chat_id, "Masukkan nama Anda:");
             }
         } else {
@@ -71,13 +73,18 @@ function handleUserMessage($user_id, $chat_id, $text, $username, $chat_type, $me
             $state = $stmt->fetch();
 
             if ($state) {
+                //jika state pengguna adalah 'awaiting_name' maka..
                 if ($state['state'] == 'awaiting_name') {
                     // Simpan nama dan update state
                     $pdo->prepare("UPDATE user_states SET name = ?, state = 'awaiting_role' WHERE user_id = ?")
                         ->execute([$text, $user_id]);
+                    //bot akan mengirimkan pesan ini..
                     sendMessage($chat_id, "Masukkan role (Teknisi/Plasa):");
+                //jika state pengguna adalah 'awaiting_role' maka..
                 } elseif ($state['state'] == 'awaiting_role') {
+                    // role disimpan dalam lowercase
                     $role = strtolower($text);
+                    // pengguna akan disuruh mengisi role
                     if ($role === 'teknisi' || $role === 'plasa') {
                         // Simpan ke tabel users
                         $pdo->beginTransaction();
@@ -87,6 +94,7 @@ function handleUserMessage($user_id, $chat_id, $text, $username, $chat_type, $me
                         $pdo->prepare("DELETE FROM user_states WHERE user_id = ?")->execute([$user_id]);
                         $pdo->commit();
                         sendMessage($chat_id, "Registrasi berhasil! Nama: {$state['name']}, Role: " . ucfirst($role));
+                    //jika role yang dimasukkan tidak valid maka akan mengirim pesan ini..
                     } else {
                         sendMessage($chat_id, "Role tidak valid. Masukkan 'Teknisi' atau 'Plasa'.");
                     }
@@ -96,6 +104,7 @@ function handleUserMessage($user_id, $chat_id, $text, $username, $chat_type, $me
     }elseif ($chat_type === 'group' || $chat_type === 'supergroup') {
         // Hanya cek database jika pesan adalah /moban atau /help
         if (strpos($text, "/moban") === 0 || $text == "/help") {
+            //memerikas apakah grup sudah terdaftar di database
             $stmt = $pdo->prepare("SELECT * FROM groups WHERE group_id = ? AND is_active = 1");
             $stmt->execute([$chat_id]);
             $group = $stmt->fetch();
@@ -106,22 +115,23 @@ function handleUserMessage($user_id, $chat_id, $text, $username, $chat_type, $me
                 return;
             }
 
-            // Proses perintah yang valid
+            // jika grup terdaftar. Proses perintah yang valid /moban, /help, /cek
             if (strpos($text, "/moban") === 0) {
                 handleOrder($text, $chat_id, $message_id, $user_id, $username);
             } elseif ($text == "/help") {
                 sendHelpMessage($chat_id, $message_id);
-            }
-        } elseif (strpos($text, "/cek") === 0) {
-            handleCekOrder($text, $chat_id, $message_id);
-        }  
+            } elseif (strpos($text, "/cek") === 0) {
+                handleCekOrder($text, $chat_id, $message_id);
+            }  
+        } 
     }
 }
 
+//fungsi untuk menangani /cek order
 function handleCekOrder($text, $chat_id, $message_id) {
     global $pdo;
 
-    // Cek apakah grup terdaftar dan aktif
+    // Cek apakah grup terdaftar dan aktif di database
     $stmtGroup = $pdo->prepare("SELECT * FROM groups WHERE group_id = ? AND is_active = 1");
     $stmtGroup->execute([$chat_id]);
     $group = $stmtGroup->fetch();
@@ -134,13 +144,15 @@ function handleCekOrder($text, $chat_id, $message_id) {
     // Ekstrak Order_ID dari pesan
     $parts = explode(' ', $text);
     if (count($parts) < 2) {
+        //jika salah format kirim pesan tersebut
         replyMessage($chat_id, "Format salah. Gunakan: /cek [Order_ID]\nContoh: /cek WO123456789", $message_id);
         return;
     }
     
+    //ambil order id dari text
     $orderId = trim($parts[1]);
 
-    // Query database
+    // Query database berdarsarkan order_id yang diambil
     $stmt = $pdo->prepare("
             SELECT 
                     o.*,
@@ -160,13 +172,13 @@ function handleCekOrder($text, $chat_id, $message_id) {
     $stmt->execute([$orderId]);
     $order = $stmt->fetch(PDO::FETCH_ASSOC);
 
-
+    //jika order tidak ditemukan dalam database
     if (!$order) {
         replyMessage($chat_id, "Order ID $orderId tidak ditemukan dalam sistem.", $message_id);
         return;
     }
 
-    // Format respons
+    // Format respons ketika order ditemukan
     $response = "Detail Order\n";
     $response .= "────────────────────\n";
     $response .= "• Order ID: {$order['Order_ID']}\n";
@@ -175,7 +187,7 @@ function handleCekOrder($text, $chat_id, $message_id) {
     $response .= "• Transaksi: {$order['Transaksi']}\n";
     $response .= "• Status: {$order['progress_order']}\n";
     $response .= "• Dibuat oleh: {$order['pembuat']} (@{$order['username_telegram']})\n";
-    // Tambahkan penangani hanya jika status Pickup/Close
+    // Tambahkan penangani(Provi) hanya jika status Pickup/Close
     if(in_array($order['log_status'], ['Pickup', 'Close'])) {
         $response .= "• Ditangani oleh: {$order['penangani']}\n";
     }
@@ -183,10 +195,14 @@ function handleCekOrder($text, $chat_id, $message_id) {
     $response .= "• Keterangan: {$order['Keterangan']}\n";
     $response .= "────────────────────\n";
 
+    //mengirim pesan berupa reply
     replyMessage($chat_id, $response, $message_id);
 }
 
+
+//fungsi untuk menangani perintah /help
 function sendHelpMessage($chat_id, $message_id) {
+    //informasi yang akan ditampilkan
     $helpMessage = "Panduan Penggunaan Perintah `/moban`\n\n"
                 . "Gunakan format berikut:\n"
                 . "/moban #Kategori #Transaksi #Order_ID #Keterangan\n"
@@ -212,15 +228,20 @@ function sendHelpMessage($chat_id, $message_id) {
                 
                 \n\nPerintah untuk cek status order:\n/cek [Order_ID]\nContoh: /cek MOk42504171139006946cd3d0";
 
+    //mengirim jawaban berupa reply
     replyMessage($chat_id, $helpMessage, $message_id);
 }
 
-
+//fungsi mengirim pesan 
 function sendMessage($chat_id, $message) {
+    // Membentuk URL untuk endpoint Telegram Bot API sendMessage
     $url = API_URL . "sendMessage?chat_id=$chat_id&text=" . urlencode($message);
+
+    // Mengirim permintaan HTTP GET ke API Telegram
     file_get_contents($url);
 }
 
+//fungsi untuk menangani perintah /moban
 function handleOrder($text, $chat_id, $message_id, $user_id, $username) {
     global $pdo;
 
@@ -234,9 +255,10 @@ function handleOrder($text, $chat_id, $message_id, $user_id, $username) {
     $pattern = "/^\/moban #($kategori_regex) #([A-Z0-9]+) #([A-Za-z0-9]+) #([\s\S]+)/i";
     preg_match($pattern, $text, $matches);
 
-    // Perbaikan regex agar sesuai format
+    // Perbaikan regex agar sesuai format(format lama langsung input disini)
     // preg_match("/^\/moban #(INDIHOME|INDIBIZ|Wifiid|Astinet|Metro|VPNIP|WMS|OLO) #([A-Z0-9]+) #([A-Z0-9]+) #([\s\S]+)/i", $text, $matches);
 
+    //jika salah format maka akan mengirim pesan ini...
     if (count($matches) !== 5) {
         $message = "Format Order Tidak Valid!\n\n";
         $message .= "Pastikan formatnya sesuai dengan contoh berikut:\n";
@@ -245,10 +267,12 @@ function handleOrder($text, $chat_id, $message_id, $user_id, $username) {
         $message .= "/moban #INDIHOME #MO #WO123456789 #Permintaan layanan\n\n";
         $message .= "Untuk informasi lebih lanjut, ketik perintah `/help`.";
         
+        //pesan dikirim dalam bentuk reply
         replyMessage($chat_id, $message, $message_id,);
         return;
     }
 
+    //mengekstak data dari hasil regex
     $kategori = strtoupper($matches[1]); // Kategori (INDIHOME, INDIBIZ, DATIN)
     $transaksi = strtoupper($matches[2]); // Transaksi
     $wonum = $matches[3]; // WONUM
@@ -264,7 +288,7 @@ function handleOrder($text, $chat_id, $message_id, $user_id, $username) {
         return;
     }
 
-    // Jika user bukan Teknisi/Plasa, tolak akses
+    // Jika user bukan Teknisi/Plasa, tolak akses...
     if (!in_array($user['role'], ['teknisi', 'plasa'])) {
         replyMessage($chat_id, "Maaf, fitur ini hanya bisa digunakan oleh Teknisi atau Plasa. Hubungi admin untuk mendapatkan akses.", $message_id);
         return;
@@ -276,21 +300,24 @@ function handleOrder($text, $chat_id, $message_id, $user_id, $username) {
     // Generate nomor tiket
     $no_tiket = generateTicket();
 
-    // Cek apakah Order_ID atau No_Tiket sudah ada
+    // Cek apakah Order_ID atau No_Tiket sudah ada. mengindari duplikasi..
     $stmtCheck = $pdo->prepare("SELECT COUNT(*) FROM orders WHERE Order_ID = ? OR No_Tiket = ?");
     $stmtCheck->execute([$wonum, $no_tiket]);
     $exists = $stmtCheck->fetchColumn();
     
     if ($exists > 0) {
+        //jika duplikat 
         $stmtGet = $pdo->prepare("SELECT Order_ID, No_Tiket FROM orders WHERE Order_ID = ? OR No_Tiket = ?");
         $stmtGet->execute([$wonum, $no_tiket]);
         $existingOrder = $stmtGet->fetch(PDO::FETCH_ASSOC);
-    
+        
+        //kirim reply ini...
         replyMessage($chat_id, "Order sudah ada di sistem!\n\n Order_ID: {$existingOrder['Order_ID']}\n No_Tiket: {$existingOrder['No_Tiket']}", $message_id);
         return;
     }
     
     try {
+        //mulai transaksi ke database..
         $pdo->beginTransaction();
 
         // Simpan ke tabel orders (tambahkan group_id)
@@ -307,21 +334,26 @@ function handleOrder($text, $chat_id, $message_id, $user_id, $username) {
         // Balas pesan di grup asal
         replyMessage($chat_id, "Hallo $nama. Permintaan Anda $wonum $transaksi $kategori dengan no tiket $no_tiket sedang kami check, silahkan tunggu.", $message_id);
     } catch (Exception $e) {
+        //rollback jika transaksi gagal
         $pdo->rollBack();
         replyMessage($chat_id, "Terjadi kesalahan saat menyimpan order. Coba lagi nanti.\n\nError: " . $e->getMessage(), $message_id);
     }
 }
 
 
-
+//mengirim pesan berupa reply ke user
 function replyMessage($chat_id, $message, $reply_to_message_id) {
+    // Membentuk URL untuk mengirim balasan pesan ke Telegram Bot API
     $url = API_URL . "sendMessage?chat_id=$chat_id&text=" . urlencode($message) . "&reply_to_message_id=$reply_to_message_id";
+    // Mengirim permintaan HTTP GET ke API Telegram
     file_get_contents($url);
 }
+
+//fungsi mengirim notifikasi jika terjadi perubahan data pada database
 function sendNotifications() {
     global $pdo;
 
-    // Ambil notifikasi yang belum terkirim
+    // Ambil notifikasi yang statusnya Pickup atau Close dan belum terkirim (is_sent = 0)
     $stmt = $pdo->query("
         SELECT lo.*, o.group_id 
         FROM log_orders lo
@@ -333,7 +365,7 @@ function sendNotifications() {
 
     foreach ($notifications as $notification) {
         $chat_id = $notification['group_id']; // Ambil group_id dari order
-        $no_tiket = $notification['No_Tiket'];
+        $no_tiket = $notification['No_Tiket']; 
         $order_id = $notification['order_id'];
         $transaksi = $notification['transaksi'];
         $status = $notification['status'];
@@ -395,15 +427,12 @@ function sendNotifications() {
     }
 }
 
-
-// function generateTicket() {
-//     return 'TKT' . strtoupper(substr(uniqid(rand(), true), -5));
-// }
-
+//fungsi membuat tiket random
 function generateTicket() {
     global $pdo;
     do {
-        $no_tiket = 'TKT' . strtoupper(substr(uniqid(rand(), true), -5));
+        // -8 adalah berarti yang diambil 8 angka
+        $no_tiket = 'TKT' . strtoupper(substr(uniqid(rand(), true), -8));
 
         // Menggunakan prepared statement untuk keamanan
         $query = "SELECT COUNT(*) FROM orders WHERE No_Tiket = :no_tiket";

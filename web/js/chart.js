@@ -1,12 +1,15 @@
+// Jalankan kode saat dokumen siap
 $(document).ready(function() {
     // Ambil data dari PHP (AJAX request)
     $.getJSON("", function(data) {
+        // Siapkan array untuk label dan nilai chart
         let labels = [];
         let values = [];
 
+        // Proses data dari response API
         data.forEach(item => {
-            labels.push(item.kategori);
-            values.push(item.total);
+            labels.push(item.kategori); // Kumpulkan label kategori
+            values.push(item.total); // Kumpulkan nilai total
         });
 
         // **1️⃣ Tampilkan grafik batang (Bar Chart)**
@@ -14,11 +17,11 @@ $(document).ready(function() {
         new Chart(ctx1, {
             type: "bar",
             data: {
-                labels: labels,
+                labels: labels, // Label dari data kategori
                 datasets: [{
-                    label: "Kategori",
-                    data: values,
-                    backgroundColor: "blue"
+                    label: "Kategori", 
+                    data: values, // Nilai dari total per kategori
+                    backgroundColor: "blue" // Warna batang
                 }]
             }
         });
@@ -28,10 +31,10 @@ $(document).ready(function() {
         new Chart(ctx2, {
             type: "pie",
             data: {
-                labels: ["In Progress", "On Rekap"],
+                labels: ["In Progress", "On Rekap"], // Label hardcoded
                 datasets: [{
                     data: [50, 50], // Bisa diambil dari data.php juga
-                    backgroundColor: ["cyan", "blue"]
+                    backgroundColor: ["cyan", "blue"] // Warna slice
                 }]
             }
         });
@@ -45,8 +48,8 @@ $(document).ready(function() {
                 datasets: [{
                     label: "Record Count",
                     data: [1, 1], // Bisa diambil dari data
-                    borderColor: "blue",
-                    fill: false
+                    borderColor: "blue", // Warna garis
+                    fill: false // Tidak ada area bawah garis
                 }]
             }
         });

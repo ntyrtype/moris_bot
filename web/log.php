@@ -1,5 +1,7 @@
 <?php 
+// Memulai session untuk manajemen state pengguna
 session_start();
+// Memuat konfigurasi database
 require "../config/Database.php";
 
 // Memastikan pengguna sudah login
@@ -89,6 +91,7 @@ if (!empty($start_date) && !empty($end_date)) {
     $stmt->bindParam(":end_date", $end_date, PDO::PARAM_STR);
 }
 
+// eksekusi hasilnya    
 $stmt->execute();
 $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -101,6 +104,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <!-- <meta http-equiv="refresh" content="60"> -->
     <link rel="stylesheet" href="./style/style.css">
     <title>Close</title>
+    <!-- scripts eksternal -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"> -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -108,18 +112,20 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 </head>
 <body>
-
+    <!-- sidebar -->
     <div class="sidebar" id="sidebar">
         <h1>MORIS BOT</h1>
         <a href="dashboard.php">Dashboard</a>
         <a href="order.php">Order</a>
         <a href="pickup.php">PickUp</a>
         <a href="close.php">Close</a>
+        <!-- validasi hanya terlihat di admin -->
         <?php if ($_SESSION['role'] === 'admin'): ?>
         <a href="log.php">Log</a>
         <?php endif; ?>
     </div>
 
+    <!-- konten -->
     <div class="content" id="content">
         <div class="navbar">
             <button id="toggleSidebar">☰</button>
@@ -127,6 +133,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="profile-dropdown">
                 <button id="profileButton"><?php echo htmlspecialchars($_SESSION['nama']); ?></button>
                 <div class="profile-content" id="profileContent">
+                    <!-- hanya tampil di admin -->
                     <?php if ($_SESSION['role'] === 'admin'): ?>
                         <a href="add_user.php">Tambah User</a>
                         <a href="admin.php">Tools</a>
@@ -141,12 +148,14 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <h1 class="headtitle">Log Menu</h1>
         <div class="filter">
             <form action="" method="GET">
+                <!-- filter by order -->
                 <select aria-label="order_by" name="order_by" id="order_by">
                     <option value="">All</option>
                     <option value="Plasa" <?= ($order_by === 'Plasa') ? 'selected' : '' ?>>PLASA</option>
                     <option value="Teknisi" <?= ($order_by === 'Teknisi') ? 'selected' : '' ?>>TEKNISI</option>
                 </select>
 
+                <!-- filter by transaksi -->
                 <select aria-label="transaksi" name="transaksi" id="transaksi">
                     <option value="">All Transaksi</option>
                     <option value="PDA" <?= ($transaksi === 'PDA') ? 'selected' : '' ?>>PDA</option>
@@ -160,6 +169,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <option value="DO" <?= ($transaksi === 'DO') ? 'selected' : '' ?>>DO</option>
                 </select>
 
+                <!-- filter by kategori -->
                 <select aria-label="kategori" name="kategori" id="kategori">
                     <option value="">All Kategori</option>
                     <option value="Indibiz">Indibiz</option>
@@ -171,6 +181,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <option value="OLO">OLO</option>
                 </select>
 
+                <!-- filter by date -->
                 <!-- <div class="filter_date"> -->
                     <label for="start_date">Date:</label>
                     <input type="date" name="start_date" id="start_date" value="<?= isset($_GET['start_date']) ? htmlspecialchars($_GET['start_date']) : '' ?>">
@@ -184,6 +195,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="table-responsive">
             <table id="dataTable" class="display" style="width:100%">
             <thead>
+                <!-- tabel kolom -->
                 <tr>
                     <th>No</th>
                     <th>User ID</th>
@@ -201,6 +213,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </tr>
             </thead>
             <tbody>
+            <!-- looping mengambil data dari order -->
             <?php if (!empty($orders)): ?>
                 <?php $no = 1; ?>
                 <?php foreach ($orders as $order): ?>
@@ -228,14 +241,16 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </tbody>
         </table>
         </div>
+        <!-- btn doenload -->
         <button id="downloadButton" class="download-btn">Download Excel</button>
     </div>
 
+<!-- eksternal script js -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="./js/sidebar.js"></script>
-<script src="./js/profile.js"></script>
-<script src="./js/datatable.js"></script>
-<script src="./js/cancel.js"></script>
+<script src="./js/sidebar.js"></script> <!-- untuk sidebar -->
+<script src="./js/profile.js"></script> <!-- untuk profile -->
+<script src="./js/datatable.js"></script> <!-- untuk datatable -->
+<script src="./js/cancel.js"></script> <!-- untuk cancel -->
 <!-- <script src="./js/download.js"></script> -->
 
 </body>

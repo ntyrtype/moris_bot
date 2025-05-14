@@ -1,4 +1,5 @@
 <?php 
+// Inisialisasi session dan koneksi database
 session_start();
 require "../config/Database.php";
 
@@ -62,11 +63,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt_insert_log->execute();
 
         $pdo->commit();
+        // berikan notifikasi jika sukses
         $_SESSION['message'] = "Order berhasil diupdate.";
         header("Location: pickup.php"); // Redirect untuk menghindari resubmit form
         exit();
 
     } catch (PDOException $e) {
+        // rollback jika error
         $pdo->rollBack();
         echo "Error: " . $e->getMessage();
     }
@@ -112,7 +115,7 @@ $query = "
         o.Status = 'Pickup';
 ";
 
-// Tambahkan filter jika ada input order_by
+// Tambahkan filter jika ada input order_by, transaksi, kategori, dan tanggal
 if ($order_by) {
     $query .= " AND o.order_by = :order_by";
 }
@@ -131,6 +134,7 @@ if (!empty($start_date) && !empty($end_date)) {
     $query .= " AND o.tanggal <= :end_date";
 }
 
+// urutkan berdasarkan tanggal terlama
 $query .= " ORDER BY o.tanggal DESC";
 
 // Eksekusi query
@@ -174,12 +178,14 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body>
 
+    <!-- sidebar -->
     <div class="sidebar" id="sidebar">
         <h1>MORIS BOT</h1>
         <a href="dashboard.php">Dashboard</a>
         <a href="order.php">Order</a>
         <a href="pickup.php">PickUp</a>
         <a href="close.php">Close</a>
+        <!-- jika admin tampilkan log -->
         <?php if ($_SESSION['role'] === 'admin'): ?>
         <a href="log.php">Log</a>
         <?php endif; ?>
@@ -192,6 +198,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="profile-dropdown">
                 <button id="profileButton"><?php echo htmlspecialchars($_SESSION['nama']); ?></button>
                 <div class="profile-content" id="profileContent">
+                    <!-- jika admin ampilkan tools admin dan tambah user -->
                     <?php if ($_SESSION['role'] === 'admin'): ?>
                         <a href="add_user.php">Tambah User</a>
                         <a href="admin.php">Tools</a>
@@ -204,6 +211,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </div>
         <h1 class="headtitle">Pickup Menu</h1>
+        <!-- seasson jika berhasil pickup maka akan memberi notif -->
         <?php if (isset($_SESSION['message'])): ?>
         <div class="notification" style="margin: 20px 20px 20px 10px;">
             <?= htmlspecialchars($_SESSION['message']) ?>
@@ -212,12 +220,14 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <?php endif; ?>
         <div class="filter">
             <form action="" method="GET">
+                <!-- filter by order -->
                 <select aria-label="order_by" name="order_by" id="order_by">
                     <option value="">All</option>
                     <option value="Plasa" <?= ($order_by === 'Plasa') ? 'selected' : '' ?>>PLASA</option>
                     <option value="Teknisi" <?= ($order_by === 'Teknisi') ? 'selected' : '' ?>>TEKNISI</option>
                 </select>
 
+                <!-- filter by transaksi -->
                 <select aria-label="transaksi" name="transaksi" id="transaksi">
                     <option value="">All Transaksi</option>
                     <option value="PDA" <?= ($transaksi === 'PDA') ? 'selected' : '' ?>>PDA</option>
@@ -231,6 +241,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <option value="DO" <?= ($transaksi === 'DO') ? 'selected' : '' ?>>DO</option>
                 </select>
 
+                <!-- filter by kategori -->
                 <select aria-label="kategori" name="kategori" id="kategori">
                     <option value="">All Kategori</option>
                     <option value="Indibiz">Indibiz</option>
@@ -242,6 +253,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <option value="OLO">OLO</option>
                 </select>
 
+                <!-- filter by date -->
                 <!-- <div class="filter_date"> -->
                     <label for="start_date">Date:</label>
                     <input type="date" name="start_date" id="start_date" value="<?= isset($_GET['start_date']) ? htmlspecialchars($_GET['start_date']) : '' ?>">
@@ -255,6 +267,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="table-responsive">
             <table id="dataTable" class="display" style="width:100%">
                 <thead>
+                    <!-- kolom tabel -->
                     <tr>
                         <th>No</th>
                         <th>Order ID</th>
@@ -270,6 +283,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </tr>
                 </thead>
                 <tbody>
+                    <!-- looping untuk menampilkan data -->
                     <?php if (!empty($orders)): ?>
                         <?php $no = 1; ?>
                         <?php foreach ($orders as $order): ?>
@@ -279,6 +293,7 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <td><?= htmlspecialchars($order['kategori']) ?></td>
                                 <td><?= htmlspecialchars($order['transaksi']) ?></td>
                                 <td><?= htmlspecialchars($order['tanggal']) ?></td>
+                                <!-- jika keteranngan panjang maka akan di showmore -->
                                 <td class="text-container">
                                     <?php
                                         $text = nl2br(htmlspecialchars($order['Keterangan']));
@@ -290,12 +305,14 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 </td>
                                 <td><?= htmlspecialchars($order['no_tiket']) ?></td>
                                 <td>
+                                    <!-- linked telegram by id telegram di database -->
                                     <a href="https://t.me/<?= htmlspecialchars($order['username_telegram']) ?>" target="_blank">
                                         <?= htmlspecialchars($order['nama']) ?>
                                     </a>
                                 <td><?= htmlspecialchars($order['Provi']) ?></td>
                                 <td><?= htmlspecialchars($order['progress']) ?></td>
                                 <td>
+                                    <!-- memmbuat reply jika close -->
                                     <button onclick="openModal('<?php echo htmlspecialchars($order['no_tiket'], ENT_QUOTES, 'UTF-8'); ?>')">Reply</button>
                                 </td>
                             </tr>
@@ -309,9 +326,11 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </tbody>
             </table>
         </div>
+        <!-- btn download -->
         <button id="downloadButton" class="download-btn">Download Excel</button>
     </div>
 
+    <!-- modal ketika close -->
     <div id="modal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
@@ -334,11 +353,12 @@ $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 
-<script src="./js/sidebar.js"></script>
-<script src="./js/profile.js"></script>
-<script src="./js/datatable.js"></script>
-<script src="./js/showmore.js"></script>
-<script src="./js/keterangan.js"></script>
+<!-- memanggil scripts js -->
+<script src="./js/sidebar.js"></script> <!-- memanggil sidebar -->
+<script src="./js/profile.js"></script> <!-- memanggil profile -->
+<script src="./js/datatable.js"></script> <!-- memanggil datatable -->
+<script src="./js/showmore.js"></script> <!-- memanggil showmore -->
+<script src="./js/keterangan.js"></script> <!-- memanggil keterangan -->
 <!-- <script src="./js/download.js"></script> -->
 
 </body>

@@ -1,4 +1,5 @@
 <?php
+// Memulai session untuk mengelola state pengguna
 session_start();
 require "../config/Database.php"; // Memuat konfigurasi database
 
@@ -9,7 +10,9 @@ if (!isset($_SESSION['role'])) {
     exit();
 }
 
+//cek apakah yang login adalah admin
 if ($_SESSION['role'] !== 'admin') {
+    //jka tidak akan diarahkan balik ke dashboard
     $_SESSION['message'] = "Anda tidak memiliki akses untuk mengubah kategori!";
     header("Location: dashboard.php");
     exit();
@@ -23,6 +26,7 @@ $kategori_regex = $row['regex_pattern'] ?? '';
 // Ubah "|" menjadi ", " untuk placeholder
 $kategori_placeholder = str_replace('|', ', ', $kategori_regex);
 
+// Handling form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!empty($_POST['category_regex'])) {
         $category_regex = trim($_POST['category_regex']); // Ambil input admin
@@ -124,6 +128,7 @@ try {
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+  <!-- Style kustom untuk halaman admin -->
   <style>
     body {
       background-color: #2c3e50;
@@ -260,7 +265,9 @@ try {
 </head>
 <body>
   <main>
+    <!-- Container utama --> 
     <section class="container wrapper">
+      <!-- Tombol kembali -->
       <button class="close-btn" onclick="window.history.back();">&times;</button>
       <h2 class="display-4 pt-3">Admin Tools</h2>
       
@@ -324,6 +331,7 @@ try {
       </div>
     </section>
   </main>
+  <!-- Script untuk menangani tampilan informasi regex -->
   <script>
   document.getElementById("regexInfo").addEventListener("click", function(event) {
     event.preventDefault();
@@ -340,6 +348,7 @@ try {
     }
   });
   </script>
+  <!-- Script untuk inisialisasi DataTable dan fungsi toggle status -->
   <script>
     $(document).ready(function() {
       // Inisialisasi DataTable untuk Group

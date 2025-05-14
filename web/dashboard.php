@@ -1,21 +1,28 @@
 <?php
+// Memulai session untuk manajemen state pengguna
 session_start();
+// Memuat konfigurasi database  
 require "../config/Database.php";
 
+
+// Validasi otentikasi pengguna
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(["error" => "Unauthorized"]);
     header("Location: index.php");
     exit();
 }
 
+// Inisialisasi variabel untuk menyimpan data statistik
 $order_count = 0;
 $pickup_count = 0;
 $close_count = 0;
 $produktifitiData = [];
 
+// Handling request AJAX untuk data dashboard
 if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     header("Content-Type: application/json");
 
+     // Sanitasi parameter input GET
     $transaksi = htmlspecialchars(trim($_GET['transaksi'] ?? ''), ENT_QUOTES, 'UTF-8');
     $kategori = htmlspecialchars(trim($_GET['kategori'] ?? ''), ENT_QUOTES, 'UTF-8');
     $start_date = htmlspecialchars(trim($_GET['start_date'] ?? ''), ENT_QUOTES, 'UTF-8');
@@ -25,6 +32,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     // Query Filter Order Count
     $sql = "SELECT Status, COUNT(DISTINCT order_id) AS jumlah FROM log_orders WHERE 1=1";
 
+    // Dynamic query building berdasarkan parameter filter
     if (!empty($order_by)) {
         $sql .= " AND order_by = :order_by";
     }
@@ -58,6 +66,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
 
     $stmt->execute();
 
+    // Mengolah hasil query untuk statistik order
     $orders_count = [];
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $orders_count[$row['Status']] = $row['jumlah'];
@@ -101,6 +110,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
         $queryProduktifiti .= " AND DATE(lo.tanggal) BETWEEN :start_date AND :end_date";
     }
 
+    // grup by 
     $queryProduktifiti .= " GROUP BY lo.id_user, lo.nama ORDER BY RecordCount DESC";
 
     $stmtProduktifiti = $pdo->prepare($queryProduktifiti);
@@ -141,6 +151,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
         $queryProgress .= " AND DATE(tanggal) BETWEEN :start_date AND :end_date";
     }
 
+    // grup by
     $queryProgress .= " GROUP BY tanggal ORDER BY tanggal";
     $stmtProgress = $pdo->prepare($queryProgress);
 
@@ -178,6 +189,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
         $queryCategory .= " AND DATE(tanggal) BETWEEN :start_date AND :end_date";
     }
 
+    // grup by kategori
     $queryCategory .= " GROUP BY Kategori";
     $stmtCategory = $pdo->prepare($queryCategory);
 
@@ -215,6 +227,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
         $queryProgressType .= " AND DATE(tanggal) BETWEEN :start_date AND :end_date";
     }
 
+    // grup by progess_order
     $queryProgressType .= " GROUP BY progress_order";
     $stmtProgressType = $pdo->prepare($queryProgressType);
 
@@ -250,6 +263,8 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     // $queryProgressType = "SELECT progress_order, COUNT(*) as total FROM orders GROUP BY progress_order";
     // $stmtProgressType = $pdo->query($queryProgressType);
     // $dataProgressType = $stmtProgressType->fetchAll(PDO::FETCH_ASSOC);
+
+    // menampilkan sisa order
     $querySisaOrder = "SELECT COUNT(*) as sisa_order FROM orders WHERE status = 'Order'";
 
     if (!empty($order_by)) {
@@ -353,18 +368,20 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 </head>
 <body>
-
+<!-- Sidebar navigasi -->
 <div class="sidebar" id="sidebar">
     <h1>MORIS BOT</h1>
     <a href="dashboard.php">Dashboard</a>
     <a href="order.php">Order</a>
     <a href="pickup.php">PickUp</a>
     <a href="close.php">Close</a>
+    <!-- hanya tampil saat halaman admin -->
     <?php if ($_SESSION['role'] === 'admin'): ?>
     <a href="log.php">Log</a>
     <?php endif; ?>
 </div>
 
+<!-- konten utama halaman dashboard -->
 <div class="content" id="content">
     <div class="navbar">
         <button id="toggleSidebar">☰</button>
@@ -372,6 +389,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
         <div class="profile-dropdown">
             <button id="profileButton"><?php echo htmlspecialchars($_SESSION['nama']); ?></button>
             <div class="profile-content" id="profileContent">
+                <!-- hanya admin yang tampil -->
                 <?php if ($_SESSION['role'] === 'admin'): ?>
                 <a href="add_user.php">Tambah User</a>
                 <a href="admin.php">Tools</a>
@@ -387,11 +405,13 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     <!-- Filter -->
     <div class="filter">
         <form action="" id="filterForm" method="GET">
+            <!-- plasa or teknisi -->
             <select aria-label="order_by" name="order_by" id="order_by">
                 <option value="">All</option>
                 <option value="Plasa" <?= (isset($order_by) && $order_by === 'Plasa') ? 'selected' : '' ?>>PLASA</option>
                 <option value="Teknisi" <?= (isset($order_by) && $order_by === 'Teknisi') ? 'selected' : '' ?>>TEKNISI</option>
             </select>
+            <!-- berdasarkan transaksi -->
             <select aria-label="transaksi" name="transaksi" id="transaksi">
                 <option value="">All Transaksi</option>
                 <option value="PDA">PDA</option>
@@ -405,6 +425,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
                 <option value="DO">DO</option>
             </select>
 
+            <!-- berdasarkan kategori -->
             <select aria-label="kategori" name="kategori" id="kategori">
                 <option value="">All Kategori</option>
                 <option value="Indibiz">Indibiz</option>
@@ -447,6 +468,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     </div>
     <!-- Tabel dan Grafik -->
     <div class="dashboard-content">
+        <!-- validasi hanya tampil di admin dan Helpdesk -->
         <?php if ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'helpdesk'): ?>
             <div class="table-container">
                 <table id="productivityTable" class="display">
@@ -475,7 +497,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
                 <?php endif; ?>
             </div>
         </div>
-    <!-- Grafik Progress by Tanggal -->
+    <!-- Grafik Progress by Tanggal hanya tampil di admin -->
     <?php if ($_SESSION['role'] === 'admin'): ?>
     <div class="table-container">
             <canvas id="progressChart"></canvas>
@@ -491,7 +513,8 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == "true") {
     </div>
 </div>
 
-<script src="./js/sidebar.js"></script>
+<!-- js eksternal -->
+<script src="./js/sidebar.js"></script>  
 <script src="./js/card.js"></script>
 <script src="./js/profile.js"></script>
 

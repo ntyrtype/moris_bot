@@ -1,23 +1,25 @@
 $(document).ready(function() {
     // Inisialisasi DataTables
     const table = $('#dataTable').DataTable({
-        "scrollX": true,
-        "ordering": false,
-        "columnDefs": [
-            { targets: 5, width: "300px", className: "text-truncate" } // Tetapkan lebar kolom "Keterangan"
+        "scrollX": true, // Aktifkan scroll horizontal
+        "ordering": false,  // Nonaktifkan fitur sorting
+        "columnDefs": [ 
+            {   targets: 5, // Target kolom ke-5 (indeks dimulai dari 0)
+                width: "300px", // Atur lebar tetap
+                className: "text-truncate" } // Tetapkan lebar kolom "Keterangan"
         ],
     });
 
     // Atur CSS untuk tabel
     $('#dataTable').css({
-        "table-layout": "fixed",
-        "width": "100%"
+        "table-layout": "fixed", // Gunakan fixed table layout
+        "width": "100%"  // Lebar tabel 100%
     });
 
     // Fungsi untuk membersihkan teks dari HTML
     function extractTextFromHTML(html) {
         const temp = document.createElement("div");
-        temp.innerHTML = html;
+        temp.innerHTML = html; // Parse string HTML ke DOM
 
         // Cari elemen dengan class "hidden-text"
         const hiddenTextElement = temp.querySelector(".hidden-text");

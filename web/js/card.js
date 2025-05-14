@@ -1,4 +1,6 @@
+// Main function yang dijalankan saat dokumen siap
 $(document).ready(function () {
+    // Variabel untuk menyimpan instance chart (untuk menghindari memory leak)
     let progressChartInstance = null;
     let categoryChartInstance = null;
     let progressTypeChartInstance = null;
@@ -11,18 +13,21 @@ $(document).ready(function () {
         fetchData();
     });
 
+    // Fungsi utama pengambilan data
     function fetchData() {
+        // Ambil nilai filter dari form
         let order_by = $("#order_by").val();
         let transaksi = $("#transaksi").val();
         let kategori = $("#kategori").val();
         let start_date = $("#start_date").val();
         let end_date = $("#end_date").val();
 
+        // AJAX request untuk mendapatkan data terfilter
         $.ajax({
             url: "dashboard.php",
             type: "GET",
             dataType: "json",
-            data: {
+            data: { // Parameter query string
                 ajax: "true",
                 order_by: order_by,
                 transaksi: transaksi,
@@ -44,6 +49,7 @@ $(document).ready(function () {
                 updateCharts(response);
             },
             error: function (xhr, status, error) {
+                // Handling error
                 console.error("Error:", error);
                 $("#table-body").html("<tr><td colspan='8'>Gagal mengambil data</td></tr>");
                 console.log("Response Text:", xhr.responseText);
@@ -51,11 +57,12 @@ $(document).ready(function () {
         });
     }
 
-    
+    // Fungsi update tabel produktivitas
     function updateProduktifitiTable(data) {
         let tableBody = $("#table-body");
-        tableBody.empty();
-    
+        tableBody.empty(); // Kosongkan tabel
+        
+        // Handling data kosong
         if (!data || data.length === 0) {
             tableBody.html("<tr><td colspan='8'>Tidak ada data</td></tr>");
             return;
@@ -91,7 +98,8 @@ $(document).ready(function () {
     
             // Debug: Tampilkan URL yang dihasilkan
             console.log("Generated Log Link:", logLink);
-    
+            
+             // Membuat baris tabel
             let row = `
                 <tr>
                     <td>${index + 1}</td>
@@ -120,19 +128,22 @@ $(document).ready(function () {
             "destroy": true // Hapus DataTable lama sebelum diinisialisasi ulang
         });
     }
-
+    // Fungsi update semua chart
     function updateCharts(data) {
         updateProgressChart(data.progressChart);
         updateCategoryChart(data.categoryChart);
         updateProgressTypeChart(data.progressTypeChart);
     }
 
+    // Fungsi update line chart (progress per tanggal)
     function updateProgressChart(data) {
         const ctx = document.getElementById('progressChart')?.getContext('2d');
         if (!ctx) return;
 
+        // Hancurkan chart sebelumnya jika ada
         if (progressChartInstance) progressChartInstance.destroy();
 
+        // Buat chart baru
         progressChartInstance = new Chart(ctx, {
             type: 'line',
             data: {
@@ -163,6 +174,7 @@ $(document).ready(function () {
         });
     }
 
+    // Fungsi update bar chart (kategori)
     function updateCategoryChart(data) {
         const ctx = document.getElementById('categoryChart')?.getContext('2d');
         if (!ctx) return;
@@ -200,6 +212,7 @@ $(document).ready(function () {
         });
     }
 
+    // Fungsi update pie chart (tipe progress)
     function updateProgressTypeChart(data) {
         const ctx = document.getElementById('progressTypeChart')?.getContext('2d');
         if (!ctx) return;

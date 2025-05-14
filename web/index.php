@@ -1,9 +1,16 @@
-  <?php
+<?php
+  // Memulai sesi untuk menyimpan data login pengguna
   session_start();
+
+  // Mengimpor konfigurasi koneksi database
   require "../config/Database.php"; // Pastikan file koneksi database sudah benar
 
+  // Inisialisasi pesan error kosong
   $error_message = "";
+
+  // Mengecek apakah form dikirim menggunakan metode POST
   if ($_SERVER["REQUEST_METHOD"] == "POST") {
+      // Mengambil input dari form dan membersihkan spasi
       $input_username = trim($_POST['username']);
       $input_password = trim($_POST['password']);
 
@@ -20,13 +27,14 @@
 
               // Verifikasi password dengan SHA-256 (karena pakai SHA2 di database)
               if (hash('sha256', $input_password) === $user['Password']) {
+
                   // Update status menjadi 'active' setelah login berhasil
                   $update_query = "UPDATE users SET status = 'active' WHERE ID = :user_id";
                   $update_stmt = $pdo->prepare($update_query);
                   $update_stmt->bindParam(":user_id", $user['ID'], PDO::PARAM_INT);
                   $update_stmt->execute();
 
-                  // Set session untuk pengguna
+                  // Set session untuk pengguna (sesi ini akan disimpan di session)
                   $_SESSION['user_id'] = $user['ID'];
                   $_SESSION['username'] = $user['Username']; 
                   $_SESSION['nama'] = $user['Nama'];
@@ -36,12 +44,15 @@
                   header("Location: Dashboard.php");
                   exit();
               } else {
+                  // Password tidak cocok
                   $error_message = "Password salah!";
               }
           } else {
+              // Username tidak ditemukan dalam database
               $error_message = "Username tidak ditemukan!";
           }
       } catch (PDOException $e) {
+          // Menangani error jika terjadi kesalahan saat koneksi ke database
           $error_message = "Terjadi kesalahan saat menghubungkan ke database: " . $e->getMessage();
       }
   }
@@ -53,10 +64,12 @@
   <head>
     <meta charset="UTF-8">
     <title>Login</title>
+    <!-- Menggunakan tema Cosmo dari Bootswatch (versi Bootstrap 4.4.1) -->
     <link href="https://stackpath.bootstrapcdn.com/bootswatch/4.4.1/cosmo/bootstrap.min.css" rel="stylesheet">
+    <!-- Styling tambahan untuk tampilan halaman login -->
     <style>
       body{
-        background-color: #2c3e50;
+        background-color: #2c3e50; /* Warna latar belakang gelap */
       }
       .wrapper { 
         font-family:'Poppins', sans-serif;
@@ -103,23 +116,29 @@
   <body>
     <main>
       <section class="container wrapper">
+        <!-- Judul halaman login -->
         <h2 class="display-4 pt-3">Login</h2>
         <p class="text-center">Silahkan masukkan username dan password.</p>
 
+        <!-- Menampilkan pesan error jika ada -->
         <?php if ($error_message): ?>
           <div class="alert alert-danger text-center"><?php echo $error_message; ?></div>
         <?php endif; ?>
 
+        <!-- Form login -->
         <form action="" method="POST"> 
           <div class="form-group">
+            <!-- Input untuk username -->
             <input type="text" name="username" id="username" class="form-control" placeholder="Username" required >
           </div>
 
           <div class="form-group">
+            <!-- Input untuk password -->
             <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
           </div>
 
           <div class="form-group">
+            <!-- Tombol submit login -->
             <input type="submit" class="btn btn-block btn-outline-primary btn-customs" value="Login">
           </div>
         </form>

@@ -1,10 +1,13 @@
 <?php
+// Memulai session untuk manajemen state pengguna
 session_start();
+// Memuat konfigurasi database
 require "../config/Database.php";
 
+//  Validasi otentikasi pengguna
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(["error" => "Unauthorized"]);
-    header("Location: index.php");
+    header("Location: index.php"); // Redirect jika belum login
     exit();
 }
 ?>
@@ -15,28 +18,33 @@ if (!isset($_SESSION['user_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./style/style.css">
+    <!-- Library eksternal -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <title>Home</title>
 </head>
 <body>
 
+<!-- Sidebar navigasi -->
 <div class="sidebar" id="sidebar">
     <h1>MORIS BOT</h1>
     <a href="dashboard.php">Dashboard</a>
     <a href="order.php">Order</a>
     <a href="pickup.php">PickUp</a>
     <a href="close.php">Close</a>
+    <!-- hanya terlihat jika admin -->
     <?php if ($_SESSION['role'] === 'admin'): ?>
     <a href="log.php">Log</a>
     <?php endif; ?>
 </div>
 
+<!-- Konten utama -->
 <div class="content" id="content">
     <div class="navbar">
         <button id="toggleSidebar">☰</button>
         <a href="home.php" class="home-icon"><i class="fas fa-home"></i></a>
         <div class="profile-dropdown">
             <button id="profileButton"><?php echo htmlspecialchars($_SESSION['nama']); ?></button>
+            <!-- hanya terlihat jika admin -->
             <div class="profile-content" id="profileContent">
                 <?php if ($_SESSION['role'] === 'admin'): ?>
                     <a href="add_user.php">Tambah User</a>
@@ -49,6 +57,7 @@ if (!isset($_SESSION['user_id'])) {
             </div>
         </div>
     </div>
+    <!-- Konten petunjuk penggunaan -->
     <div class="container">
         <h1>📌 Petunjuk Penggunaan</h1>
 
@@ -115,8 +124,9 @@ if (!isset($_SESSION['user_id'])) {
     </div>
 </div>
 
-<script src="./js/sidebar.js"></script>
-<script src="./js/profile.js"></script>
+<!-- Script eksternal untuk fungsionalitas UI -->
+<script src="./js/sidebar.js"></script> <!--untuk sidebar -->
+<script src="./js/profile.js"></script> <!--untuk profile -->
 
 </body>
 </html>
